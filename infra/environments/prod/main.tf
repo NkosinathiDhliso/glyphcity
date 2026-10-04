@@ -2106,6 +2106,16 @@ resource "aws_lambda_permission" "apigw_api" {
 }
 
 # =============================================================================
+# glyphcity.com: registered at Namecheap, DNS delegated to this zone
+# (GlyphCity rebrand spec, task 8.1). App records are added in the cutover.
+# =============================================================================
+
+resource "aws_route53_zone" "glyphcity" {
+  name    = "glyphcity.com"
+  comment = "GlyphCity app domain. Nameservers are set at the Namecheap registrar."
+}
+
+# =============================================================================
 # Custom domain (api.areacode.co.za) — optional, gated on enable_api_custom_domain
 # =============================================================================
 
@@ -2563,6 +2573,11 @@ module "rum" {
 }
 
 # --- Outputs ---
+output "glyphcity_name_servers" {
+  description = "Set these as Custom DNS for glyphcity.com at Namecheap."
+  value       = aws_route53_zone.glyphcity.name_servers
+}
+
 output "api_endpoint" {
   value = module.api_gateway.api_endpoint
 }
