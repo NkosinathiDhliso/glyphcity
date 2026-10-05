@@ -128,6 +128,30 @@ export default defineConfig({
       dependencies: ['smoke'],
     },
 
+    // ── GlyphCity rebrand (glyphcity-rebrand task 16.2, R12.4) ──────────
+    // No smoke dependency: built to run against local dev-mock servers, which
+    // have no API to health-check. Specs skip with a reason unless the target
+    // declares what it was built with (E2E_DEV_MOCK, E2E_POINT_MODE,
+    // E2E_LIVE_DOMAINS; see .env.example). Chromium mobile, as the consumer
+    // app is mobile-first.
+    {
+      name: 'glyphcity-rebrand',
+      testMatch: /glyphcity-rebrand\/.*\.spec\.ts/,
+      // Vite dev servers compile on first hit and Mapbox renders on software
+      // WebGL in headless Chromium, so allow more time than the shared default.
+      timeout: 120_000,
+      use: {
+        ...devices['Pixel 7'],
+        navigationTimeout: 90_000,
+        actionTimeout: 30_000,
+        baseURL: CONSUMER_URL,
+        geolocation: { latitude: -26.2041, longitude: 28.0473 },
+        permissions: ['geolocation'],
+        locale: 'en-ZA',
+        timezoneId: 'Africa/Johannesburg',
+      },
+    },
+
     // ── Cross-portal real-time tests ─────────────────────────────────────
     {
       name: 'cross-portal',

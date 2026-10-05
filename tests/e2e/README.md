@@ -39,51 +39,52 @@ Read this before running anything that authenticates or seeds.
 
 ## Coverage matrix
 
-| Section                               | Coverage                     | Spec(s)                                                                |
-| ------------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
-| Cross-cutting smoke                   | ✅                           | `tests/smoke.spec.ts`                                                  |
-| §1.1 Sign up & first launch           | 🟡 (Google + SMS OTP manual) | `consumer/signup-and-checkin.spec.ts`, `consumer/manual-flows.spec.ts` |
-| §1.2 Map & discovery                  | ✅                           | `consumer/signup-and-checkin.spec.ts`                                  |
-| §1.3 Check-in (GPS, cooldown, errors) | ✅ (QR via phone manual)     | `consumer/signup-and-checkin.spec.ts`                                  |
-| §1.4 Profile & history                | ✅                           | `consumer/profile-and-history.spec.ts`                                 |
-| §1.5 Rewards                          | ✅ (push prompt manual)      | `consumer/rewards.spec.ts`                                             |
-| §1.6 Social                           | ✅                           | `consumer/social.spec.ts`                                              |
-| §1.7 Privacy & safety                 | ✅                           | `consumer/privacy-and-safety.spec.ts`                                  |
-| §1.8 Account management               | ✅ (delete flow manual)      | `consumer/account-management.spec.ts`                                  |
-| §1.9 Error handling                   | ✅                           | `consumer/error-handling.spec.ts`                                      |
-| §2.1 Onboarding                       | 🟡 (Google manual)           | `business/onboarding-and-live.spec.ts`                                 |
-| §2.2 Live panel                       | ✅                           | `business/onboarding-and-live.spec.ts`                                 |
-| §2.3 Venue editor                     | ✅                           | `business/venue-editor.spec.ts`                                        |
-| §2.4 Check-in detail panel            | ✅                           | `business/checkin-detail.spec.ts`                                      |
-| §2.5 Rewards                          | ✅                           | `business/rewards.spec.ts`                                             |
-| §2.6 Staff management                 | ✅                           | `business/staff-management.spec.ts`                                    |
-| §2.7 Staff redemption attribution     | ✅                           | `business/staff-management.spec.ts`                                    |
-| §2.8 Subscription & billing           | 🟡 (Yoco card flow manual)   | `business/billing-and-qr.spec.ts`                                      |
-| §2.9 QR code                          | ✅                           | `business/billing-and-qr.spec.ts`                                      |
-| §2.10 Reports                         | ✅                           | `business/reports-and-audience.spec.ts`                                |
-| §2.11 Audience & boost                | ✅                           | `business/reports-and-audience.spec.ts`                                |
-| §3.1 Staff auth                       | ✅                           | `staff/auth-and-redemption.spec.ts`                                    |
-| §3.2 QR scanner (camera)              | ❌ manual                    | `staff/auth-and-redemption.spec.ts` (fixme)                            |
-| §3.3 Manual code entry                | ✅                           | `staff/auth-and-redemption.spec.ts`                                    |
-| §3.4 Redemption preview               | ✅                           | `staff/auth-and-redemption.spec.ts`                                    |
-| §3.5 Confirmation & result            | ✅                           | `staff/auth-and-redemption.spec.ts`                                    |
-| §3.6 Recent redemptions               | ✅                           | `staff/auth-and-redemption.spec.ts`                                    |
-| §4.1 Admin auth                       | ✅                           | `admin/dashboard.spec.ts`                                              |
-| §4.2 Dashboard overview               | ✅                           | `admin/dashboard.spec.ts`                                              |
-| §4.3 Consumer management              | ✅                           | `admin/management.spec.ts`                                             |
-| §4.4 Business management              | ✅                           | `admin/management.spec.ts`                                             |
-| §4.5 Node management                  | ✅                           | `admin/management.spec.ts`                                             |
-| §4.6 Abuse flag dashboard             | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §4.7 Audit trail                      | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §4.8 Report queue                     | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §4.9 Consent audit                    | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §4.10 IAM                             | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §4.11 Archetype management            | ✅                           | `admin/moderation-and-iam.spec.ts`                                     |
-| §5 Cross-portal real-time             | ✅                           | `cross-portal/realtime.spec.ts`                                        |
-| §6 Performance & reliability          | 🟡 (memory leaks manual)     | `performance.spec.ts`                                                  |
-| §7 Security spot checks               | ✅                           | `security.spec.ts`                                                     |
-| §8 Mobile responsiveness              | ✅                           | `mobile-sweep.spec.ts`                                                 |
-| §9 Accessibility                      | 🟡 (screen-reader manual)    | `accessibility.spec.ts`                                                |
+| Section                               | Coverage                       | Spec(s)                                                                |
+| ------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| Cross-cutting smoke                   | ✅                             | `tests/smoke.spec.ts`                                                  |
+| §1.1 Sign up & first launch           | 🟡 (Google + SMS OTP manual)   | `consumer/signup-and-checkin.spec.ts`, `consumer/manual-flows.spec.ts` |
+| §1.2 Map & discovery                  | ✅                             | `consumer/signup-and-checkin.spec.ts`                                  |
+| §1.3 Check-in (GPS, cooldown, errors) | ✅ (QR via phone manual)       | `consumer/signup-and-checkin.spec.ts`                                  |
+| §1.4 Profile & history                | ✅                             | `consumer/profile-and-history.spec.ts`                                 |
+| §1.5 Rewards                          | ✅ (push prompt manual)        | `consumer/rewards.spec.ts`                                             |
+| §1.6 Social                           | ✅                             | `consumer/social.spec.ts`                                              |
+| §1.7 Privacy & safety                 | ✅                             | `consumer/privacy-and-safety.spec.ts`                                  |
+| §1.8 Account management               | ✅ (delete flow manual)        | `consumer/account-management.spec.ts`                                  |
+| §1.9 Error handling                   | ✅                             | `consumer/error-handling.spec.ts`                                      |
+| §2.1 Onboarding                       | 🟡 (Google manual)             | `business/onboarding-and-live.spec.ts`                                 |
+| §2.2 Live panel                       | ✅                             | `business/onboarding-and-live.spec.ts`                                 |
+| §2.3 Venue editor                     | ✅                             | `business/venue-editor.spec.ts`                                        |
+| §2.4 Check-in detail panel            | ✅                             | `business/checkin-detail.spec.ts`                                      |
+| §2.5 Rewards                          | ✅                             | `business/rewards.spec.ts`                                             |
+| §2.6 Staff management                 | ✅                             | `business/staff-management.spec.ts`                                    |
+| §2.7 Staff redemption attribution     | ✅                             | `business/staff-management.spec.ts`                                    |
+| §2.8 Subscription & billing           | 🟡 (Yoco card flow manual)     | `business/billing-and-qr.spec.ts`                                      |
+| §2.9 QR code                          | ✅                             | `business/billing-and-qr.spec.ts`                                      |
+| §2.10 Reports                         | ✅                             | `business/reports-and-audience.spec.ts`                                |
+| §2.11 Audience & boost                | ✅                             | `business/reports-and-audience.spec.ts`                                |
+| §3.1 Staff auth                       | ✅                             | `staff/auth-and-redemption.spec.ts`                                    |
+| §3.2 QR scanner (camera)              | ❌ manual                      | `staff/auth-and-redemption.spec.ts` (fixme)                            |
+| §3.3 Manual code entry                | ✅                             | `staff/auth-and-redemption.spec.ts`                                    |
+| §3.4 Redemption preview               | ✅                             | `staff/auth-and-redemption.spec.ts`                                    |
+| §3.5 Confirmation & result            | ✅                             | `staff/auth-and-redemption.spec.ts`                                    |
+| §3.6 Recent redemptions               | ✅                             | `staff/auth-and-redemption.spec.ts`                                    |
+| §4.1 Admin auth                       | ✅                             | `admin/dashboard.spec.ts`                                              |
+| §4.2 Dashboard overview               | ✅                             | `admin/dashboard.spec.ts`                                              |
+| §4.3 Consumer management              | ✅                             | `admin/management.spec.ts`                                             |
+| §4.4 Business management              | ✅                             | `admin/management.spec.ts`                                             |
+| §4.5 Node management                  | ✅                             | `admin/management.spec.ts`                                             |
+| §4.6 Abuse flag dashboard             | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §4.7 Audit trail                      | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §4.8 Report queue                     | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §4.9 Consent audit                    | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §4.10 IAM                             | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §4.11 Archetype management            | ✅                             | `admin/moderation-and-iam.spec.ts`                                     |
+| §5 Cross-portal real-time             | ✅                             | `cross-portal/realtime.spec.ts`                                        |
+| §6 Performance & reliability          | 🟡 (memory leaks manual)       | `performance.spec.ts`                                                  |
+| §7 Security spot checks               | ✅                             | `security.spec.ts`                                                     |
+| §8 Mobile responsiveness              | ✅                             | `mobile-sweep.spec.ts`                                                 |
+| §9 Accessibility                      | 🟡 (screen-reader manual)      | `accessibility.spec.ts`                                                |
+| GlyphCity rebrand (R12.4)             | 🟡 (live domains post-cutover) | `glyphcity-rebrand/*.spec.ts` (project `glyphcity-rebrand`)            |
 
 Legend: ✅ automated · 🟡 partially automated, see notes · ❌ stays manual
 
@@ -129,6 +130,30 @@ pnpm --filter @area-code/e2e test:ui
 pnpm --filter @area-code/e2e test --project=admin
 pnpm --filter @area-code/e2e test --project=cross-portal
 ```
+
+### GlyphCity rebrand, locally
+
+The `glyphcity-rebrand` project runs against local dev-mock servers and has no
+smoke dependency. Start the four apps with the dev mock, and the web app with
+Point_Mode built in (the flag has no runtime override):
+
+```powershell
+# one terminal per app, from apps/<app>
+$env:VITE_DEV_MOCK='true'; $env:VITE_FLAG_POINT_MODE='true'; pnpm exec vite --port 5180 --strictPort  # web
+$env:VITE_DEV_MOCK='true'; pnpm exec vite --port 5181 --strictPort                                   # business
+$env:VITE_DEV_MOCK='true'; pnpm exec vite --port 5182 --strictPort                                   # staff
+$env:VITE_DEV_MOCK='true'; pnpm exec vite --port 5183 --strictPort                                   # admin
+
+# then, from tests/e2e
+$env:E2E_CONSUMER_URL='http://localhost:5180'; $env:E2E_BUSINESS_URL='http://localhost:5181'
+$env:E2E_STAFF_URL='http://localhost:5182'; $env:E2E_ADMIN_URL='http://localhost:5183'
+$env:E2E_DEV_MOCK='1'; $env:E2E_POINT_MODE='1'
+pnpm exec playwright test --project=glyphcity-rebrand --workers=1
+```
+
+Use one worker: the map renders on software WebGL headless, and parallel
+workers starve the main thread. The glyphcity.com sign-in tests skip until
+`E2E_LIVE_DOMAINS=1` is set after the domain cutover.
 
 After a run, open the HTML report:
 
