@@ -12,6 +12,8 @@
 param(
     [string]$Environment = "prod",
     [string]$Region = "us-east-1",
+    # The app domain. Mirrors APP_DOMAIN in packages/shared/constants/brand.ts.
+    [string]$AppDomain = "glyphcity.com",
     # Sha_Parity + authenticated WebSocket gate (Deployment Parity R7.3). A
     # fresh JWT (dev-issued or founder-supplied) for the authenticated $connect
     # probe. Passed to $connect exactly as the frontend passes it: the `token`
@@ -83,11 +85,11 @@ Write-Host ""
 # 2.1 API health, 2.2 nodes seeded + JHB bounding box, 2.3 portals up + HTTP->HTTPS redirect.
 Write-Host "HTTP checks" -ForegroundColor Yellow
 
-# 2.1 API health: GET https://api.areacode.co.za/health, assert status=ok, env=prod.
+# 2.1 API health: GET https://api.$AppDomain/health, assert status=ok, env=prod.
 # $ErrorActionPreference is Stop, so wrap the HTTP call in try/catch to turn a
 # network/DNS/TLS failure into a [FAIL] line instead of an unhandled exception.
 try {
-    $health = Invoke-RestMethod -Uri "https://api.areacode.co.za/health"
+    $health = Invoke-RestMethod -Uri "https://api.$AppDomain/health"
     $observedStatus = $health.status
     $observedEnv = $health.env
     # Capture the build sha (Deployment Parity R7.1) for the Sha_Parity check in
@@ -115,7 +117,7 @@ catch {
 # assert isActive when it is present and otherwise treat presence in the list
 # as active. JHB bounding box: lat -26.5..-25.9, lng 27.7..28.4.
 try {
-    $nodesResponse = Invoke-RestMethod -Uri "https://api.areacode.co.za/v1/nodes/johannesburg"
+    $nodesResponse = Invoke-RestMethod -Uri "https://api.$AppDomain/v1/nodes/johannesburg"
 
     # Normalise to an array. The route returns a bare array today, but tolerate
     # an object wrapper (nodes/data) so a future shape change is handled, not
@@ -177,16 +179,16 @@ catch {
 }
 
 # 2.3 Portals up + HTTP->HTTPS redirect. The four Amplify portals are the
-# consumer app (apex areacode.co.za) plus the business, staff, and admin
+# consumer app (apex domain) plus the business, staff, and admin
 # subdomains (see scripts/update-all-amplify-apps.ps1 for the app-to-domain
 # map). HEAD each over HTTPS and assert 200. Each call is wrapped so a
 # network/DNS/TLS failure or a non-2xx status becomes a [FAIL] line rather than
 # an unhandled exception ($ErrorActionPreference is Stop).
 $portalUrls = @(
-    "https://areacode.co.za",
-    "https://business.areacode.co.za",
-    "https://staff.areacode.co.za",
-    "https://admin.areacode.co.za"
+    "https://$AppDomain",
+    "https://business.$AppDomain",
+    "https://staff.$AppDomain",
+    "https://admin.$AppDomain"
 )
 
 foreach ($portalUrl in $portalUrls) {
@@ -213,13 +215,13 @@ foreach ($portalUrl in $portalUrls) {
     }
 }
 
-# HTTPS enforcement: GET http://areacode.co.za WITHOUT following redirects and
+# HTTPS enforcement: GET http://$AppDomain WITHOUT following redirects and
 # assert a 30x response whose Location header is https. PowerShell 5.1's
 # Invoke-WebRequest -MaximumRedirection 0 throws on a 30x without exposing a
 # usable response, so use [System.Net.HttpWebRequest] with AllowAutoRedirect
 # disabled (a read-only GET) to read the status code and Location cleanly.
 try {
-    $httpRequest = [System.Net.HttpWebRequest]::Create("http://areacode.co.za")
+    $httpRequest = [System.Net.HttpWebRequest]::Create("http://$AppDomain")
     $httpRequest.Method = "GET"
     $httpRequest.AllowAutoRedirect = $false
     $httpResponse = $httpRequest.GetResponse()
@@ -1286,7 +1288,7 @@ Assert-LambdaSecrets -FunctionName "area-code-prod-api" -RequiredKeys @("YOCO_WE
 # Invoke-WebRequest throws on non-2xx under $ErrorActionPreference = Stop, so the
 # 401 arrives via the exception; recover the status code from the exception
 # Response, matching the portal HEAD pattern above.
-$webhookUrl = "https://api.areacode.co.za/v1/webhooks/yoco"
+$webhookUrl = "https://api.$AppDomain/v1/webhooks/yoco"
 $probeBody = '{"type":"payment.succeeded","id":"go-live-check-probe"}'
 try {
     $response = Invoke-WebRequest -Method Post -Uri $webhookUrl -Body $probeBody `
@@ -1336,7 +1338,7 @@ Write-Host "Seed-data readiness" -ForegroundColor Yellow
 # live reward count and any item with isFirstGet=$true is a First-Get
 # (backend/src/features/rewards/types.ts: isFirstGet: z.boolean().optional()).
 try {
-    $seedResponse = Invoke-RestMethod -Uri "https://api.areacode.co.za/v1/nodes/johannesburg"
+    $seedResponse = Invoke-RestMethod -Uri "https://api.$AppDomain/v1/nodes/johannesburg"
 
     # Normalise to an array, mirroring Task 2.2 (bare array today; tolerate a
     # nodes/data wrapper so a future shape change is handled, not mis-counted).
@@ -1378,7 +1380,7 @@ try {
         $hasFirstGet = $false
         $rewardsReadOk = $true
         try {
-            $rewardsResponse = Invoke-RestMethod -Uri "https://api.areacode.co.za/v1/nodes/$($node.id)/rewards"
+            $rewardsResponse = Invoke-RestMethod -Uri "https://api.$AppDomain/v1/nodes/$($node.id)/rewards"
             $items = @()
             if ($null -ne $rewardsResponse -and $rewardsResponse.PSObject.Properties.Name -contains "items") {
                 $items = @($rewardsResponse.items)

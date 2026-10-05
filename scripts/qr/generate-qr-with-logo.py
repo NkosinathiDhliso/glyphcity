@@ -4,7 +4,7 @@ Generate a QR code for the Area Code website with the company logo in the centre
 
 Usage:
     python generate-qr-with-logo.py \
-        --url https://www.areacode.co.za/ \
+        --url https://glyphcity.com/ \
         --logo ../../brand/areacode-logo.png \
         --out ../../brand/areacode-qr.png
 
@@ -32,7 +32,7 @@ def rounded_panel(size: int, radius: int, fill) -> Image.Image:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="QR code with centred logo")
-    parser.add_argument("--url", default="https://www.areacode.co.za/")
+    parser.add_argument("--url", default="https://glyphcity.com/")
     parser.add_argument("--logo", required=True, help="Path to logo image (PNG)")
     parser.add_argument("--out", default="areacode-qr.png")
     parser.add_argument("--box-size", type=int, default=20, help="Pixels per QR module")

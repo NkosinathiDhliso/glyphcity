@@ -56,12 +56,13 @@ export const USED_UNMANAGED_ALLOWLIST = new Set([
   // it as an out-of-band key that survives the merge.
   'VITE_GIT_SHA',
   // Optional share deep-link override; the code carries a hardcoded prod
-  // default ('https://areacode.co.za'), so an unset value is correct, not a gap.
+  // default ('https://glyphcity.com'), so an unset value is correct, not a gap.
   'VITE_APP_SHARE_URL',
   // Feature-flag keys are built dynamically (`VITE_FLAG_${name}`) and read as a
   // dev/runtime override with a `false` default; they are not Amplify config.
   'VITE_FLAG_LIVE_VIBE_ON_MAP',
   'VITE_FLAG_LIVE_VIBE_DECLARATION',
+  'VITE_FLAG_POINT_MODE',
 ])
 
 /**

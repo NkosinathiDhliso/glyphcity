@@ -121,7 +121,8 @@ jobs:
   # Parity locks (R4.4 / R6.4): the closure scripts are the regression tests for
   # Table_Closure and Amplify_Env_Closure. quality-gate.yml runs them on PRs;
   # this job mirrors them on push to master (same rationale as the lint cap) so
-  # master cannot drift a new table or VITE key past closure. Static parsers
+  # master cannot drift a new table or VITE key past closure. The brand strings
+  # lock (GlyphCity R1.6) rides the same job. Static parsers
   # that only read repo files (node builtins, zero deps), so no pnpm install.
   # build-lambdas depends on this job, so an unclosed gap blocks deploy.
   closure-locks:
@@ -136,6 +137,8 @@ jobs:
         run: node scripts/check-table-closure.mjs
       - name: Amplify env closure lock
         run: node scripts/check-amplify-env-closure.mjs
+      - name: Brand strings lock
+        run: node scripts/check-brand-strings.mjs
 
   build-lambdas:
     name: Build Lambda Functions
@@ -282,9 +285,9 @@ jobs:
       - name: Smoke test prod API
         run: |
           sleep 30
-          HEALTH=$(curl -sf https://api.areacode.co.za/health || echo '{"status":"failed"}')
+          HEALTH=$(curl -sf https://api.glyphcity.com/health || echo '{"status":"failed"}')
           echo "Health check: ${HEALTH}"
           echo "${HEALTH}" | grep -q '"status":"ok"'
-          NODES_STATUS=$(curl -s -o /tmp/nodes.json -w "%{http_code}" https://api.areacode.co.za/v1/nodes/johannesburg)
+          NODES_STATUS=$(curl -s -o /tmp/nodes.json -w "%{http_code}" https://api.glyphcity.com/v1/nodes/johannesburg)
           echo "Nodes endpoint status: ${NODES_STATUS}"
           test "${NODES_STATUS}" = "200"

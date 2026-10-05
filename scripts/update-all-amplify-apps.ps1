@@ -8,10 +8,13 @@
 
 param(
     [string]$Region = "us-east-1",
+    # The app domain (glyphcity-rebrand R7). Mirrors APP_DOMAIN in
+    # packages/shared/constants/brand.ts and local.app_domain in Terraform.
+    [string]$AppDomain = "glyphcity.com",
     # REST API is served on the stable custom domain. The WebSocket API has no
     # custom domain, so it stays on its execute-api endpoint (a distinct API id
     # from the HTTP API - do not reuse the HTTP id here or real-time breaks).
-    [string]$ApiUrl = "https://api.areacode.co.za",
+    [string]$ApiUrl = "https://api.$AppDomain",
     [string]$WebSocketUrl = "wss://ilcimxarf0.execute-api.us-east-1.amazonaws.com/prod",
     [string]$MapboxToken = $env:VITE_MAPBOX_TOKEN,
     # CloudWatch RUM monitor + identity pool IDs per app.
@@ -75,19 +78,19 @@ function Set-ManagedKey($Map, [string]$Key, [string]$Value, [string]$AppName) {
 # Your 4 Amplify Apps
 $AmplifyApps = @(
     @{
-        Name = "Web (Main)"; AppId = "d3pm78r41ma6w6"; Branch = "master"; Domain = "areacode.co.za"
+        Name = "Web (Main)"; AppId = "d3pm78r41ma6w6"; Branch = "master"; Domain = $AppDomain
         RumMonitorId = $RumWebMonitorId; RumIdentityPool = $RumWebIdentityPool
     },
     @{
-        Name = "Admin"; AppId = "d1ay6jict0ql9w"; Branch = "master"; Domain = "admin.areacode.co.za"
+        Name = "Admin"; AppId = "d1ay6jict0ql9w"; Branch = "master"; Domain = "admin.$AppDomain"
         RumMonitorId = $RumAdminMonitorId; RumIdentityPool = $RumAdminIdentityPool
     },
     @{
-        Name = "Business"; AppId = "dbp54yxhyjvk0"; Branch = "master"; Domain = "business.areacode.co.za"
+        Name = "Business"; AppId = "dbp54yxhyjvk0"; Branch = "master"; Domain = "business.$AppDomain"
         RumMonitorId = $RumBusinessMonitorId; RumIdentityPool = $RumBusinessIdentityPool
     },
     @{
-        Name = "Staff"; AppId = "d166bb81tg4k61"; Branch = "master"; Domain = "staff.areacode.co.za"
+        Name = "Staff"; AppId = "d166bb81tg4k61"; Branch = "master"; Domain = "staff.$AppDomain"
         RumMonitorId = $RumStaffMonitorId; RumIdentityPool = $RumStaffIdentityPool
     }
 )
@@ -135,7 +138,7 @@ foreach ($app in $AmplifyApps) {
     # portal. Give it the staff origin explicitly so the link never depends on a
     # `business.`->`staff.` hostname swap.
     if ($app.Name -eq "Business") {
-        $managed['VITE_STAFF_URL'] = "https://staff.areacode.co.za"
+        $managed['VITE_STAFF_URL'] = "https://staff.$AppDomain"
     }
 
     # Media CDN base URL: read by the shared mediaUrl helper on the photo

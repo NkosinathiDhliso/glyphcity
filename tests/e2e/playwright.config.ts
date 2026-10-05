@@ -6,10 +6,10 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 loadEnv({ path: path.join(__dirname, '.env') })
 
-const CONSUMER_URL = process.env.E2E_CONSUMER_URL ?? 'https://staging.areacode.co.za'
-const BUSINESS_URL = process.env.E2E_BUSINESS_URL ?? 'https://business.staging.areacode.co.za'
-const STAFF_URL = process.env.E2E_STAFF_URL ?? 'https://staff.staging.areacode.co.za'
-const ADMIN_URL = process.env.E2E_ADMIN_URL ?? 'https://admin.staging.areacode.co.za'
+const CONSUMER_URL = process.env.E2E_CONSUMER_URL ?? 'https://staging.glyphcity.com'
+const BUSINESS_URL = process.env.E2E_BUSINESS_URL ?? 'https://business.staging.glyphcity.com'
+const STAFF_URL = process.env.E2E_STAFF_URL ?? 'https://staff.staging.glyphcity.com'
+const ADMIN_URL = process.env.E2E_ADMIN_URL ?? 'https://admin.staging.glyphcity.com'
 
 const isCI = !!process.env.CI
 

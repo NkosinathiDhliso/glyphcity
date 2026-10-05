@@ -2,7 +2,7 @@
  * API region latency probe (audit-gap-closure R7.4).
  *
  * Measures round-trip latency from wherever this runs to:
- *   1. the live us-east-1 API health endpoint (https://api.areacode.co.za/health)
+ *   1. the live us-east-1 API health endpoint (https://api.glyphcity.com/health)
  *   2. a public af-south-1 (Cape Town) AWS endpoint, for a same-network-path
  *      comparison of the two regions.
  *
@@ -41,7 +41,7 @@ const TARGETS = [
   {
     region: 'us-east-1',
     label: 'prod API health (us-east-1)',
-    url: process.env.USEAST_URL ?? 'https://api.areacode.co.za/health',
+    url: process.env.USEAST_URL ?? 'https://api.glyphcity.com/health',
   },
   {
     region: 'af-south-1',

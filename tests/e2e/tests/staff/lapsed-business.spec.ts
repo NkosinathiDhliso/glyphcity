@@ -29,7 +29,7 @@ test.describe('Staff — lapsed business banner (R3)', () => {
 
     // The banner names the state (no billing amounts).
     await expect(page.getByText(/no longer active/i)).toBeVisible({ timeout: 15_000 })
-    await expect(page.getByText(/left Area Code/i)).toBeVisible()
+    await expect(page.getByText(/left GlyphCity/i)).toBeVisible()
 
     // The validator is still present — a lapsed venue can still scan earned codes.
     await expect(staff.scanQrButton(page)).toBeVisible()

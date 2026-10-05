@@ -46,6 +46,11 @@ jobs:
       - name: Amplify env closure lock
         run: node scripts/check-amplify-env-closure.mjs
 
+      # GlyphCity R1.6: brand literals in user-facing files must come from
+      # Brand_Constants. Zero tolerated hits (the ratchet baseline emptied in 8.7).
+      - name: Brand strings lock
+        run: node scripts/check-brand-strings.mjs
+
       - name: TypeScript check (monorepo)
         run: pnpm exec tsc --noEmit
 

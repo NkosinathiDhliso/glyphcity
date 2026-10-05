@@ -40,10 +40,12 @@
 
 param(
     [string]$Region = "us-east-1",
+    # The app domain. Mirrors APP_DOMAIN in packages/shared/constants/brand.ts.
+    [string]$AppDomain = "glyphcity.com",
     # Host that serves the REST API (custom domain). Target of the share rewrite.
-    [string]$ApiHost = "api.areacode.co.za",
+    [string]$ApiHost = "api.$AppDomain",
     # Origin the /api/<*> proxy forwards to. The Spotify dashboard redirect URI is
-    # https://areacode.co.za/api/v1/streaming/spotify/callback, so the consumer
+    # https://glyphcity.com/api/v1/streaming/spotify/callback, so the consumer
     # origin must proxy to the HTTP API.
     [string]$ApiProxyOrigin = "https://iyj02gvt12.execute-api.us-east-1.amazonaws.com",
     [switch]$DryRun
@@ -152,6 +154,6 @@ if ($failCount -gt 0) {
 Write-Host ""
 if (-not $DryRun) {
     Write-Info "No rebuild needed. Rules take effect immediately."
-    Write-Info "Verify: curl -fsS -H 'User-Agent: WhatsApp/2' https://areacode.co.za/node/<slug> | Select-String 'og:title'"
+    Write-Info "Verify: curl -fsS -H 'User-Agent: WhatsApp/2' https://$AppDomain/node/<slug> | Select-String 'og:title'"
     Write-Host ""
 }
