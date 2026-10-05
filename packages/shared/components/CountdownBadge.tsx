@@ -57,7 +57,7 @@ export function CountdownBadge({ expiresAt, className = '', nowMs }: CountdownBa
       ? 'bg-[var(--danger)]/15 text-[var(--danger)]'
       : t === 'yellow'
         ? 'bg-[var(--warning)]/15 text-[var(--warning)]'
-        : 'bg-[var(--text-muted)]/15 text-[var(--text-muted)]'
+        : 'bg-[var(--text-muted)]/15 text-[var(--text-secondary)]'
 
   return (
     <span

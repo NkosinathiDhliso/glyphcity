@@ -50,7 +50,7 @@ export function RedemptionCodeCard({
       <div className="flex flex-row items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-[var(--text-primary)] text-sm font-medium truncate">{rewardTitle}</p>
-          {nodeName ? <p className="text-[var(--text-muted)] text-xs mt-0.5 truncate">{nodeName}</p> : null}
+          {nodeName ? <p className="text-[var(--text-secondary)] text-xs mt-0.5 truncate">{nodeName}</p> : null}
         </div>
         <CountdownBadge expiresAt={codeExpiresAt} />
       </div>
@@ -70,7 +70,7 @@ export function RedemptionCodeCard({
           scan it.
         </p>
       ) : (
-        <p className="text-[var(--text-muted)] text-xs text-center">{hint}</p>
+        <p className="text-[var(--text-secondary)] text-xs text-center">{hint}</p>
       )}
     </div>
   )

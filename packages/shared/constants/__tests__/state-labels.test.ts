@@ -2,7 +2,14 @@ import { describe, it, expect } from 'vitest'
 
 import type { NodeState } from '../../types'
 import * as barrel from '../index'
-import { PLAIN_SCALE_EN, STATE_LABEL_KEY, nodeStateFromScore, stateLabelKey, toNodeState } from '../state-labels'
+import {
+  PLAIN_SCALE_EN,
+  STATE_LABEL_KEY,
+  nodeStateFromScore,
+  presenceStateKey,
+  stateLabelKey,
+  toNodeState,
+} from '../state-labels'
 
 const ALL_STATES: NodeState[] = ['dormant', 'quiet', 'active', 'buzzing', 'popping']
 
@@ -35,6 +42,13 @@ describe('State_Labels', () => {
     expect(nodeStateFromScore(31)).toBe('buzzing')
     expect(nodeStateFromScore(60)).toBe('buzzing')
     expect(nodeStateFromScore(61)).toBe('popping')
+  })
+
+  it('applies the honest-presence rule in presenceStateKey', () => {
+    expect(presenceStateKey('dormant', 0)).toBe('state.firstIn')
+    expect(presenceStateKey('popping', 0)).toBe('state.quiet')
+    expect(presenceStateKey('dormant', 3)).toBe('state.quiet')
+    expect(presenceStateKey('popping', 3)).toBe('state.veryBusy')
   })
 
   it('narrows wire strings, reading unknowns as dormant', () => {

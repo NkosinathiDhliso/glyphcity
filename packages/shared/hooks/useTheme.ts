@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+import { THEME_GROUND } from '../constants/theme-ground'
 import { storage } from '../lib/storage'
 
 /**
@@ -15,10 +16,7 @@ const LIGHT_START = 6 // 06:00 SAST
 const LIGHT_END = 18 // 18:00 SAST
 
 /** Theme-color values matching --bg-base for each mode. */
-const THEME_COLORS: Record<ResolvedTheme, string> = {
-  dark: '#0c1018',
-  light: '#f0ece6',
-}
+const THEME_COLORS: Record<ResolvedTheme, string> = THEME_GROUND
 
 /** Returns the current hour in SAST (0-23). */
 function getSASTHour(): number {

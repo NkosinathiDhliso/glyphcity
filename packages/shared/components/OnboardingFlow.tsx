@@ -92,7 +92,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           })}
         </div>
 
-        <p className="text-[var(--text-muted)] text-[11px] text-center mb-4">{selected.length}/5 selected</p>
+        <p className="text-[var(--text-secondary)] text-[11px] text-center mb-4">{selected.length}/5 selected</p>
 
         {error && <p className="text-[var(--danger)] text-xs text-center mb-3">{error}</p>}
 
@@ -102,7 +102,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           className={`w-full rounded-xl py-3.5 text-[15px] font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
             selected.length >= 1
               ? 'bg-[var(--accent)] text-[var(--on-accent)]'
-              : 'bg-[var(--bg-raised)] text-[var(--text-muted)] cursor-default'
+              : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] cursor-default'
           } ${saving ? 'opacity-50' : ''}`}
         >
           {saving ? <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" /> : 'Continue'}

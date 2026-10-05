@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 34" width="24" height="34" fill="none">
+  <!-- Logo_Mark: a cone node drawn flat. Ink is currentColor so it can be tinted.
+       Rendered assets come from scripts/generate-brand-assets.mjs. -->
+  <defs>
+    <linearGradient id="logo-mark-beam" gradientUnits="userSpaceOnUse" x1="12" y1="34" x2="12" y2="15.5">
+      <stop offset="0" stop-color="currentColor" stop-opacity="1" />
+      <stop offset="1" stop-color="currentColor" stop-opacity="0.18" />
+    </linearGradient>
+  </defs>
+  <path d="M5.5 15.5H18.5L12 34Z" fill="url(#logo-mark-beam)" />
+  <circle cx="12" cy="7" r="6.5" fill="currentColor" />
+</svg>

@@ -53,7 +53,7 @@ export function PhotoUnavailable({ className = '', variant = 'full' }: PhotoUnav
     >
       <ImageOff size={28} strokeWidth={1.5} className="text-[var(--text-muted)] opacity-60" aria-hidden="true" />
       <span className="text-[var(--text-secondary)] text-sm font-medium">Photos unavailable</span>
-      <span className="text-[var(--text-muted)] text-xs">Photo serving is not configured right now.</span>
+      <span className="text-[var(--text-secondary)] text-xs">Photo serving is not configured right now.</span>
     </div>
   )
 }

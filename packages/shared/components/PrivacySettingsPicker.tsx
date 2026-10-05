@@ -105,7 +105,7 @@ export function PrivacySettingsPicker() {
                   </span>
                 )}
               </div>
-              <p className="text-[var(--text-muted)] text-xs mt-1">{t(option.descriptionKey)}</p>
+              <p className="text-[var(--text-secondary)] text-xs mt-1">{t(option.descriptionKey)}</p>
             </div>
 
             {saving && isSelected && (

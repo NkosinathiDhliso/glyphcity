@@ -44,6 +44,19 @@ export function stateLabelKey(state: NodeState): StateLabelKey {
   return key === null ? FIRST_IN_KEY : (key as StateLabelKey)
 }
 
+/**
+ * State key under honest presence (honest-presence.md), the one rule shared by
+ * the accessible node name and the share snapshot:
+ * - nobody there and the pulse is dormant: the invite "Be the first in";
+ * - nobody there but residual pulse: quiet, never the busier band;
+ * - somebody there on a dormant pulse: quiet, never the invite;
+ * - otherwise the Plain_Scale key for the state.
+ */
+export function presenceStateKey(state: NodeState, liveCount: number): StateLabelKey {
+  if (liveCount <= 0) return state === 'dormant' ? FIRST_IN_KEY : stateLabelKey('quiet')
+  return stateLabelKey(state === 'dormant' ? 'quiet' : state)
+}
+
 const NODE_STATES: readonly NodeState[] = ['dormant', 'quiet', 'active', 'buzzing', 'popping']
 
 /** Narrow a wire string to a `NodeState`. Anything unknown reads as dormant (the invite). */

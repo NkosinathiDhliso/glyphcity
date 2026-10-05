@@ -1,6 +1,6 @@
 import { getGlyphName } from '../constants/archetype-catalog'
 import { categoryLabel, categoryLabelKey } from '../constants/node-categories'
-import { FIRST_IN_KEY, PLAIN_SCALE_EN, stateLabelKey, type StateLabelKey } from '../constants/state-labels'
+import { PLAIN_SCALE_EN, presenceStateKey } from '../constants/state-labels'
 import type { NodeCategory, NodeState } from '../types'
 
 /** i18n translator shape: key plus English default. Matches i18next `t(key, default)`. */
@@ -11,19 +11,9 @@ const HERE_NOW_KEY = 'venueCard.hereNow'
 const HERE_NOW_EN = 'here now'
 
 /**
- * The state segment under honest presence (honest-presence.md, same rule as
- * the share snapshot):
- * - nobody there and the pulse is dormant: the invite "Be the first in";
- * - nobody there but residual pulse: "Quiet", never the busier band;
- * - somebody there on a dormant pulse: "Quiet", never the invite;
- * - otherwise the Plain_Scale label for the state.
- */
-function presenceStateKey(state: NodeState, liveCount: number): StateLabelKey {
-  if (liveCount <= 0) return state === 'dormant' ? FIRST_IN_KEY : stateLabelKey('quiet')
-  return stateLabelKey(state === 'dormant' ? 'quiet' : state)
-}
-
-/**
+ * The state segment follows `presenceStateKey`, the honest-presence rule shared
+ * with the share snapshot.
+ *
  * Accessible name for a Cone_Node and its glyph (glyphcity-rebrand R3.6):
  * venue name, category word, Glyph_Name, state word or invite, then "N here
  * now" when people are present on a non-dormant pulse. Never reads the archetype `description`. An

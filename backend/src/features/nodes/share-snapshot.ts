@@ -29,7 +29,7 @@
  * some crawlers render the description alone.
  */
 
-import { FIRST_IN_KEY, PLAIN_SCALE_EN, stateLabelKey } from '@area-code/shared/constants/state-labels'
+import { FIRST_IN_KEY, PLAIN_SCALE_EN, presenceStateKey } from '@area-code/shared/constants/state-labels'
 
 import { pulseStateFromScore } from '../rewards/ranking.js'
 
@@ -42,9 +42,6 @@ const SEPARATOR = ' \u00b7 '
  * choose what gets dropped than let WhatsApp cut mid-word.
  */
 export const SHARE_SNAPSHOT_MAX_LENGTH = 200
-
-/** Zero presence, zero pulse: an invitation, never an implied crowd. */
-const FIRST_IN_LABEL = PLAIN_SCALE_EN[FIRST_IN_KEY]
 
 /** Zero presence with residual pulse: the venue was alive, it is not now. */
 const QUIET_LABEL = 'Quiet right now'
@@ -128,11 +125,10 @@ function join(segments: readonly string[]): string {
  * the pulse score says (`honest-presence.md`, under-claim never over-claim).
  */
 function presenceLabel(pulseScore: number, liveCount: number): string {
-  const state = pulseStateFromScore(pulseScore)
-  // Nobody there: residual pulse in a live band reads quiet; a dormant band is the invite.
-  if (liveCount <= 0) return state === 'dormant' ? FIRST_IN_LABEL : QUIET_LABEL
-  // Someone is there, so a dormant band never reads as an invite: it reads quiet.
-  return PLAIN_SCALE_EN[stateLabelKey(state === 'dormant' ? 'quiet' : state)]
+  const key = presenceStateKey(pulseStateFromScore(pulseScore), liveCount)
+  // Nobody there with residual pulse keeps the snapshot's "Quiet right now" wording.
+  if (liveCount <= 0 && key !== FIRST_IN_KEY) return QUIET_LABEL
+  return PLAIN_SCALE_EN[key]
 }
 
 function tonightClause(tonight: ShareSnapshotTonight | null): string | null {

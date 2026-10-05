@@ -35,6 +35,8 @@ export interface PointModeView<T> {
   inRadius: number
   /** Stacks in frame, left to right. */
   stacks: PlacedStack<T>[]
+  /** Every venue in frame, in vibeRank order (the text list, R8.2, R8.9). */
+  ranked: T[]
 }
 
 export interface PlaceVenuesInput<T> {
@@ -86,5 +88,6 @@ export function placeVenues<T extends PointModeVenue>(input: PlaceVenuesInput<T>
     y: Math.max(...stack.venues.map((v) => v.y)),
     venues: stack.venues,
   }))
-  return { inRadius: nearby.length, stacks }
+  // inView was built by walking `ranked`, so it is already in rank order.
+  return { inRadius: nearby.length, stacks, ranked: inView.map((v) => v.venue.venue) }
 }

@@ -74,7 +74,7 @@ export function ErrorToast({ message, onRetry, onDismiss, autoDismissMs = 5000 }
         aria-label="Dismiss"
         style={{
           fontSize: '16px',
-          color: 'var(--text-muted, #737373)',
+          color: 'var(--text-secondary, #737373)',
           background: 'none',
           border: 'none',
           cursor: 'pointer',

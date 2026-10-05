@@ -15,6 +15,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { extname, join } from 'node:path'
 
 import { APP_DOMAIN, APP_NAME, APP_URL, BUSINESS_URL, SPOKEN_NAME, SUPPORT_EMAIL } from '../constants/brand'
+import { THEME_GROUND } from '../constants/theme-ground'
 
 export const BRAND_TOKENS: Readonly<Record<string, string>> = {
   APP_NAME,
@@ -23,6 +24,9 @@ export const BRAND_TOKENS: Readonly<Record<string, string>> = {
   APP_URL,
   APP_BUSINESS_URL: BUSINESS_URL,
   APP_SUPPORT_EMAIL: SUPPORT_EMAIL,
+  // theme-color meta, manifest colours and the pre-hydration backstop.
+  APP_THEME_DARK: THEME_GROUND.dark,
+  APP_THEME_LIGHT: THEME_GROUND.light,
 }
 
 const KNOWN_TOKEN = new RegExp(`%(${Object.keys(BRAND_TOKENS).join('|')})%`, 'g')

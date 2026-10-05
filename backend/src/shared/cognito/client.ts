@@ -13,6 +13,7 @@
  * Read `.kiro/steering/no-sms-no-phone-auth.md` before extending or
  * removing anything in this file.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
@@ -30,7 +31,6 @@ import {
   ListUsersCommand,
   type AuthFlowType,
 } from '@aws-sdk/client-cognito-identity-provider'
-import { APP_NAME } from '@area-code/shared/constants/brand'
 
 import { AWS_REGION, requireEnv } from '../config/env.js'
 import type { AuthRole } from '../middleware/auth.js'

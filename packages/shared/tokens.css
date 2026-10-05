@@ -93,7 +93,7 @@
   --text-primary: #13211b;
   --text-secondary: #4a5a50;
   /* Labels only (11px uppercase mono or larger), never body text. */
-  --text-muted: #7e8b80;
+  --text-muted: #79867b;
   --accent: #13211b;
   --accent-bright: #24352c;
   --accent-cta: #13211b;
@@ -106,11 +106,13 @@
   --parks: #d2dec6;
   --contour: rgba(19, 33, 27, 0.08);
   --star: rgba(231, 237, 230, 0);
-  --success: #18b888;
+  /* Semantic text: original hue, darkened to 4.5:1 on Lichen
+     (scripts/check-contrast.mjs). Soft tints keep the brighter source. */
+  --success: #107b5b;
   --success-soft: rgba(24, 184, 136, 0.1);
-  --danger: #e8364a;
+  --danger: #d5182e;
   --danger-soft: rgba(232, 54, 74, 0.1);
-  --warning: #e0a020;
+  --warning: #8e6514;
   --warning-soft: rgba(224, 160, 32, 0.1);
   --info: #2da0d8;
   --info-soft: rgba(45, 160, 216, 0.1);

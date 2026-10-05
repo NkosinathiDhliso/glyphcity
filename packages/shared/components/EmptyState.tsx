@@ -30,7 +30,7 @@ export function EmptyState({ icon = 'inbox', message, actionLabel, onAction, cla
   return (
     <Box className={`flex flex-col items-center justify-center py-12 gap-3 ${className}`}>
       <IconComponent size={32} strokeWidth={1.5} className="text-[var(--text-muted)] opacity-40" aria-hidden="true" />
-      <Text className="text-[var(--text-muted)] text-sm text-center max-w-xs">{message}</Text>
+      <Text className="text-[var(--text-secondary)] text-sm text-center max-w-xs">{message}</Text>
       {actionLabel && onAction && (
         <button onClick={onAction} className="text-[var(--accent)] text-sm font-medium mt-1">
           {actionLabel}

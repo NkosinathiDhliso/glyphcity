@@ -12,7 +12,7 @@ interface PrivacyIndicatorProps {
 const PRIVACY_CONFIG: Record<PrivacyLevel, { Icon: LucideIcon; label: string; color: string }> = {
   public: { Icon: Unlock, label: 'Public', color: 'var(--success)' },
   friends_only: { Icon: Users, label: 'Friends Only', color: 'var(--accent)' },
-  private: { Icon: Lock, label: 'Private', color: 'var(--text-muted)' },
+  private: { Icon: Lock, label: 'Private', color: 'var(--text-secondary)' },
 }
 
 export function PrivacyIndicator({ privacyLevel }: PrivacyIndicatorProps) {

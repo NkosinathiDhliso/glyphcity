@@ -27,7 +27,7 @@ export function StreakDisplay({ streakCount, streakStartDate, atRisk }: StreakDi
         <Box>
           <Text className="text-[var(--text-primary)] text-sm font-semibold">{streakCount} day streak</Text>
           {streakStartDate && (
-            <Text className="text-[var(--text-muted)] text-xs">Since {formatDate(streakStartDate)}</Text>
+            <Text className="text-[var(--text-secondary)] text-xs">Since {formatDate(streakStartDate)}</Text>
           )}
         </Box>
       </Box>
@@ -42,7 +42,7 @@ export function StreakDisplay({ streakCount, streakStartDate, atRisk }: StreakDi
       )}
 
       {streakCount === 0 && (
-        <Text className="text-[var(--text-muted)] text-xs">
+        <Text className="text-[var(--text-secondary)] text-xs">
           Check in at a venue to start a streak. Keep checking in daily to grow it!
         </Text>
       )}
