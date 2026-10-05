@@ -2653,6 +2653,24 @@ module "amplify_domain_staff" {
   ]
 }
 
+# --- Area Code's own site on areacode.co.za ---
+# The umbrella company site (separate repo NkosinathiDhliso/areacode, Amplify
+# app area-code-site, branch main) on the apex and www, freed by the app's move
+# to glyphcity.com (decision 4 in docs/decisions/glyphcity-rebrand.md). The
+# zone's company mail records (MX, SES DKIM, WorkMail autodiscover) are not
+# touched; Amplify adds only its own records.
+module "amplify_domain_areacode_site" {
+  source         = "../../modules/amplify-domain"
+  env            = local.env
+  amplify_app_id = "d136gd7fpxn74x"
+  domain_name    = "areacode.co.za"
+
+  sub_domains = [
+    { branch_name = "main", prefix = "" },
+    { branch_name = "main", prefix = "www" }
+  ]
+}
+
 # --- CloudWatch RUM (frontend error/perf monitoring) ---
 # Pay-per-event ($1 / 100k events). Cookies disabled at SDK level so no
 # consent banner is required under POPIA. See module docs for details.
