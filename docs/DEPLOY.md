@@ -184,20 +184,12 @@ step below runs in one window, in this order.
 
 1. Confirm the glyphcity.com nameservers at Namecheap match
    `terraform output glyphcity_name_servers`.
-2. Google Cloud console, the shared OAuth client:
-   - Branding: home page `https://glyphcity.com`, privacy policy
-     `https://glyphcity.com/legal/privacy`, terms
-     `https://glyphcity.com/legal/terms`, and `glyphcity.com` under authorised
-     domains. Keep areacode.co.za listed until the window closes.
-   - Authorised JavaScript origins: add `https://glyphcity.com`,
-     `https://www.glyphcity.com`, and the `business.`, `staff.` and `admin.`
-     hosts.
-   - Authorised redirect URIs stay on the Cognito Hosted UI domains
-     (`*.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`); they do not
-     change.
-3. Spotify developer dashboard: add the redirect URI
-   `https://glyphcity.com/api/v1/streaming/spotify/callback` next to the old one.
-4. Keep the switch on a branch. Amplify builds on every push to `master`, so
+2. Google Cloud console and Spotify developer dashboard: apply every item in
+   the [External console checklist](#external-console-checklist-google-oauth-spotify-yoco)
+   below. Add the glyphcity.com values next to the areacode.co.za ones and
+   keep the old ones until the window closes, so sign-in works on both sides
+   of the switch.
+3. Keep the switch on a branch. Amplify builds on every push to `master`, so
    the merge is the step that ships the frontends.
 
 ### In the window
@@ -213,16 +205,85 @@ step below runs in one window, in this order.
 4. `./scripts/update-all-amplify-apps.ps1` (defaults to glyphcity.com), then
    `./scripts/apply-amplify-spa-rewrites.ps1`.
 5. Merge to `master` and push; Amplify builds the four frontends.
-6. `./scripts/go-live-check.ps1` must pass against the new domains.
+6. Yoco dashboard: point the payment webhook at
+   `https://api.glyphcity.com/v1/webhooks/yoco` (Yoco item in the checklist
+   below). The old API host is gone after step 2, so webhooks fail until this
+   is done.
+7. `./scripts/go-live-check.ps1` must pass against the new domains.
 
 ### After the window
 
-1. Remove areacode.co.za from the Google branding and origins, and the old
-   Spotify redirect URI.
+1. Remove the areacode.co.za values from the Google branding, authorised
+   domains and JavaScript origins, and the old Spotify redirect URI.
 2. Reprint venue QR posters: old posters encode areacode.co.za/qr/... and no
    longer reach the app.
 3. areacode.co.za now carries only Area Code's own site and company mail
    (decision 4 in `docs/decisions/glyphcity-rebrand.md`).
+
+## External console checklist (Google OAuth, Spotify, Yoco)
+
+These settings live outside Terraform, so they are set by hand. Check them on
+the cutover, whenever a Cognito Hosted UI domain or app host changes, and when
+a sign-in or callback error points at a mismatch. Hostnames come from
+`infra/environments/prod/main.tf` and
+`backend/src/shared/security/origins.ts`; if those change, change this list in
+the same commit. Consent-screen detail (logo, scopes, brand verification) is in
+`docs/GOOGLE_OAUTH_BRANDING.md`.
+
+### Google Cloud console, the shared OAuth client
+
+All four pools use the one Google client (`local.google_oauth` in prod
+Terraform).
+
+OAuth consent screen (Branding):
+
+| Field                 | Value                                   |
+| --------------------- | --------------------------------------- |
+| App name              | `GlyphCity`                             |
+| Application home page | `https://glyphcity.com`                 |
+| Privacy policy link   | `https://glyphcity.com/legal/privacy`   |
+| Terms of service link | `https://glyphcity.com/legal/terms`     |
+| Authorised domains    | `glyphcity.com`                         |
+| User support email    | `support@areacode.co.za` (company mail) |
+
+Authorised JavaScript origins (the prod list in `origins.ts`, without the
+Amplify default hosts):
+
+- `https://glyphcity.com`
+- `https://www.glyphcity.com`
+- `https://business.glyphcity.com`
+- `https://staff.glyphcity.com`
+- `https://admin.glyphcity.com`
+
+Authorised redirect URIs, one per wired pool's Cognito Hosted UI domain. These
+do not change with the app domain:
+
+| Pool     | Redirect URI                                                                             |
+| -------- | ---------------------------------------------------------------------------------------- |
+| Consumer | `https://area-code-prod-consumer.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`    |
+| Business | `https://area-code-prod-business-v2.auth.us-east-1.amazoncognito.com/oauth2/idpresponse` |
+| Staff    | `https://area-code-prod-staff-v2.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`    |
+| Admin    | `https://area-code-prod-admin.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`       |
+
+The domains are `aws_cognito_user_pool_domain.consumer_v2`, `.business_v2`,
+`.staff_v2` and the `cognito_admin` module default. Confirm with
+`terraform output cognito_business_hosted_ui_domain` and
+`cognito_staff_hosted_ui_domain`. The app-side callback and logout URLs
+(`https://glyphcity.com/auth/callback` and the matching portal hosts) are set
+on the Cognito app clients in Terraform, not in Google.
+
+### Spotify developer dashboard
+
+Redirect URI: `https://glyphcity.com/api/v1/streaming/spotify/callback`. It
+must match `SPOTIFY_REDIRECT_URI` (the `spotify_redirect_uri` variable in prod
+Terraform) exactly. The consumer app's `/api/<*>` Amplify rule forwards it to
+the API.
+
+### Yoco dashboard
+
+Webhook URL: `https://api.glyphcity.com/v1/webhooks/yoco`. If Yoco issues a
+new signing secret for the changed webhook, rotate `yoco_webhook_secret` as in
+[Yoco payment secrets](#yoco-payment-secrets).
 
 ## Deploy Frontend (reference)
 
@@ -263,9 +324,9 @@ extensionless path.
   the client router instead of a 404.
 - **`/api/<*>` proxy**: forwards to the HTTP API so the Spotify OAuth callback
   resolves on the app origin (`SPOTIFY_REDIRECT_URI` is
-  `https://areacode.co.za/api/v1/streaming/spotify/callback`).
+  `https://glyphcity.com/api/v1/streaming/spotify/callback`).
 - **`/node/<*>` share preview, consumer web only**: rewrites to
-  `https://api.areacode.co.za/v1/share/node/<*>` with a 200 so a shared venue
+  `https://api.glyphcity.com/v1/share/node/<*>` with a 200 so a shared venue
   link unfurls with real OpenGraph tags (venue name, live snapshot, image).
   The route then redirects the visitor to `/map?venue={slug}&src=share`. It is
   consumer-only because only that app serves the map arrival. Without this rule
@@ -275,7 +336,7 @@ extensionless path.
 Verify the share rule after applying, on the consumer origin:
 
 ```powershell
-curl -fsS https://areacode.co.za/node/<slug> | Select-String 'og:title'
+curl -fsS https://glyphcity.com/node/<slug> | Select-String 'og:title'
 ```
 
 Two notes on scope. The API proxy stays on all four apps, as it was before the
@@ -293,11 +354,11 @@ manual spot checks are a quick supplement, not a replacement for it:
 
 ```bash
 # 1. Health endpoint
-curl -fsS https://api.areacode.co.za/health
+curl -fsS https://api.glyphcity.com/health
 # Expected: {"status":"ok","env":"prod",...}
 
 # 2. A read path that touches DynamoDB
-curl -fsS https://api.areacode.co.za/v1/nodes/johannesburg | jq '.nodes | length'
+curl -fsS https://api.glyphcity.com/v1/nodes/johannesburg | jq '.nodes | length'
 # Expected: a non-zero number
 
 # 3. Watch the Lambda for errors for 5 minutes
@@ -306,10 +367,10 @@ aws logs tail /aws/lambda/area-code-prod-api --since 5m --follow
 
 Portal smoke checks:
 
-- <https://areacode.co.za> — map renders with nodes
-- <https://business.areacode.co.za> — login lands on the venue editor
-- <https://staff.areacode.co.za> — scan/entry screen loads
-- <https://admin.areacode.co.za> — dashboard loads
+- <https://glyphcity.com>: map renders with nodes
+- <https://business.glyphcity.com>: login lands on the venue editor
+- <https://staff.glyphcity.com>: scan/entry screen loads
+- <https://admin.glyphcity.com>: dashboard loads
 
 ## Load Smoke (dev, manual only)
 
@@ -378,16 +439,16 @@ All three are in `.gitignore`. If you need to rotate a secret, use `scripts/depl
 
 The Yoco keys live in `infra/environments/prod/terraform.tfvars` and are read by `terraform apply` (via `deploy-serverless.ps1`), which sets them as Lambda environment variables. Never commit real values.
 
-| tfvars variable       | Lambda env var         | Source                                                                               |
-| --------------------- | ---------------------- | ------------------------------------------------------------------------------------ |
-| `yoco_secret_key`     | `YOCO_PROD_SECRET_KEY` | Yoco dashboard > Developers > API keys > Live secret key                             |
-| `yoco_webhook_secret` | `YOCO_WEBHOOK_SECRET`  | Yoco dashboard > Developers > Webhooks > the areacode.co.za webhook > Signing secret |
+| tfvars variable       | Lambda env var         | Source                                                                                  |
+| --------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
+| `yoco_secret_key`     | `YOCO_PROD_SECRET_KEY` | Yoco dashboard > Developers > API keys > Live secret key                                |
+| `yoco_webhook_secret` | `YOCO_WEBHOOK_SECRET`  | Yoco dashboard > Developers > Webhooks > the api.glyphcity.com webhook > Signing secret |
 
 `yoco_webhook_secret` verifies the HMAC signature on every incoming payment webhook. If it is unset or wrong, the API rejects every webhook (fail-closed) and no payment ever activates a tier, so it must be present and correct in prod.
 
 To rotate the webhook secret:
 
-1. In the Yoco dashboard, open the areacode.co.za webhook and regenerate the signing secret.
+1. In the Yoco dashboard, open the `https://api.glyphcity.com/v1/webhooks/yoco` webhook and regenerate the signing secret.
 2. Copy the new value into `yoco_webhook_secret` in `infra/environments/prod/terraform.tfvars`.
 3. Apply infra only: `./scripts/deploy-serverless.ps1 -Environment prod -TerraformOnly`.
 4. Send a test webhook from the Yoco dashboard and confirm it is accepted (no 401 in `aws logs tail /aws/lambda/area-code-prod-api`).

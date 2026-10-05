@@ -419,6 +419,11 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791172857608
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791179961819
       }
     ],
     "5.1 `packages/shared/assets/logo-mark.svg` and the render script for": [
@@ -426,6 +431,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102985488
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791179981097
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791180998472
       }
     ],
     "5.2 Wordmark on the auth landing and headers; Map tab icon": [
@@ -433,6 +448,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102985771
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791181000649
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791181761944
       }
     ],
     "5.3 Brand_Line on auth landing, share cards and OG image only": [
@@ -440,6 +465,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102986040
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791181763132
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182121113
       }
     ],
     "6.1 `applyOutdoorPaint(map, theme)` on `style.load` for background,": [
@@ -475,6 +510,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102987597
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182122111
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182646785
       }
     ],
     "7.2 Muted tone restricted to labels at 11px uppercase mono or larger": [
@@ -482,6 +527,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102987825
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182646500
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791183926487
       }
     ],
     "8.1 Terraform: Route53 zone, ACM certs (us-east-1 and regional), SES": [
@@ -622,6 +677,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102992484
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182653559
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791183926958
       }
     ],
     "10.8 Write property test for no persistence": [
@@ -629,6 +694,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102992704
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791183938922
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791185011205
       }
     ],
     "11.1 Node schema and service: `entrance { lat, lng }`, 75 m rule,": [
@@ -664,6 +739,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102994016
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791185023498
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791185698248
       }
     ],
     "12.2 Venue share card restyled with Outdoor_Palette, Plain_Scale and": [
@@ -671,6 +756,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102994220
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791185699468
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791186895293
       }
     ],
     "13.1 Landing reads `ref`, stashes via `safeStorage`; sign-up writes": [
@@ -713,6 +808,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102995514
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791186903533
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791187226685
       }
     ],
     "16.1 Plain_Scale sort test run and recorded against the 0.1 pass bar": [
@@ -727,6 +832,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102995944
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791189897234
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791193324533
       }
     ],
     "16.3 Street rehearsal: two phones, three or more venues within 150 m,": [
@@ -741,6 +856,16 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791102996369
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791187855420
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791189897023
       }
     ],
     "0. Founder decisions and guards (R1, R4, R6.5, R7, R8.3, R10.5, R11)": [
@@ -769,6 +894,48 @@
         "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
         "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
         "timestamp": 1791144416143
+      }
+    ],
+    "4. Tokens, grain, type (R5)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791179963639
+      }
+    ],
+    "5. Brand marks (R5.7 to R5.9)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791182121524
+      }
+    ],
+    "7. Contrast checks (R5.3)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791183926711
+      }
+    ],
+    "10. Sensors and screen (R8)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791185011459
+      }
+    ],
+    "12. Share cards (R10)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791186896253
+      }
+    ],
+    "15. Rules and docs (R12.1, R12.2)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791187227104
       }
     ]
   }

@@ -7,11 +7,11 @@ This doc is for the on-call engineer dealing with a live production incident. Ev
 1. **Is the API alive?**
 
    ```bash
-   curl -fsS https://api.areacode.co.za/health
+   curl -fsS https://api.glyphcity.com/health
    # Expected: {"status":"ok","env":"prod","version":"0.0.1","timestamp":"..."}
    ```
 
-2. **What does the user see?** Open <https://areacode.co.za> and reproduce. 500s usually mean Lambda errors; 403 from CORS means the origin is not in the allow list.
+2. **What does the user see?** Open <https://glyphcity.com> and reproduce. 500s usually mean Lambda errors; 403 from CORS means the origin is not in the allow list.
 
 3. **Which alarm fired?** Check CloudWatch alarms in `us-east-1`. The ones that page:
    - `area-code-prod-api-errors`
@@ -194,7 +194,10 @@ aws sqs start-message-move-task \
 ```
 
 **Route53 health check red but `/health` returns ok from your laptop.**
-Check if the health check is hitting the custom domain or the raw API Gateway URL. Route53 hits `api.areacode.co.za` directly. If the cert or the custom domain mapping is broken, traffic works but the health check fails.
+Check if the health check is hitting the custom domain or the raw API Gateway URL. Route53 hits `api.glyphcity.com` directly. If the cert or the custom domain mapping is broken, traffic works but the health check fails.
+
+**Google sign-in fails with `redirect_uri_mismatch`, an origin error, or the consent screen shows the wrong name.**
+The Google OAuth client and consent screen are set by hand, outside Terraform. Compare them against the [External console checklist](DEPLOY.md#external-console-checklist-google-oauth-spotify-yoco) in `docs/DEPLOY.md`, which lists the authorised JavaScript origins, the four Hosted UI redirect URIs and the consent-screen URLs. The same checklist covers the Spotify redirect URI and the Yoco webhook URL.
 
 **Cognito `NotAuthorizedException` on new logins.**
 Usually the CUSTOM_AUTH Lambda trigger is erroring. Tail `/aws/lambda/area-code-prod-cognito-<pool>-define-auth` and the create/verify siblings.
@@ -203,10 +206,10 @@ Usually the CUSTOM_AUTH Lambda trigger is erroring. Tail `/aws/lambda/area-code-
 Presigned URL was generated with the wrong bucket or `ContentType` does not match. Check `AREA_CODE_S3_MEDIA_BUCKET` on the API Lambda env vars; the code now reads `AREA_CODE_S3_MEDIA_BUCKET` first and falls back to `MEDIA_BUCKET`.
 
 **Venue photos upload fine but never render (broken image / "Photos unavailable" everywhere).**
-The apps serve photos from `VITE_CDN_URL`, which must be `https://cdn.areacode.co.za` and must resolve to the media CloudFront distribution. This is load-bearing: if the hostname does not match the distribution's alias + certificate, every photo fails (CloudFront 403 on host mismatch, or DNS failure).
+The apps serve photos from `VITE_CDN_URL`, which must be `https://cdn.glyphcity.com` and must resolve to the media CloudFront distribution. This is load-bearing: if the hostname does not match the distribution's alias + certificate, every photo fails (CloudFront 403 on host mismatch, or DNS failure).
 
-- The distribution, its `cdn.areacode.co.za` alias, the us-east-1 ACM cert, and the Route53 A/AAAA alias records all live in `infra/modules/cdn` + `infra/environments/prod/main.tf` (gated on `enable_media_custom_domain`). The correct URL is the Terraform output `media_cdn_url`.
-- Confirm serving directly: `curl -I https://cdn.areacode.co.za/<a-known-headerImageKey>` should return `200` (a `403`/SSL error means the alias or cert is missing; `AccessDenied` means the OAC bucket policy is off).
+- The distribution, its `cdn.glyphcity.com` alias, the us-east-1 ACM cert, and the Route53 A/AAAA alias records all live in `infra/modules/cdn` + `infra/environments/prod/main.tf` (gated on `enable_media_custom_domain`). The correct URL is the Terraform output `media_cdn_url`.
+- Confirm serving directly: `curl -I https://cdn.glyphcity.com/<a-known-headerImageKey>` should return `200` (a `403`/SSL error means the alias or cert is missing; `AccessDenied` means the OAC bucket policy is off).
 - The frontend value is provisioned by `scripts/update-all-amplify-apps.ps1` from `$env:VITE_CDN_URL` for the Web and Business apps only. After changing it, re-run that script and redeploy Amplify (builds are from git, so the value bakes in at build time).
 - The UI degrades a failed image to the "Photos unavailable" state (`packages/shared/components/MediaImage.tsx`), so seeing that state app-wide points at this CDN wiring, not a per-venue problem.
 
@@ -345,7 +348,7 @@ here is treated as not run, because "did we ever run it?" then has no answer.
 
 | Script                                                                                     | Purpose                                                                                                                                                      | Environment | Date run                          | Run by                        | Outcome                                                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- | --------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scripts/seed-demo-venues.ps1`                                                             | Seed Area Code demo venues so Johannesburg clears the 5-node launch floor with margin                                                                        | prod        | 2026-07-05                        | founder                       | Done. Braamfontein Beans and Maboneng Social created; Johannesburg at 7 active paid-tier nodes. See GO_LIVE_CHECK_RESULT.                                                                                                                                                                                                                                                 |
+| `scripts/seed-demo-venues.ps1`                                                             | Seed demo venues so Johannesburg clears the 5-node launch floor with margin                                                                                  | prod        | 2026-07-05                        | founder                       | Done. Braamfontein Beans and Maboneng Social created; Johannesburg at 7 active paid-tier nodes. See GO_LIVE_CHECK_RESULT.                                                                                                                                                                                                                                                 |
 | `scripts/claim-demo-venues.ps1`                                                            | Rename the three placeholder demo venues and publish one live get each so every venue reads honestly                                                         | prod        | 2026-07-05                        | founder                       | Done. Plato coffe to Plato Coffee Co., Hi to Hive Kitchen, RuleRev to Revolver Eatery; one `nth_checkin` get on each of the five demo venues. See GO_LIVE_CHECK_RESULT.                                                                                                                                                                                                   |
 | Consent version bump (`AREA_CODE_CONSENT_VERSION` in `infra/environments/dev/main.tf`)     | Raise the consent version so new consents record it and the admin re-consent list captures pre-bump users                                                    | dev         | staged 2026-07-05, deploy pending | pending                       | v1.0 to v1.1 staged in dev `main.tf`; the dev deploy that applies it is founder-run and not yet executed. See the "Task 7.1 verification" note in GO_LIVE_CHECK_RESULT.                                                                                                                                                                                                   |
 | Consent version bump (`AREA_CODE_CONSENT_VERSION` in `infra/environments/prod/main.tf`)    | Same, for prod                                                                                                                                               | prod        | PENDING                           | pending                       | Not run. Tracked as `release-quality-and-ops-hygiene` task 7.2, in its own window.                                                                                                                                                                                                                                                                                        |
@@ -404,7 +407,7 @@ verification when the cutover runs.
 
 ## Escalation
 
-- Primary on-call: see `alerts@areacode.co.za` distribution list.
+- Primary on-call: see `alerts@areacode.co.za` distribution list (company mail, the `alert_email` default in prod Terraform; glyphcity.com receives no mail).
 - AWS Support: Basic plan, case link via console. Upgrade to Developer if the business-impacting issue is AWS-side.
 - Amplify deploys: check the Amplify console for the affected app.
 

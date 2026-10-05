@@ -105,7 +105,7 @@ runs, block-statement predicates, tagged
 
 ### Phase 2: outdoor look and brand marks
 
-- [ ] 4. Tokens, grain, type (R5)
+- [x] 4. Tokens, grain, type (R5)
   - [x] 4.1 Edit `packages/shared/tokens.css` in place to the Outdoor_Palette
         (table in design); remove glacier accent, accent and CTA gradients;
         `--accent` becomes ink; node tokens untouched
@@ -119,17 +119,17 @@ runs, block-statement predicates, tagged
   - [x] 4.4 Sweep components that referenced removed tokens; primary buttons
         become ink on ground with `active:scale-95`
     - _Requirements: 5.1, 5.10_
-  - [-] 4.5 `SkyHeader.tsx`: dawn or dusk gradient, ridge, stars in dark, the
-    venue's own Cone_Node via the shared marker builder; used in venue
-    detail and the auth landing
+  - [x] 4.5 `SkyHeader.tsx`: dawn or dusk gradient, ridge, stars in dark, the
+        venue's own Cone_Node via the shared marker builder; used in venue
+        detail and the auth landing
     - _Requirements: 5.5, 4.1_
-- [ ] 5. Brand marks (R5.7 to R5.9)
-  - [~] 5.1 `packages/shared/assets/logo-mark.svg` and the render script for
-    favicon, PWA icons, apple-touch, splash and default OG image
+- [x] 5. Brand marks (R5.7 to R5.9)
+  - [x] 5.1 `packages/shared/assets/logo-mark.svg` and the render script for
+        favicon, PWA icons, apple-touch, splash and default OG image
     - _Requirements: 5.8_
-  - [~] 5.2 Wordmark on the auth landing and headers; Map tab icon
+  - [x] 5.2 Wordmark on the auth landing and headers; Map tab icon
     - _Requirements: 5.7, 5.8_
-  - [~] 5.3 Brand_Line on auth landing, share cards and OG image only
+  - [x] 5.3 Brand_Line on auth landing, share cards and OG image only
     - _Requirements: 5.9_
 - [x] 6. Map terrain (R6)
   - [x] 6.1 `applyOutdoorPaint(map, theme)` on `style.load` for background,
@@ -144,11 +144,11 @@ runs, block-statement predicates, tagged
   - [x] 6.4 Test that venue markers remain DOM markers above the canvas and
         carry no fog or light styling
     - _Requirements: 6.4, 4.4_
-- [ ] 7. Contrast checks (R5.3)
-  - [~] 7.1 Contrast script over token pairs, light and dark, run in CI
+- [x] 7. Contrast checks (R5.3)
+  - [x] 7.1 Contrast script over token pairs, light and dark, run in CI
     - _Requirements: 5.3_
-  - [~] 7.2 Muted tone restricted to labels at 11px uppercase mono or larger
-    (lint rule or test over component classes)
+  - [x] 7.2 Muted tone restricted to labels at 11px uppercase mono or larger
+        (lint rule or test over component classes)
     - _Requirements: 5.3_
 
 ### Phase 3: domain cutover
@@ -178,7 +178,7 @@ runs, block-statement predicates, tagged
         scripts) in the same change; no redirect; keep the zone and the
         records listed in 0.1; QR parser keeps path-only acceptance
     - _Requirements: 7.5, 7.6_
-  - [~] 8.8 `terraform plan`, `deploy-serverless.ps1 -Environment prod`,
+  - [-] 8.8 `terraform plan`, `deploy-serverless.ps1 -Environment prod`,
     `update-all-amplify-apps.ps1`; `go-live-check.ps1` green on new domains
     - _Requirements: 7.7_
 
@@ -198,7 +198,7 @@ runs, block-statement predicates, tagged
     - _Requirements: 8.5_
   - [x] 9.5 `accuracy.ts` gate for GPS and heading thresholds
     - _Requirements: 8.6_
-- [-] 10. Sensors and screen (R8)
+- [x] 10. Sensors and screen (R8)
   - [x] 10.1 `usePointModeSensors`: camera, position watch, heading with iOS
         permission in the tap; cleanup on unmount and hidden tab
     - _Requirements: 8.7, 8.8_
@@ -216,10 +216,10 @@ runs, block-statement predicates, tagged
   - [x] 10.6 Camera control on the map top bar; `VITE_FLAG_POINT_MODE` off by
         default; closure allowlist and `rules/tech.md`
     - _Requirements: 8.1, 8.10_
-  - [~] 10.7 Write property test for ranking parity
+  - [x] 10.7 Write property test for ranking parity
     - Property 8: visible venues are an order-preserving subset of `vibeRank`
     - _Requirements: 8.2_
-  - [~] 10.8 Write property test for no persistence
+  - [x] 10.8 Write property test for no persistence
     - Property 9: simulated session makes no API or storage write
     - _Requirements: 8.7_
 - [x] 11. Entrance pins (R9)
@@ -237,12 +237,12 @@ runs, block-statement predicates, tagged
 
 ### Phase 5: creator layer and measurement
 
-- [ ] 12. Share cards (R10)
-  - [~] 12.1 `glyphShareCard.ts` on `shareCard.ts` primitives; 1080 by 1350
-    and 1200 by 630; Brand_Line and `APP_DOMAIN`; Web Share with file
+- [x] 12. Share cards (R10)
+  - [x] 12.1 `glyphShareCard.ts` on `shareCard.ts` primitives; 1080 by 1350
+        and 1200 by 630; Brand_Line and `APP_DOMAIN`; Web Share with file
     - _Requirements: 10.1_
-  - [~] 12.2 Venue share card restyled with Outdoor_Palette, Plain_Scale and
-    Brand_Line
+  - [x] 12.2 Venue share card restyled with Outdoor_Palette, Plain_Scale and
+        Brand_Line
     - _Requirements: 10.2_
 - [x] 13. Acquisition_Source (R10.3, R11)
   - [x] 13.1 Landing reads `ref`, stashes via `safeStorage`; sign-up writes
@@ -262,23 +262,23 @@ runs, block-statement predicates, tagged
 
 ### Phase 6: rules, verification and rehearsal
 
-- [ ] 15. Rules and docs (R12.1, R12.2)
+- [x] 15. Rules and docs (R12.1, R12.2)
   - [x] 15.1 `rules/product.md` to GlyphCity as an Area Code brand; new
         `rules/glyph-language.md`; `pnpm sync:rules`
     - _Requirements: 12.1_
-  - [~] 15.2 `docs/DEPLOY.md`, `docs/RUNBOOK.md` domain references
+  - [x] 15.2 `docs/DEPLOY.md`, `docs/RUNBOOK.md` domain references
     - _Requirements: 12.2_
 - [ ] 16. Verification (R11.4, R12)
   - [~] 16.1 Plain_Scale sort test run and recorded against the 0.1 pass bar
     - _Requirements: 11.4_
-  - [~] 16.2 Playwright: brand on four portals and sign-in on new domains,
-    Plain_Scale, profile glyph, no description, Point_Mode with mocked
-    sensors and fallbacks, axe in both themes
+  - [x] 16.2 Playwright: brand on four portals and sign-in on new domains,
+        Plain_Scale, profile glyph, no description, Point_Mode with mocked
+        sensors and fallbacks, axe in both themes
     - _Requirements: 12.4_
   - [~] 16.3 Street rehearsal: two phones, three or more venues within 150 m,
     log position and heading error; flag stays off if beams land on the
     wrong door more than the agreed rate
     - _Requirements: 8.5, 8.6_
-  - [~] 16.4 Full gate: `pnpm typecheck`, `pnpm test`, `pnpm lint`,
-    `pnpm format:check`, `pnpm guard:serverless`, web build
+  - [x] 16.4 Full gate: `pnpm typecheck`, `pnpm test`, `pnpm lint`,
+        `pnpm format:check`, `pnpm guard:serverless`, web build
     - _Requirements: 12.3, 12.5_

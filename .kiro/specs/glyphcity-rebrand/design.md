@@ -164,7 +164,7 @@ without edits. Removed: `--accent-gradient`, `--cta-gradient*`,
 | Surface 2                          | `#E1E7DA`                                | `#18221D`                       |
 | Ink (`--text-primary`, `--accent`) | Bush ink `#13211B`                       | Bone `#E7EDE6`                  |
 | Secondary text                     | `#4A5A50`                                | `#A0AEA3`                       |
-| Muted                              | Fynbos `#7E8B80` (labels only, not body) | `#69776D` (labels only)         |
+| Muted                              | Fynbos `#79867B` (labels only, not body) | `#69776D` (labels only)         |
 | Border                             | `rgba(19,33,27,.10)`                     | `rgba(231,237,230,.08)`         |
 | Sky top, mid, horizon              | `#C9DCE3`, `#E3EBE2`, `#F2D8BC`          | `#05080C`, `#0B1413`, `#3B2A20` |
 | Ridge                              | `#C3CFB8`                                | `#0C1410`                       |

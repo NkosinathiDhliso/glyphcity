@@ -148,6 +148,19 @@ How it is read (task 13.3):
   a cue; the founder reads the counts beside it before deciding.
 - Code: `packages/shared/lib/silenceRule.ts`. Admin view: "By source".
 
+### 11. Logo_Mark ground for rendered icons
+
+Task 5.1. Every raster icon (favicon, PWA 192 and 512, maskable 512,
+apple-touch, Expo icon) is Bush ink on Lichen, the light theme ink and ground.
+One ground, not a light and dark pair: launchers and browser tabs choose their
+own surround, and ink on lichen reads on both. The maskable icon draws the mark
+at half the edge so its corners sit inside the 80% safe-zone circle. The
+notification badge stays white on transparent, because Android masks it to a
+silhouette. Source: `packages/shared/assets/logo-mark.svg` (ink is
+`currentColor`). Renderer: `pnpm brand:assets`
+(`scripts/generate-brand-assets.mjs`), with Funnel Display and Funnel Sans
+vendored under `packages/shared/assets/fonts` (OFL).
+
 ## Repo housekeeping (founder, on GitHub)
 
 PENDING founder action.
