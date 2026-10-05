@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { AlertCircle } from 'lucide-react'
 
 // Staff-portal honest lapsed-business state (cross-portal-lifecycle-alignment
@@ -15,7 +16,7 @@ export function LapsedBusinessBanner() {
       <div className="flex flex-col gap-1">
         <span className="text-[var(--text-primary)] font-semibold text-sm">This account is no longer active</span>
         <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
-          The venue has left Area Code, so it no longer appears on the map and new rewards cannot be earned here. You
+          The venue has left {APP_NAME}, so it no longer appears on the map and new rewards cannot be earned here. You
           can still validate codes customers already earned. Contact the owner to reactivate the account.
         </p>
       </div>

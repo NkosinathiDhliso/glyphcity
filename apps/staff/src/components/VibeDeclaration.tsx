@@ -277,7 +277,7 @@ export function VibeDeclaration() {
                     data-testid={`vibe-genre-${genre}`}
                     className={
                       active
-                        ? 'rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--accent)] text-white'
+                        ? 'rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--accent)] text-[var(--on-accent)]'
                         : 'rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-secondary)]'
                     }
                   >
@@ -292,7 +292,7 @@ export function VibeDeclaration() {
               onClick={() => void handleSave()}
               disabled={selected.length === 0 || saving || !dirty}
               data-testid="vibe-declaration-save"
-              className="bg-[var(--accent)] text-white font-semibold rounded-xl py-2.5 text-sm transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100"
+              className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-2.5 text-sm transition-all active:scale-95 disabled:opacity-40 disabled:active:scale-100"
             >
               {saving ? 'Saving…' : 'Set tonight\u2019s vibe'}
             </button>

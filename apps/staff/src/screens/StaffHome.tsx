@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,7 +43,7 @@ export function StaffHome() {
         style={{ paddingTop: 'max(1rem, env(safe-area-inset-top, 0px))' }}
       >
         <div className="flex flex-col">
-          <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">{staffName ?? 'Area Code'}</span>
+          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{staffName ?? APP_NAME}</span>
           {businessName && <span className="text-[var(--text-muted)] text-xs">{businessName}</span>}
         </div>
         <button onClick={logout} className="text-[var(--text-muted)] text-sm">

@@ -1,6 +1,7 @@
+import { PLAIN_SCALE_EN, nodeStateFromScore, stateLabelKey } from '@area-code/shared/constants/state-labels'
 import { api } from '@area-code/shared/lib/api'
 import { useConsumerAuthStore } from '@area-code/shared/stores/consumerAuthStore'
-import type { Node, Reward } from '@area-code/shared/types'
+import type { Node, NodeState, Reward } from '@area-code/shared/types'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet, Linking, Platform } from 'react-native'
@@ -15,14 +16,6 @@ interface NodeDetailSheetProps {
   isOpen: boolean
   onClose: () => void
   onCheckIn: () => void
-}
-
-function getNodeState(score: number): string {
-  if (score >= 80) return 'popping'
-  if (score >= 60) return 'buzzing'
-  if (score >= 30) return 'active'
-  if (score >= 10) return 'quiet'
-  return 'dormant'
 }
 
 /**
@@ -54,7 +47,8 @@ export function NodeDetailSheet({ node, pulseScore, isOpen, onClose, onCheckIn }
 
   if (!node) return null
 
-  const state = getNodeState(pulseScore)
+  const state = nodeStateFromScore(pulseScore)
+  const labelKey = stateLabelKey(state)
   const activeRewards = rewards?.filter((r) => r.isActive) ?? []
 
   return (
@@ -68,7 +62,7 @@ export function NodeDetailSheet({ node, pulseScore, isOpen, onClose, onCheckIn }
             <View style={styles.metaRow}>
               <Text style={styles.category}>{node.category}</Text>
               <View style={[styles.stateDot, { backgroundColor: stateColor(state) }]} />
-              <Text style={styles.stateText}>{state}</Text>
+              <Text style={styles.stateText}>{t(labelKey, PLAIN_SCALE_EN[labelKey])}</Text>
             </View>
 
             {activeRewards.length > 0 && (
@@ -118,7 +112,7 @@ export function NodeDetailSheet({ node, pulseScore, isOpen, onClose, onCheckIn }
   )
 }
 
-function stateColor(state: string): string {
+function stateColor(state: NodeState): string {
   switch (state) {
     case 'popping':
       return '#ef4444'
@@ -157,7 +151,7 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
   category: { color: colors.textSecondary, fontSize: 13, textTransform: 'capitalize' },
   stateDot: { width: 8, height: 8, borderRadius: 4 },
-  stateText: { color: colors.textSecondary, fontSize: 13, textTransform: 'capitalize' },
+  stateText: { color: colors.textSecondary, fontSize: 13 },
   rewardsSection: { gap: 8, marginBottom: 8 },
   rewardsHeading: {
     color: colors.textSecondary,

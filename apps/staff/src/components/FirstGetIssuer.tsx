@@ -11,6 +11,7 @@
  * First-Get on mount and renders nothing if the venue hasn't configured one.
  */
 
+import { APP_DOMAIN, APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { describeApiError } from '@area-code/shared/lib/apiError'
 import { clipboardFailureCopy, copyToClipboard } from '@area-code/shared/lib/clipboard'
@@ -109,7 +110,7 @@ export function FirstGetIssuer() {
       return
     }
     w.document.write(`<!doctype html>
-<html><head><title>Area Code · ${escapeHtml(reward.title)}</title>
+<html><head><title>${APP_NAME} · ${escapeHtml(reward.title)}</title>
 <style>
   body { font-family: system-ui, sans-serif; padding: 32px; text-align: center; }
   h1 { font-size: 18px; margin: 0 0 4px; }
@@ -127,10 +128,10 @@ export function FirstGetIssuer() {
   .body { font-size: 14px; line-height: 1.5; max-width: 280px; margin: 0 auto; }
   .footer { margin-top: 24px; color: #888; font-size: 11px; }
 </style></head><body>
-<h1>Your Area Code reward</h1>
+<h1>Your ${APP_NAME} reward</h1>
 <div class="sub">${escapeHtml(reward.title)}</div>
 <div class="token">${escapeHtml(issued.token)}</div>
-<p class="body">Sign up at <strong>areacode.co.za</strong> and enter this code. Free reward, no card required.</p>
+<p class="body">Sign up at <strong>${APP_DOMAIN}</strong> and enter this code. Free reward, no card required.</p>
 <p class="footer">Code expires ${formatExpiry(issued.expiresAt)}.</p>
 <script>window.print(); setTimeout(() => window.close(), 250)</script>
 </body></html>`)
@@ -180,7 +181,7 @@ export function FirstGetIssuer() {
         {phase === 'idle' && (
           <button
             onClick={() => void handleIssue()}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-2.5 text-sm transition-all active:scale-95"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-2.5 text-sm transition-all active:scale-95"
           >
             Issue token
           </button>

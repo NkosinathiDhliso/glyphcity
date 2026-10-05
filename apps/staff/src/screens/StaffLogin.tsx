@@ -69,7 +69,7 @@ export function StaffLogin() {
         paddingBottom: 'max(2rem, env(safe-area-inset-bottom))',
       }}
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-[Syne]">{t('staff.login.title')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-display">{t('staff.login.title')}</h1>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button
@@ -107,10 +107,10 @@ export function StaffLogin() {
           type="button"
           onClick={() => void handleEmailLogin()}
           disabled={loading || !email || !password}
-          className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('staff.login.submitEmail', 'Sign in')
           )}

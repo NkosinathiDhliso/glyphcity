@@ -154,7 +154,7 @@ export function StaffInvite({ token }: StaffInviteProps) {
 
   return (
     <div className="flex flex-col items-center justify-center h-dvh bg-[var(--bg-base)] px-5">
-      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-6 font-[Syne]">Join as Staff</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-6 font-display">Join as Staff</h1>
 
       {status === 'idle' && (
         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -197,7 +197,7 @@ export function StaffInvite({ token }: StaffInviteProps) {
           <button
             onClick={() => void handleEmailAccept()}
             disabled={!name.trim() || !email.trim() || password.length < 8}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-4 text-base transition-all active:scale-95 disabled:opacity-50"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-4 text-base transition-all active:scale-95 disabled:opacity-50"
           >
             Accept Invite
           </button>
@@ -218,7 +218,7 @@ export function StaffInvite({ token }: StaffInviteProps) {
           <p className="text-[var(--text-secondary)] text-sm">Your staff account is ready.</p>
           <a
             href="/"
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3 px-8 text-sm transition-all active:scale-95"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 px-8 text-sm transition-all active:scale-95"
           >
             Go to Sign In
           </a>

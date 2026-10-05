@@ -1,3 +1,3 @@
-# Area Code Staff — private, authenticated portal. Do not index or crawl.
+# Staff portal: private and authenticated. Do not index or crawl.
 User-agent: *
 Disallow: /

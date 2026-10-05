@@ -16,7 +16,7 @@ const PENDING_QR_KEY = 'pendingQrCheckIn'
 
 /**
  * Landing screen for venue-printed QR codes deep-linked as
- * areacode.co.za/qr/{nodeId}/{token}. Mirrors the web QrCheckIn flow:
+ * glyphcity.com/qr/{nodeId}/{token}. Mirrors the web QrCheckIn flow:
  * posts the token to /v1/check-in, then routes back to the map. If the
  * visitor isn't signed in we stash the pending check-in and send them to
  * login; the root layout resumes it after auth.

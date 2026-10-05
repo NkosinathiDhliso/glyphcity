@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { TIER_PERMANENCE_SHORT } from '@area-code/shared/constants/legal'
 import { TIER_LEVELS } from '@area-code/shared/constants/tier-levels'
 import type { TierLevel } from '@area-code/shared/constants/tier-levels'
@@ -13,10 +14,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, Share } from 'react-native'
 
-import { ArchetypeReveal } from '../../src/components/ArchetypeReveal'
 import { AvatarCircle } from '../../src/components/AvatarCircle'
 import { NativeTierBadge } from '../../src/components/NativeTierBadge'
 import { RedemptionCodeCard } from '../../src/components/RedemptionCodeCard'
+import { YourGlyphCard } from '../../src/components/YourGlyphCard'
 import { colors } from '../../src/theme'
 
 export default function ProfileScreen() {
@@ -79,7 +80,7 @@ export default function ProfileScreen() {
     try {
       const data = await api.get<Record<string, unknown>>('/v1/users/me/data-export')
       await Share.share({
-        title: 'Area Code data export',
+        title: `${APP_NAME} data export`,
         message: JSON.stringify(data, null, 2),
       })
     } catch {
@@ -212,7 +213,7 @@ export default function ProfileScreen() {
         </View>
       )}
 
-      <ArchetypeReveal archetypeId={displayUser?.archetypeId ?? 'archetype-uncharted'} />
+      <YourGlyphCard archetypeId={displayUser?.archetypeId} />
 
       <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/friends')}>
         <Text style={styles.menuText}>{t('friends.title')}</Text>

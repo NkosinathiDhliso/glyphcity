@@ -129,7 +129,7 @@ export function StaffOAuthCallback() {
 
   return (
     <div className="flex flex-col items-center justify-center h-dvh bg-[var(--bg-base)] px-5">
-      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne]">
+      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display">
         {t('auth.oauth.finishing', 'Finishing sign-in…')}
       </h1>
       {!error ? (

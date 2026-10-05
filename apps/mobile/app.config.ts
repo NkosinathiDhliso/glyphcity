@@ -1,8 +1,10 @@
 import { ExpoConfig, ConfigContext } from 'expo/config'
 
+import { APP_DOMAIN, APP_NAME } from '../../packages/shared/constants/brand'
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'Area Code',
+  name: APP_NAME,
   slug: 'area-code',
   version: '1.0.0',
   orientation: 'portrait',
@@ -17,9 +19,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: false,
     infoPlist: {
       NSLocationWhenInUseUsageDescription:
-        'Area Code uses your location to check you in at nearby venues and show relevant content.',
+        `${APP_NAME} uses your location to check you in at nearby venues ` + 'and show relevant content.',
     },
-    associatedDomains: ['applinks:areacode.co.za'],
+    associatedDomains: [`applinks:${APP_DOMAIN}`],
   },
   android: {
     package: 'co.za.areacode.app',
@@ -29,9 +31,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         action: 'VIEW',
         autoVerify: true,
         data: [
-          { scheme: 'https', host: 'areacode.co.za', pathPrefix: '/node/' },
-          { scheme: 'https', host: 'areacode.co.za', pathPrefix: '/qr/' },
-          { scheme: 'https', host: 'areacode.co.za', pathPrefix: '/staff-invite/' },
+          { scheme: 'https', host: APP_DOMAIN, pathPrefix: '/node/' },
+          { scheme: 'https', host: APP_DOMAIN, pathPrefix: '/qr/' },
+          { scheme: 'https', host: APP_DOMAIN, pathPrefix: '/staff-invite/' },
         ],
         category: ['BROWSABLE', 'DEFAULT'],
       },
