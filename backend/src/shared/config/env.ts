@@ -9,6 +9,8 @@
 // run with AREA_CODE_ENV=dev) behave exactly as before. The fail-fast branch is
 // prod-only, which is the one place a wrong default is dangerous.
 
+import { APP_DOMAIN, APP_URL, BUSINESS_URL } from '@area-code/shared/constants/brand'
+
 export const APP_ENV: string = process.env['AREA_CODE_ENV'] ?? 'dev'
 export const IS_PROD: boolean = APP_ENV === 'prod'
 
@@ -57,7 +59,23 @@ export function requireEnv(name: string, devDefault?: string): string {
  * literal is the dev/local default only; prod sets the var via Terraform.
  */
 export function webBaseUrl(): string {
-  return requireEnv('AREA_CODE_WEB_URL', 'https://areacode.co.za').replace(/\/+$/, '')
+  return requireEnv('AREA_CODE_WEB_URL', APP_URL).replace(/\/+$/, '')
+}
+
+/**
+ * Business portal base URL (`AREA_CODE_BUSINESS_URL`), without a trailing
+ * slash. The origin owner emails link to. Prod sets it via Terraform.
+ */
+export function businessBaseUrl(): string {
+  return requireEnv('AREA_CODE_BUSINESS_URL', BUSINESS_URL).replace(/\/+$/, '')
+}
+
+/**
+ * Transactional sender (`AREA_CODE_FROM_EMAIL`), an address on the verified
+ * SES identity. Read at send time, so a Lambda that never sends never needs it.
+ */
+export function fromEmail(): string {
+  return requireEnv('AREA_CODE_FROM_EMAIL', `noreply@${APP_DOMAIN}`)
 }
 
 /**
@@ -117,6 +135,11 @@ export function assertStartupConfig(): void {
   // `getEffectiveTier` helper imported by workers (reports, campaigns, rewards)
   // that never serve the webhook and must not require a payment secret.
   requireEnv('YOCO_WEBHOOK_SECRET')
+  // App URLs and the sender (glyphcity-rebrand R7.3): a missing value would
+  // otherwise surface only in the first email or share link that needs it.
+  requireEnv('AREA_CODE_WEB_URL')
+  requireEnv('AREA_CODE_BUSINESS_URL')
+  requireEnv('AREA_CODE_FROM_EMAIL')
 }
 
 // The Yoco webhook signing secret is validated in `assertStartupConfig()` above

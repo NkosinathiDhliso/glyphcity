@@ -69,6 +69,7 @@
 import { createHmac } from 'node:crypto'
 
 import { ATTRIBUTION_WINDOW_HOURS, AWAY_GATE_MIN_MINUTES } from '@area-code/shared/constants/attribution'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { FastifyInstance } from 'fastify'
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 
@@ -593,7 +594,7 @@ describe('Receipt split — two-device dev rehearsal (R3.1, R3.2, R4.3)', () => 
     // Conservation: each consumer sits on exactly one side of the Receipt.
     expect(stats.foundYouToday + stats.walkInsToday).toBe(2)
 
-    expect(stats.receiptToday.headline).toBe('1 person found you on Area Code and checked in today.')
+    expect(stats.receiptToday.headline).toBe(`1 person found you on ${APP_NAME} and checked in today.`)
     expect(stats.receiptToday.walkIn).toBe('1 person who was already in the room also checked in.')
 
     // ── And live, not only on poll: the fan-out carries both stamps (R3.6) ────

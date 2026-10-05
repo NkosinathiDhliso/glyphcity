@@ -8,6 +8,8 @@
 // timezone-library lookup, and keeps `digestWeekFor` framework-free and
 // property-testable (callers pass the reference instant).
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
+
 import { SAST_OFFSET_MS } from '../../shared/time/sast.js'
 
 import { analyzePeakHours } from './analyzers/peak-hours.js'
@@ -222,8 +224,7 @@ export const BANNED_CAUSAL_VERBS = ['brought', 'drove', 'generated', 'boosted'] 
  * The single constructive, non-blaming next step shown on a zero-visits week
  * (R2.3). Exactly one next step, no numbers.
  */
-export const ZERO_VISITS_NEXT_STEP =
-  'Ask your staff to mention Area Code at the till, or put the First-Get poster up where customers order.'
+export const ZERO_VISITS_NEXT_STEP = `Ask your staff to mention ${APP_NAME} at the till, or put the First-Get poster up where customers order.`
 
 const plural = (n: number, singular: string): string => (n === 1 ? singular : `${singular}s`)
 
@@ -341,7 +342,7 @@ export function buildDigestCopy(digest: DigestData, tier: string): string[] {
 
   // Zero-visits branch: honest statement, exactly one next step, no numbers.
   if (metrics.visits === 0) {
-    return ['No visits were recorded through Area Code this week.', ZERO_VISITS_NEXT_STEP, tierClose(tier)]
+    return [`No visits were recorded through ${APP_NAME} this week.`, ZERO_VISITS_NEXT_STEP, tierClose(tier)]
   }
 
   const lines: string[] = []
@@ -356,7 +357,7 @@ export function buildDigestCopy(digest: DigestData, tier: string): string[] {
   }
 
   lines.push(
-    `${metrics.visits} ${plural(metrics.visits, 'visit')} recorded through Area Code this week` +
+    `${metrics.visits} ${plural(metrics.visits, 'visit')} recorded through ${APP_NAME} this week` +
       `${deltaFor('visits')}.`,
   )
 
@@ -380,11 +381,11 @@ export function buildDigestCopy(digest: DigestData, tier: string): string[] {
 
   lines.push(
     `${metrics.firstGetIssued} First-Get ${plural(metrics.firstGetIssued, 'code')} issued, ` +
-      `${metrics.firstGetConversions} converted into signups captured by Area Code.`,
+      `${metrics.firstGetConversions} converted into signups captured by ${APP_NAME}.`,
   )
 
   lines.push(
-    `${metrics.shares} ${plural(metrics.shares, 'share')} of your venue recorded through Area Code this week` +
+    `${metrics.shares} ${plural(metrics.shares, 'share')} of your venue recorded through ${APP_NAME} this week` +
       `${deltaFor('shares')}.`,
   )
 

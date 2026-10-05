@@ -5,9 +5,12 @@
  * length bound) are Property 4 and live in the property test.
  */
 
+import { FIRST_IN_KEY, PLAIN_SCALE_EN } from '@area-code/shared/constants/state-labels'
 import { describe, expect, it } from 'vitest'
 
 import { buildShareSnapshot } from '../share-snapshot.js'
+
+const L = PLAIN_SCALE_EN
 
 const DOT = '\u00b7'
 
@@ -21,7 +24,9 @@ describe('buildShareSnapshot — the design examples', () => {
       tonight: { headline: 'Amapiano', startsAt: '21:00' },
     })
 
-    expect(line).toBe(`Ramona's ${DOT} Buzzing ${DOT} 12 here now ${DOT} Amapiano tonight from 21:00 ${DOT} 1 get live`)
+    expect(line).toBe(
+      `Ramona's ${DOT} ${L['state.busy']} ${DOT} 12 here now ${DOT} Amapiano tonight from 21:00 ${DOT} 1 get live`,
+    )
   })
 
   it('reads quiet with residual pulse and nobody there, keeping Tonight', () => {
@@ -45,7 +50,7 @@ describe('buildShareSnapshot — the design examples', () => {
       tonight: null,
     })
 
-    expect(line).toBe(`Ramona's ${DOT} Be the first in`)
+    expect(line).toBe(`Ramona's ${DOT} ${L[FIRST_IN_KEY]}`)
   })
 })
 
@@ -59,7 +64,7 @@ describe('buildShareSnapshot — clause rules', () => {
       tonight: null,
     })
 
-    expect(line).toBe(`Kitchener ${DOT} Active ${DOT} 3 here now ${DOT} 2 gets live`)
+    expect(line).toBe(`Kitchener ${DOT} ${L['state.aLittleBusy']} ${DOT} 3 here now ${DOT} 2 gets live`)
   })
 
   it('omits the start time when it is not a local HH:mm', () => {
@@ -71,7 +76,7 @@ describe('buildShareSnapshot — clause rules', () => {
       tonight: { headline: 'Live jazz', startsAt: null },
     })
 
-    expect(line).toBe(`Kitchener ${DOT} Popping ${DOT} 4 here now ${DOT} Live jazz tonight`)
+    expect(line).toBe(`Kitchener ${DOT} ${L['state.veryBusy']} ${DOT} 4 here now ${DOT} Live jazz tonight`)
   })
 
   it('drops an empty headline rather than rendering a bare "tonight"', () => {
@@ -83,6 +88,31 @@ describe('buildShareSnapshot — clause rules', () => {
       tonight: { headline: '   ', startsAt: '21:00' },
     })
 
-    expect(line).toBe(`Kitchener ${DOT} Quiet right now ${DOT} 1 here now`)
+    expect(line).toBe(`Kitchener ${DOT} ${L['state.quiet']} ${DOT} 1 here now`)
+  })
+
+  it('reads quiet, never the invite, when someone is there on a dormant pulse', () => {
+    const line = buildShareSnapshot({
+      name: 'Kitchener',
+      pulseScore: 0,
+      liveCheckInCount: 1,
+      activeRewardCount: 0,
+      tonight: null,
+    })
+
+    expect(line).toBe(`Kitchener ${DOT} ${L['state.quiet']} ${DOT} 1 here now`)
+  })
+
+  it('never displays a retired state word', () => {
+    for (const pulseScore of [0, 4, 12, 45, 70, 500]) {
+      const line = buildShareSnapshot({
+        name: 'Kitchener',
+        pulseScore,
+        liveCheckInCount: 5,
+        activeRewardCount: 0,
+        tonight: null,
+      })
+      expect(line).not.toMatch(/\b(Popping|Buzzing|Active|Dormant)\b/)
+    }
   })
 })

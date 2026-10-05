@@ -10,14 +10,17 @@
  *
  *   {venue name} · {pulse label} · {live count} here now · {Tonight} · {gets}
  *
- *   "Ramona's · Buzzing · 12 here now · Amapiano tonight from 21:00 · 1 get live"
+ *   "Ramona's · Busy · 12 here now · Amapiano tonight from 21:00 · 1 get live"
  *   "Ramona's · Quiet right now · Amapiano tonight from 21:00"
  *   "Ramona's · Be the first in"
  *
+ * The pulse label is the Plain_Scale from `@area-code/shared/constants/state-labels`
+ * (glyphcity-rebrand R2.1); this file holds no state words of its own.
+ *
  * Honesty rules this file enforces (`honest-presence.md`):
  * - Zero live presence never reads as busy. It reads "Quiet right now", or
- *   "Be the first in" when there is no pulse either. The decayed pulse score
- *   can never promote an empty room to Active/Buzzing/Popping.
+ *   "Be the first in" when the pulse is in the dormant band. The decayed pulse score
+ *   can never promote an empty room to a busy label.
  * - The live count only appears when it is above zero; we say less rather
  *   than dressing up an empty room.
  *
@@ -26,7 +29,9 @@
  * some crawlers render the description alone.
  */
 
-import { pulseStateFromScore, type PulseState } from '../rewards/ranking.js'
+import { FIRST_IN_KEY, PLAIN_SCALE_EN, stateLabelKey } from '@area-code/shared/constants/state-labels'
+
+import { pulseStateFromScore } from '../rewards/ranking.js'
 
 /** Segment separator (U+00B7 middle dot), as used in the consumer whisper copy. */
 const SEPARATOR = ' \u00b7 '
@@ -38,20 +43,8 @@ const SEPARATOR = ' \u00b7 '
  */
 export const SHARE_SNAPSHOT_MAX_LENGTH = 200
 
-/**
- * Pulse_State → snapshot label. `quiet` and `dormant` share the honest
- * under-claim wording; only `active` and above read as lively.
- */
-const STATE_LABEL: Record<PulseState, string> = {
-  popping: 'Popping',
-  buzzing: 'Buzzing',
-  active: 'Active',
-  quiet: 'Quiet right now',
-  dormant: 'Quiet right now',
-}
-
 /** Zero presence, zero pulse: an invitation, never an implied crowd. */
-const FIRST_IN_LABEL = 'Be the first in'
+const FIRST_IN_LABEL = PLAIN_SCALE_EN[FIRST_IN_KEY]
 
 /** Zero presence with residual pulse: the venue was alive, it is not now. */
 const QUIET_LABEL = 'Quiet right now'
@@ -135,8 +128,11 @@ function join(segments: readonly string[]): string {
  * the pulse score says (`honest-presence.md`, under-claim never over-claim).
  */
 function presenceLabel(pulseScore: number, liveCount: number): string {
-  if (liveCount <= 0) return pulseScore > 0 ? QUIET_LABEL : FIRST_IN_LABEL
-  return STATE_LABEL[pulseStateFromScore(pulseScore)]
+  const state = pulseStateFromScore(pulseScore)
+  // Nobody there: residual pulse in a live band reads quiet; a dormant band is the invite.
+  if (liveCount <= 0) return state === 'dormant' ? FIRST_IN_LABEL : QUIET_LABEL
+  // Someone is there, so a dormant band never reads as an invite: it reads quiet.
+  return PLAIN_SCALE_EN[stateLabelKey(state === 'dormant' ? 'quiet' : state)]
 }
 
 function tonightClause(tonight: ShareSnapshotTonight | null): string | null {

@@ -56,6 +56,7 @@
  * DEV_MODE.
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 
 import { BANNED_CAUSAL_VERBS } from '../digest.js'
@@ -349,7 +350,7 @@ describe('Weekly Attribution Digest — dev rehearsal end to end (R3.1, R4.2, R6
     expect(card.metrics.firstGetConversions).toBe(1)
     // The card renders copy, and the copy is Honest_Framing clean (no causal verbs).
     expect(card.copy.length).toBeGreaterThan(0)
-    expect(card.copy.some((line) => line.includes('recorded through Area Code'))).toBe(true)
+    expect(card.copy.some((line) => line.includes(`recorded through ${APP_NAME}`))).toBe(true)
     for (const line of card.copy) {
       for (const verb of BANNED_CAUSAL_VERBS) {
         expect(line.toLowerCase()).not.toContain(verb)
@@ -389,7 +390,7 @@ describe('Weekly Attribution Digest — dev rehearsal end to end (R3.1, R4.2, R6
 
     // The owner-facing sentence the email leads with names the same count.
     const [, , , copyLines] = h.sendDigestEmailMock.mock.calls[0]!
-    expect(copyLines[0]).toContain(`${EXPECTED_FOUND_YOU} people found you on Area Code and checked in this week`)
+    expect(copyLines[0]).toContain(`${EXPECTED_FOUND_YOU} people found you on ${APP_NAME} and checked in this week`)
     expect(copyLines.some((line) => line.includes('Recorded sources:'))).toBe(true)
 
     // And the dashboard card reads the same row back with the same split.

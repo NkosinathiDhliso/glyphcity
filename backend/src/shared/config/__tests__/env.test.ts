@@ -21,6 +21,26 @@ function resetEnv(): void {
   delete process.env['AREA_CODE_QR_HMAC_SECRET']
   delete process.env['AREA_CODE_CONSENT_VERSION']
   delete process.env['YOCO_WEBHOOK_SECRET']
+  delete process.env['AREA_CODE_WEB_URL']
+  delete process.env['AREA_CODE_BUSINESS_URL']
+  delete process.env['AREA_CODE_FROM_EMAIL']
+}
+
+/** Every key `assertStartupConfig()` requires in prod, with glyphcity.com values. */
+const PROD_REQUIRED: Record<string, string> = {
+  AREA_CODE_QR_HMAC_SECRET: 'prod-qr-secret',
+  AREA_CODE_CONSENT_VERSION: 'v1.0',
+  YOCO_WEBHOOK_SECRET: 'whsec_prod_secret',
+  AREA_CODE_WEB_URL: 'https://glyphcity.com',
+  AREA_CODE_BUSINESS_URL: 'https://business.glyphcity.com',
+  AREA_CODE_FROM_EMAIL: 'noreply@glyphcity.com',
+}
+
+function setProdRequired(except?: string): void {
+  process.env['AREA_CODE_ENV'] = 'prod'
+  for (const [key, value] of Object.entries(PROD_REQUIRED)) {
+    if (key !== except) process.env[key] = value
+  }
 }
 
 beforeEach(() => {
@@ -77,13 +97,20 @@ describe('assertStartupConfig() (R1.2, R1.5)', () => {
   })
 
   it('passes in prod when all required keys are set', async () => {
-    process.env['AREA_CODE_ENV'] = 'prod'
-    process.env['AREA_CODE_QR_HMAC_SECRET'] = 'prod-qr-secret'
-    process.env['AREA_CODE_CONSENT_VERSION'] = 'v1.0'
-    process.env['YOCO_WEBHOOK_SECRET'] = 'whsec_prod_secret'
+    setProdRequired()
     const { assertStartupConfig } = await import('../env.js')
     expect(() => assertStartupConfig()).not.toThrow()
   })
+
+  // glyphcity-rebrand R7.3: app URLs and the sender crash startup when missing.
+  it.each(['AREA_CODE_WEB_URL', 'AREA_CODE_BUSINESS_URL', 'AREA_CODE_FROM_EMAIL'])(
+    'throws in prod when %s is missing',
+    async (key) => {
+      setProdRequired(key)
+      const { assertStartupConfig } = await import('../env.js')
+      expect(() => assertStartupConfig()).toThrow(new RegExp(`${key} is not set`))
+    },
+  )
 
   it('is a no-op in dev even when all keys are missing', async () => {
     process.env['AREA_CODE_ENV'] = 'dev'

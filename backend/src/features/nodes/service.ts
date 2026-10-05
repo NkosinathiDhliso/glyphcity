@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
+import { ENTRANCE_MAX_DISTANCE_METRES, entranceWithinBound } from '@area-code/shared/lib/entrance'
 import { buildMediaUrl } from '@area-code/shared/lib/mediaUrl'
 import type { VenueMomentum, VenueTonight } from '@area-code/shared/types'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
@@ -627,6 +628,7 @@ export async function updateNode(
     address: string
     lat: number
     lng: number
+    entrance: { lat: number; lng: number } | null
   }>,
 ) {
   if (DEV_MODE) return
@@ -648,6 +650,8 @@ export async function updateNode(
   // Strip address from the DB patch (it's not a column on nodes)
   delete patch['address']
 
+  await applyEntrancePin(nodeId, data.entrance, patch)
+
   const result = await repo.updateNode(nodeId, businessId, patch as Parameters<typeof repo.updateNode>[2])
   if (result.count === 0) throw AppError.forbidden('You do not own this node')
 
@@ -655,6 +659,34 @@ export async function updateNode(
   // the cached city assembly has to be dropped or the edit waits out the TTL
   // (R15.5).
   await invalidateCityPayloadForNode(nodeId)
+}
+
+/**
+ * Entrance_Pin rules (GlyphCity rebrand R9.1, R9.2). A new pin must sit within
+ * `ENTRANCE_MAX_DISTANCE_METRES` of the venue pin. Moving the venue pin without
+ * re-placing the entrance clears it, so a stale door can never point Point_Mode
+ * at the wrong building.
+ */
+async function applyEntrancePin(
+  nodeId: string,
+  entrance: { lat: number; lng: number } | null | undefined,
+  patch: Record<string, unknown>,
+): Promise<void> {
+  const venueMoved = patch['lat'] !== undefined && patch['lng'] !== undefined
+  if (entrance === undefined) {
+    if (venueMoved) patch['entrance'] = null
+    return
+  }
+  if (entrance === null) return
+  const venue = venueMoved
+    ? { lat: patch['lat'] as number, lng: patch['lng'] as number }
+    : await nodesDynamo.getNodeById(nodeId)
+  if (!venue) throw AppError.notFound('Node not found')
+  if (!entranceWithinBound(venue, entrance)) {
+    throw AppError.badRequest(
+      `Put the entrance pin within ${ENTRANCE_MAX_DISTANCE_METRES} m of your venue. Drag it onto your front door.`,
+    )
+  }
 }
 
 export async function updateNodeSocialLinks(

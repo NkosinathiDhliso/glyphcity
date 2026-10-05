@@ -1,5 +1,7 @@
 import { createHmac } from 'node:crypto'
 
+import { API_URL } from '@area-code/shared/constants/brand'
+
 import { qrHmacSecret, requireEnv } from '../../shared/config/env'
 import { digestsEqual } from '../../shared/security/hmac'
 
@@ -28,7 +30,7 @@ import { digestsEqual } from '../../shared/security/hmac'
 // `repository.ts`.
 // ============================================================================
 
-/** Env var holding the public API base URL (e.g. `https://api.areacode.co.za`). */
+/** Env var holding the public API base URL (e.g. `https://api.glyphcity.com`). */
 export const API_BASE_URL_ENV = 'AREA_CODE_API_BASE_URL'
 
 /** Env var holding the dedicated HMAC secret for unsubscribe tokens. */
@@ -109,7 +111,7 @@ export function verifyUnsubscribeToken(token: string): { userId: string; busines
  * implemented by the `GET /v1/campaigns/unsubscribe` handler.
  */
 export function buildUnsubscribeUrl(userId: string, businessId: string): string {
-  const base = requireEnv(API_BASE_URL_ENV, 'https://api.areacode.co.za').replace(/\/+$/, '')
+  const base = requireEnv(API_BASE_URL_ENV, API_URL).replace(/\/+$/, '')
   const token = signUnsubscribeToken(userId, businessId)
   return `${base}/v1/campaigns/unsubscribe?token=${token}`
 }

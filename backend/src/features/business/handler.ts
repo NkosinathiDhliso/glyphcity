@@ -1,3 +1,4 @@
+import { APP_DOMAIN } from '@area-code/shared/constants/brand'
 import type { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 
@@ -704,7 +705,7 @@ export async function businessRoutes(app: FastifyInstance) {
         email = await getVerifiedEmailBySub('admin', auth.cognitoSub)
       }
       if (!email) {
-        email = '<admin-no-email>@areacode.co.za'
+        email = `<admin-no-email>@${APP_DOMAIN}`
       }
 
       return service.updateBoostFloor(params.duration, body.floorCents, body.changeReason ?? null, {

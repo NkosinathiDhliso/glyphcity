@@ -15,6 +15,7 @@
  * Runs under the standard `pnpm test` (default node env).
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // ─── Capture the SESv2 SendEmailCommand input ────────────────────────────────
@@ -53,7 +54,7 @@ function lastEmail(): { to: string; subject: string; text: string; html: string 
 }
 
 const COPY_LINES = [
-  '23 visits recorded through Area Code this week, up 3 from the previous week.',
+  `23 visits recorded through ${APP_NAME} this week, up 3 from the previous week.`,
   '18 unique visitors recorded.',
   'The full weekly report adds peak-hours analysis. Upgrade to unlock it.',
 ]

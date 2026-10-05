@@ -107,6 +107,7 @@
 import { createHmac } from 'node:crypto'
 
 import { AWAY_GATE_MIN_MINUTES, GOING_PUBLIC_THRESHOLD } from '@area-code/shared/constants/attribution'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { getTier } from '@area-code/shared/constants/tier-levels'
 import type { FastifyInstance } from 'fastify'
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
@@ -976,7 +977,7 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
     // (`discovery-dna-vibe-over-convenience.md`): pulse label, who is there now,
     // then the owner's line for tonight, then the get.
     expect(html).toContain(
-      `${KUDU.name} \u00b7 Active \u00b7 3 here now \u00b7 ${KUDU.headline} tonight from ${TONIGHT_START.time} \u00b7 1 get live`,
+      `${KUDU.name} \u00b7 A little busy \u00b7 3 here now \u00b7 ${KUDU.headline} tonight from ${TONIGHT_START.time} \u00b7 1 get live`,
     )
     // Script-capable clients are redirected into the map with the source intact.
     expect(html).toContain(`/map?venue=${KUDU.slug}&amp;src=share`)
@@ -1072,7 +1073,9 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
       { nodeId: KUDU.nodeId, nodeName: KUDU.name, goingCount: seeded.goingRefs.length + 1 },
     ])
 
-    expect(stats.receiptToday.headline).toBe(`${expectedFoundYou} people found you on Area Code and checked in today.`)
+    expect(stats.receiptToday.headline).toBe(
+      `${expectedFoundYou} people found you on ${APP_NAME} and checked in today.`,
+    )
     expect(stats.receiptToday.walkIn).toBe(`${expectedWalkIns} people who were already in the room also checked in.`)
   })
 
@@ -1156,7 +1159,7 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
     const kuduFirstTimers = kuduFoundYou - kudu.returning
     const kuduCopy = digestCopyFor(KUDU.businessName)
     expect(kuduCopy.slice(0, 4)).toEqual([
-      `${kuduFoundYou} people found you on Area Code and checked in this week.`,
+      `${kuduFoundYou} people found you on ${APP_NAME} and checked in this week.`,
       `${kudu.weekWalkIns} people who were already in the room also checked in.`,
       `${kuduFirstTimers} of them had never been in before.`,
       'Recorded sources: 5 from the map, 2 from a shared link, 1 from search, 1 from a notification.',
@@ -1169,7 +1172,7 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
     const thembi = SEED_ACTIVITY.find((activity) => activity.key === 'thembi')!
     const thembiCopy = digestCopyFor(THEMBI.businessName)
     expect(thembiCopy.slice(0, 2)).toEqual([
-      `${thembi.weekFoundVia.length} people found you on Area Code and checked in this week.`,
+      `${thembi.weekFoundVia.length} people found you on ${APP_NAME} and checked in this week.`,
       `${thembi.weekWalkIns} people who were already in the room also checked in.`,
     ])
     expect(thembi.weekFoundVia.length).toBeLessThan(SUPPRESSION_FLOOR)
@@ -1180,7 +1183,7 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
     // The digest reads no Onboarding_Checklist, so the step is the reach pair.
     const loftCopy = digestCopyFor(LOFT.businessName)
     expect(loftCopy.slice(0, 3)).toEqual([
-      'No one has found you on Area Code and checked in this week yet.',
+      `No one has found you on ${APP_NAME} and checked in this week yet.`,
       `${LOFT_WALK_INS} people who were already in the room also checked in.`,
       'Share your venue link with your regulars, and publish what is on tonight.',
     ])

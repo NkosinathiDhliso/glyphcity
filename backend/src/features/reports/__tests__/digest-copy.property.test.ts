@@ -3,6 +3,7 @@ import { join, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { OPEN_SOURCES, type OpenSource } from '@area-code/shared/constants/attribution'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { OnboardingStatus } from '@area-code/shared/types'
 import * as fc from 'fast-check'
 import { describe, it, expect } from 'vitest'
@@ -400,11 +401,11 @@ describe('Feature: Proof of demand, Property 3: Honest copy', () => {
 
         if (digest.metrics.visits === 0) {
           // The quiet-week branch is unchanged by this spec: no Receipt lines.
-          expect(lines.join(' ')).not.toContain('found you on Area Code')
+          expect(lines.join(' ')).not.toContain(`found you on ${APP_NAME}`)
         } else if (receipt === null) {
           // A Digest_Row from before the Receipt existed was never measured, so
           // the digest claims nothing about Found_You (R4.5).
-          expect(lines.join(' ')).not.toContain('found you on Area Code')
+          expect(lines.join(' ')).not.toContain(`found you on ${APP_NAME}`)
         } else {
           // The headline is the Found_You sentence, built by the one copy home
           // the emails and the Plans panel use, and the Receipt block leads the
@@ -535,7 +536,7 @@ describe('Feature: Proof of demand, Property 3: Honest copy', () => {
         // The headline states the quiet window plainly: no padded number, and
         // never "0 people found you" (R4.7, R6.3).
         expect(copy.headline).not.toMatch(/\d/)
-        expect(copy.headline.toLowerCase()).toContain('no one has found you on area code')
+        expect(copy.headline.toLowerCase()).toContain(`no one has found you on ${APP_NAME.toLowerCase()}`)
 
         // An incomplete checklist points at the flag that is false.
         if (checklist !== null && !checklist.hasNode) {

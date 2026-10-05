@@ -61,6 +61,12 @@ export const updateNodeBodySchema = z.object({
   address: z.string().min(5).max(200).optional(),
   lat: z.number().min(-90).max(90).optional(),
   lng: z.number().min(-180).max(180).optional(),
+  /** Entrance_Pin for Point_Mode; `null` clears it. The 75 m bound is checked in the service. */
+  entrance: z
+    .object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) })
+    .strict()
+    .nullable()
+    .optional(),
 })
 
 export const claimNodeBodySchema = z.object({
@@ -149,6 +155,11 @@ export interface Node {
    * Absent/null means no boost has ever been purchased.
    */
   boostUntil?: string | null
+  /**
+   * Owner-set front-door coordinate, within 75 m of `lat`/`lng`. Read only by
+   * Point_Mode; the map, ranking, membership and check-in radius ignore it.
+   */
+  entrance?: { lat: number; lng: number } | null
   createdAt: string
   updatedAt: string
 }

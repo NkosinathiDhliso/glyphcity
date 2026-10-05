@@ -12,6 +12,7 @@ import {
   staffInviteAcceptBodySchema,
   staffInviteMetaQuerySchema,
   consumerEmailSignupBodySchema,
+  consumerOAuthSyncBodySchema,
   consumerSignupBodySchema,
   verifyOtpBodySchema,
   loginBodySchema,
@@ -150,15 +151,18 @@ export async function authRoutes(app: FastifyInstance) {
       preHandler: [
         rateLimitMiddleware({ key: 'consumer-oauth-sync', max: 10, windowSeconds: 60 }),
         requireAuth('consumer'),
+        validate({ body: consumerOAuthSyncBodySchema }),
       ],
     },
     async (request) => {
       const auth = getAuth(request)
       const userAgent = request.headers['user-agent'] ?? ''
+      const body = request.body as z.infer<typeof consumerOAuthSyncBodySchema>
       return service.consumerOAuthSync({
         cognitoSub: auth.cognitoSub,
         email: auth.email,
         userAgent,
+        acquisitionSource: body.acquisitionSource,
       })
     },
   )

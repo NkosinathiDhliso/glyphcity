@@ -1,4 +1,4 @@
-import { DEV_MODE, qrHmacSecret } from '../../shared/config/env.js'
+import { DEV_MODE, IS_PROD, qrHmacSecret, webBaseUrl } from '../../shared/config/env.js'
 import { digestsEqual } from '../../shared/security/hmac.js'
 
 import * as repo from './repository.js'
@@ -216,7 +216,7 @@ export async function connectStreaming(
  */
 export async function handleSpotifyCallback(code: string, state: string): Promise<string> {
   // Default frontend base — overridden by origin in state if present
-  let frontendBase = process.env['AREA_CODE_ENV'] === 'prod' ? 'https://areacode.co.za' : 'http://localhost:3000'
+  let frontendBase = IS_PROD ? webBaseUrl() : 'http://localhost:3000'
 
   try {
     // Decode and verify the signed state to get the userId

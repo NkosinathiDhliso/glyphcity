@@ -1,4 +1,5 @@
 // DynamoDB Repository for Auth (Replaces Prisma)
+import type { AcquisitionSource } from '@area-code/shared/constants/attribution'
 import { QueryCommand, PutCommand, GetCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 
 import { documentClient, TableNames, scanFirstMatch } from '../../shared/db/dynamodb.js'
@@ -164,6 +165,7 @@ export async function createUser(data: {
   cityId: string
   cognitoSub: string
   emailVerified?: boolean
+  acquisitionSource?: AcquisitionSource
 }) {
   return createUserDb({
     ...data,

@@ -21,6 +21,7 @@
 //    actually false, so the owner reads "print the QR", not "nobody came".
 
 import { OPEN_SOURCES, OPEN_SOURCE_PHRASE } from '@area-code/shared/constants/attribution'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { OnboardingChecklistStep, OnboardingStatus } from '@area-code/shared/types'
 
 import { formatSastDate } from '../../shared/time/sast.js'
@@ -152,8 +153,8 @@ export function buildReceiptCopy(
   // Zero branch: stated plainly, with no number in the headline, so a quiet
   // window never reads as "0 people found you" (R4.7, R6.3).
   const headline = zero
-    ? `No one has found you on Area Code and checked in${phrase} yet.`
-    : `${foundYouVisitors} ${people(foundYouVisitors)} found you on Area Code and checked in${phrase}.`
+    ? `No one has found you on ${APP_NAME} and checked in${phrase} yet.`
+    : `${foundYouVisitors} ${people(foundYouVisitors)} found you on ${APP_NAME} and checked in${phrase}.`
 
   const walkIn =
     walkInVisitors > 0
@@ -173,7 +174,7 @@ export function buildReceiptCopy(
   const measuredFrom =
     receipt.measuredFrom === null
       ? null
-      : `Area Code has recorded how people found you since ${formatSastDate(receipt.measuredFrom)}, ` +
+      : `${APP_NAME} has recorded how people found you since ${formatSastDate(receipt.measuredFrom)}, ` +
         `so part of this window predates the measurement.`
 
   const nextStep = zero ? pickNextStep(checklist) : null

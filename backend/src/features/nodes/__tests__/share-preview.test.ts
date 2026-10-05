@@ -30,7 +30,7 @@ function view(overrides: Partial<SharePreviewView> = {}): SharePreviewView {
   return {
     slug: 'ramonas-a1b2c3',
     name: "Ramona's",
-    description: "Ramona's \u00b7 Buzzing \u00b7 12 here now",
+    description: "Ramona's \u00b7 Busy \u00b7 12 here now",
     imageUrl: 'https://cdn.areacode.co.za/nodes/n1/header.webp',
     canonicalUrl: 'https://areacode.co.za/node/ramonas-a1b2c3',
     ...overrides,
@@ -49,7 +49,7 @@ describe('renderSharePreview — Open Graph tags (R1.2)', () => {
     const html = renderSharePreview(v, NONCE)
 
     expect(metaContent(html, 'property', 'og:title')).toBe('Ramona&#39;s')
-    expect(metaContent(html, 'property', 'og:description')).toBe('Ramona&#39;s \u00b7 Buzzing \u00b7 12 here now')
+    expect(metaContent(html, 'property', 'og:description')).toBe('Ramona&#39;s \u00b7 Busy \u00b7 12 here now')
     expect(metaContent(html, 'property', 'og:image')).toBe(v.imageUrl)
     expect(metaContent(html, 'property', 'og:url')).toBe(v.canonicalUrl)
     expect(html).toContain(`<title>Ramona&#39;s</title>`)
@@ -58,7 +58,7 @@ describe('renderSharePreview — Open Graph tags (R1.2)', () => {
 
   it('renders the site default image when that is what the service resolved', () => {
     const html = renderSharePreview(view({ imageUrl: DEFAULT_OG_IMAGE }), NONCE)
-    expect(metaContent(html, 'property', 'og:image')).toBe('https://www.areacode.co.za/og-image.png')
+    expect(metaContent(html, 'property', 'og:image')).toBe('https://glyphcity.com/og-image.png')
   })
 
   it('needs no JavaScript for the tags: they are all in the served head', () => {

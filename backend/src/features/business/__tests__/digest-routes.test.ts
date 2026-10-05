@@ -19,6 +19,7 @@
  * and auth are exercised without a live DynamoDB.
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { FastifyInstance } from 'fastify'
 import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest'
 
@@ -69,7 +70,7 @@ const LATEST_VIEW = {
     deltas: null,
     suppressed: [],
     tierAtBuild: 'growth',
-    copy: ['23 visits recorded through Area Code this week.'],
+    copy: [`23 visits recorded through ${APP_NAME} this week.`],
     createdAt: '2026-07-06T20:00:00.000Z',
   },
 }

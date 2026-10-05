@@ -25,6 +25,8 @@
  * `default-src`.
  */
 
+import { APP_NAME, APP_URL } from '@area-code/shared/constants/brand'
+
 import { escapeHtml } from '../../shared/html/escape.js'
 import { venueArrivalPath } from '../../shared/links/venue-arrival.js'
 
@@ -34,7 +36,7 @@ import { venueArrivalPath } from '../../shared/links/venue-arrival.js'
  * This is the designed "no venue photo" state required by R1.2, not a masking
  * fallback: a share card without an image reads as broken.
  */
-export const DEFAULT_OG_IMAGE = 'https://www.areacode.co.za/og-image.png'
+export const DEFAULT_OG_IMAGE = `${APP_URL}/og-image.png`
 
 /**
  * Crawler and browser cache window for the preview (R1.2 / task 1.3). Five
@@ -97,7 +99,7 @@ export function renderSharePreview(view: SharePreviewView, nonce: string): strin
 <meta name="description" content="${description}" />
 <link rel="canonical" href="${canonical}" />
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="Area Code" />
+<meta property="og:site_name" content="${APP_NAME}" />
 <meta property="og:locale" content="en_ZA" />
 <meta property="og:title" content="${name}" />
 <meta property="og:description" content="${description}" />
@@ -113,7 +115,7 @@ export function renderSharePreview(view: SharePreviewView, nonce: string): strin
 <noscript>
 <h1>${name}</h1>
 <p>${description}</p>
-<p><a href="${targetHref}">Open ${name} on Area Code</a></p>
+<p><a href="${targetHref}">Open ${name} on ${APP_NAME}</a></p>
 </noscript>
 </body>
 </html>

@@ -1,5 +1,8 @@
 import { randomBytes } from 'node:crypto'
 
+import type { AcquisitionSource } from '@area-code/shared/constants/attribution'
+import { APP_NAME } from '@area-code/shared/constants/brand'
+
 import * as cognito from '../../shared/cognito/client.js'
 import { AWS_REGION, DEV_MODE, webBaseUrl } from '../../shared/config/env.js'
 import { sendEmailVerificationEmail } from '../../shared/email/ses.js'
@@ -135,7 +138,13 @@ function suggestedUsernameFromEmail(email: string): string {
 }
 
 /** Called once after Hosted UI Google OAuth returns Cognito tokens. Ensures Dynamo user + Cognito custom:userId. */
-export async function consumerOAuthSync(opts: { cognitoSub: string; email?: string | undefined; userAgent: string }) {
+export async function consumerOAuthSync(opts: {
+  cognitoSub: string
+  email?: string | undefined
+  userAgent: string
+  /** Written only if this sync creates the account (R10.3). */
+  acquisitionSource?: AcquisitionSource
+}) {
   const { cognitoSub, email: rawEmail } = opts
 
   if (DEV_MODE) {
@@ -202,6 +211,7 @@ export async function consumerOAuthSync(opts: { cognitoSub: string; email?: stri
         cityId: city.id,
         cognitoSub,
         emailVerified: true,
+        acquisitionSource: opts.acquisitionSource ?? 'organic',
       })
 
       const consentVersion = currentConsentVersion()
@@ -338,6 +348,7 @@ export async function consumerEmailSignup(data: {
   password: string
   consentAnalytics?: boolean
   userAgent?: string
+  acquisitionSource?: AcquisitionSource
 }) {
   if (DEV_MODE) {
     const userId = `dev-user-${Date.now()}`
@@ -380,6 +391,7 @@ export async function consumerEmailSignup(data: {
       cityId: city.id,
       cognitoSub: cognitoUser.sub,
       emailVerified: false,
+      acquisitionSource: data.acquisitionSource ?? 'organic',
     })
 
     await cognito.updateUserAttributes('consumer', email, {
@@ -1122,7 +1134,7 @@ export async function adminMfaCompleteSetup(opts: { email: string; session: stri
 
 /** Build an otpauth:// URI for authenticator-app QR codes. */
 function buildTotpUri(email: string, secret: string): string {
-  const issuer = 'Area Code Admin'
+  const issuer = `${APP_NAME} Admin`
   const label = `${issuer}:${email}`
   const params = new URLSearchParams({ secret, issuer })
   return `otpauth://totp/${encodeURIComponent(label)}?${params.toString()}`

@@ -1,5 +1,6 @@
 import { createHmac, randomUUID } from 'node:crypto'
 
+import { APP_DOMAIN } from '@area-code/shared/constants/brand'
 import type {
   BusinessReceipt,
   LiveGoingLine,
@@ -8,9 +9,10 @@ import type {
   ReceiptWindowName,
 } from '@area-code/shared/types'
 
-import { APP_ENV, AWS_REGION, DEV_MODE, qrHmacSecret, requireEnv } from '../../shared/config/env.js'
+import { APP_ENV, DEV_MODE, qrHmacSecret, requireEnv, webBaseUrl } from '../../shared/config/env.js'
 import { sendRenewalReminderEmail, sendRenewalUpcomingEmail } from '../../shared/email/ses.js'
 import { AppError } from '../../shared/errors/AppError.js'
+import { getCloudWatchClient } from '../../shared/monitoring/cloudwatch.js'
 import { digestsEqual } from '../../shared/security/hmac.js'
 import { deactivateNodesForBusiness } from '../nodes/dynamodb-repository.js'
 import { buildDigestCopy, type DigestData } from '../reports/digest.js'
@@ -108,17 +110,6 @@ function logBoostBranch(branch: BOOST_LOG_BRANCHES, fields: Record<string, unkno
 // any throw from `putMetric` and still returns the reject decision. We adapt
 // the SDK to that helper's `PutMetricFn` shape rather than duplicating the
 // try/catch here.
-
-let cloudWatchClientSingleton: import('@aws-sdk/client-cloudwatch').CloudWatchClient | null = null
-
-async function getCloudWatchClient(): Promise<import('@aws-sdk/client-cloudwatch').CloudWatchClient> {
-  if (cloudWatchClientSingleton) return cloudWatchClientSingleton
-  const { CloudWatchClient } = await import('@aws-sdk/client-cloudwatch')
-  cloudWatchClientSingleton = new CloudWatchClient({
-    region: AWS_REGION,
-  })
-  return cloudWatchClientSingleton
-}
 
 async function putBoostMetric(input: BoostMetricInput): Promise<void> {
   const { PutMetricDataCommand } = await import('@aws-sdk/client-cloudwatch')
@@ -244,7 +235,7 @@ export async function getBusinessProfile(cognitoSub: string) {
     return {
       id: 'dev-biz-1',
       businessName: 'Dev Business',
-      email: 'dev@areacode.co.za',
+      email: `dev@${APP_DOMAIN}`,
       tier: 'growth',
       cognitoSub,
       paidUntil: addPaidInterval(new Date().toISOString(), 'monthly'),
@@ -1080,7 +1071,7 @@ export function validateQrToken(nodeId: string, token: string): boolean {
 export async function getQrData(nodeId: string, businessId: string) {
   if (DEV_MODE) {
     const token = generateQrToken(nodeId)
-    return { url: `https://areacode.co.za/qr/${nodeId}/${token}`, token, nodeId }
+    return { url: `${webBaseUrl()}/qr/${nodeId}/${token}`, token, nodeId }
   }
   const node = await repo.getNodeForBusiness(nodeId, businessId)
   if (!node) throw AppError.forbidden('You do not own this node')
@@ -1093,7 +1084,7 @@ export async function getQrData(nodeId: string, businessId: string) {
 
   const token = generateQrToken(nodeId)
   return {
-    url: `https://areacode.co.za/qr/${nodeId}/${token}`,
+    url: `${webBaseUrl()}/qr/${nodeId}/${token}`,
     token,
     nodeId,
   }
@@ -1523,7 +1514,7 @@ export async function getCurrentNodeQr(businessId: string) {
   if (DEV_MODE) {
     const nodeId = 'dev-node-1'
     const token = generateQrToken(nodeId)
-    return { url: `https://areacode.co.za/qr/${nodeId}/${token}`, token, nodeId }
+    return { url: `${webBaseUrl()}/qr/${nodeId}/${token}`, token, nodeId }
   }
   const nodes = await repo.getNodesForBusiness(businessId)
   if (!nodes.length) throw AppError.notFound('No nodes found')
@@ -1537,7 +1528,7 @@ export async function getCurrentNodeQr(businessId: string) {
   }
 
   const token = generateQrToken(nodeId)
-  return { url: `https://areacode.co.za/qr/${nodeId}/${token}`, token, nodeId }
+  return { url: `${webBaseUrl()}/qr/${nodeId}/${token}`, token, nodeId }
 }
 
 // ─── Downgrade / Cancel Subscription & non-payment enforcement ──────────────

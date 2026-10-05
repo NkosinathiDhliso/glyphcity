@@ -14,7 +14,7 @@
  * To set up:
  *   Spotify: https://developer.spotify.com/dashboard → Create App
  *     - Set redirect URIs (must match SPOTIFY_REDIRECT_URI env var EXACTLY):
- *         Prod:  https://areacode.co.za/api/v1/streaming/spotify/callback
+ *         Prod:  https://glyphcity.com/api/v1/streaming/spotify/callback
  *                (requires Amplify /api/* proxy rule — see scripts/apply-amplify-spa-rewrites.ps1)
  *         Local: http://localhost:4000/v1/streaming/spotify/callback
  *     - Scopes needed: user-top-read

@@ -23,6 +23,7 @@
  *     that is actually missing instead of reporting a zero
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { FastifyInstance } from 'fastify'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -353,7 +354,7 @@ describe('GET /v1/business/receipt — Receipt plus copy (R6.2, R6.3)', () => {
 
     expect(body.foundYouVisitors).toBe(3)
     expect(body.walkInVisitors).toBe(2)
-    expect(body.headline).toContain('3 people found you on Area Code and checked in during your trial.')
+    expect(body.headline).toContain(`3 people found you on ${APP_NAME} and checked in during your trial.`)
     expect(body.walkIn).toContain('already in the room')
     // Measurement only: the endpoint never claims Area Code caused the visit.
     expect(`${body.headline} ${body.walkIn}`).not.toMatch(/brought|drove|generated|boosted/i)

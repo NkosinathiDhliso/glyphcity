@@ -106,6 +106,9 @@ export async function getNodesByCitySlug(citySlug: string) {
       // A paid reach signal only; kept separate from pulse/aliveness (honest-presence).
       boostUntil: (n['boostUntil'] as string | null | undefined) ?? null,
       boostActive: isBoostActive(n['boostUntil'] as string | null | undefined),
+      // Entrance_Pin, only when the owner set one. Point_Mode reads it; nothing
+      // else on the map does (GlyphCity rebrand R9.3, R9.4).
+      ...(n['entrance'] ? { entrance: n['entrance'] as { lat: number; lng: number } } : {}),
     }))
 }
 
@@ -228,6 +231,7 @@ export async function updateNode(
     qrCheckinEnabled: boolean
     lat: number
     lng: number
+    entrance: { lat: number; lng: number } | null
   }>,
 ) {
   // Verify node belongs to business

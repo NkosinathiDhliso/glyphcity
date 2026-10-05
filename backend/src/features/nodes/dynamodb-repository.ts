@@ -236,6 +236,7 @@ function mapNode(item: Record<string, unknown>): Node {
     defaultArchetypeId: (item['defaultArchetypeId'] as string | null | undefined) ?? null,
     currentArchetypeId: (item['currentArchetypeId'] as string | null | undefined) ?? null,
     boostUntil: (item['boostUntil'] as string | null | undefined) ?? null,
+    entrance: (item['entrance'] as { lat: number; lng: number } | null | undefined) ?? null,
     createdAt: (item['createdAt'] as string) ?? '',
     updatedAt: (item['updatedAt'] as string) ?? '',
   }

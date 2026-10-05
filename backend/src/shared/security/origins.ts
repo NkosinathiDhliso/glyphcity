@@ -1,3 +1,5 @@
+import { APP_DOMAIN, APP_URL, BUSINESS_URL } from '@area-code/shared/constants/brand'
+
 /**
  * Single source of truth for allowed Origin values.
  *
@@ -15,12 +17,14 @@ const AMPLIFY_ORIGINS = [
   'https://master.d1ay6jict0ql9w.amplifyapp.com', // admin
 ]
 
+// Matches local.app_cors_origins in infra/environments/prod/main.tf; the two
+// switch together (glyphcity-rebrand R7.2).
 const PROD_ORIGINS = [
-  'https://areacode.co.za',
-  'https://www.areacode.co.za',
-  'https://business.areacode.co.za',
-  'https://staff.areacode.co.za',
-  'https://admin.areacode.co.za',
+  APP_URL,
+  `https://www.${APP_DOMAIN}`,
+  BUSINESS_URL,
+  `https://staff.${APP_DOMAIN}`,
+  `https://admin.${APP_DOMAIN}`,
   ...AMPLIFY_ORIGINS,
 ]
 

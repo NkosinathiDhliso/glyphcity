@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 
-import { requireAuth } from '../../shared/middleware/auth.js'
+import { getAuth, requireAuth } from '../../shared/middleware/auth.js'
 import { rateLimitMiddleware } from '../../shared/middleware/rate-limit.js'
 import { validate } from '../../shared/middleware/validation.js'
 
@@ -31,7 +31,7 @@ export async function eventRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const body = request.body as EventBatchBody
-      service.recordEvents(body.events)
+      await service.recordEventsForUser(getAuth(request).userId, body.events)
       return reply.status(204).send()
     },
   )

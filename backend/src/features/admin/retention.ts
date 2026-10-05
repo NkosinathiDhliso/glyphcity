@@ -21,6 +21,7 @@
  *     for that user), not O(table).
  */
 
+import { ACQUISITION_LABELS, isAcquisitionSource, type AcquisitionLabel } from '@area-code/shared/constants/attribution'
 import { QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 
 import { documentClient, TableNames } from '../../shared/db/dynamodb.js'
@@ -38,6 +39,8 @@ export interface CohortRow {
   d7Pct: number
   d30Pct: number
   d90Pct: number
+  /** Signups and Day 1 split by Acquisition_Source (GlyphCity rebrand R11.2). */
+  bySource: Record<AcquisitionLabel, { signups: number; d1: number }>
 }
 
 export interface VenueLeak {
@@ -57,16 +60,18 @@ export interface RetentionPayload {
 
 const CACHE_TTL_MS = 30 * 60 * 1000
 
-let cache: { payload: RetentionPayload; expiresAt: number } | null = null
+// Keyed by window length, so a 4-week read never answers a 12-week request.
+const cache = new Map<number, { payload: RetentionPayload; expiresAt: number }>()
 
 interface UserSlim {
   userId: string
   createdAt: string
+  acquisition: AcquisitionLabel
   firstCheckInNodeId?: string
 }
 
 /** Monday of the ISO week containing `d`, as YYYY-MM-DD. */
-function isoWeekMonday(d: Date): string {
+export function isoWeekMonday(d: Date): string {
   const dt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
   const day = dt.getUTCDay() || 7 // Sunday = 7
   if (day !== 1) dt.setUTCDate(dt.getUTCDate() - (day - 1))
@@ -93,14 +98,16 @@ async function listRecentUsers(weeks: number, hardCap = 5_000): Promise<UserSlim
         TableName: TableNames.users,
         FilterExpression: 'createdAt >= :since',
         ExpressionAttributeValues: { ':since': sinceIso },
-        ProjectionExpression: 'userId, createdAt',
+        ProjectionExpression: 'userId, createdAt, acquisitionSource',
         ...(exclusiveStartKey ? { ExclusiveStartKey: exclusiveStartKey } : {}),
       }),
     )
     for (const item of result.Items ?? []) {
+      const source = item['acquisitionSource']
       out.push({
         userId: item['userId'] as string,
         createdAt: item['createdAt'] as string,
+        acquisition: isAcquisitionSource(source) ? source : 'unknown',
       })
       if (out.length >= hardCap) return out
     }
@@ -138,13 +145,14 @@ interface CohortBuckets {
   d90: number
 }
 
+/** Tally one cohort member. Returns true when they count toward Day 1. */
 function tallyMember(
   signupAt: string,
   checkIns: CheckInSlim[],
   buckets: CohortBuckets,
   venueStats: Map<string, { signups: number; d7Returns: number }>,
-): void {
-  if (checkIns.length === 0) return
+): boolean {
+  if (checkIns.length === 0) return false
   const sortedAt = checkIns.map((c) => c.checkedInAt).sort()
   const first = sortedAt[0]!
   const ageDays = dayDiff(signupAt, first)
@@ -159,6 +167,7 @@ function tallyMember(
   v.signups++
   if (ageDays <= 7 && checkIns.length > 1) v.d7Returns++
   venueStats.set(earliestCheckIn.nodeId, v)
+  return ageDays <= 1
 }
 
 async function processCohort(
@@ -167,19 +176,27 @@ async function processCohort(
   venueStats: Map<string, { signups: number; d7Returns: number }>,
 ): Promise<CohortRow> {
   const buckets: CohortBuckets = { d1: 0, d7: 0, d30: 0, d90: 0 }
+  const bySource = Object.fromEntries(
+    ACQUISITION_LABELS.map((l) => [l, { signups: 0, d1: 0 }]),
+  ) as CohortRow['bySource']
 
   // Process users in batches of 25 so we don't hammer DynamoDB.
   const batchSize = 25
   for (let i = 0; i < members.length; i += batchSize) {
     const slice = members.slice(i, i + batchSize)
     const results = await Promise.all(slice.map((m) => getUserCheckIns(m.userId)))
-    slice.forEach((m, j) => tallyMember(m.createdAt, results[j]!, buckets, venueStats))
+    slice.forEach((m, j) => {
+      const source = bySource[m.acquisition]
+      source.signups++
+      if (tallyMember(m.createdAt, results[j]!, buckets, venueStats)) source.d1++
+    })
   }
 
   const signups = members.length
   return {
     cohortWeekStart: weekStart,
     signups,
+    bySource,
     ...buckets,
     d1Pct: signups ? buckets.d1 / signups : 0,
     d7Pct: signups ? buckets.d7 / signups : 0,
@@ -189,7 +206,8 @@ async function processCohort(
 }
 
 export async function computeRetention(weeks = 12): Promise<RetentionPayload> {
-  if (cache && cache.expiresAt > Date.now()) return cache.payload
+  const cached = cache.get(weeks)
+  if (cached && cached.expiresAt > Date.now()) return cached.payload
 
   const users = await listRecentUsers(weeks)
 
@@ -237,10 +255,10 @@ export async function computeRetention(weeks = 12): Promise<RetentionPayload> {
     cacheMinutes: CACHE_TTL_MS / 60_000,
   }
 
-  cache = { payload, expiresAt: Date.now() + CACHE_TTL_MS }
+  cache.set(weeks, { payload, expiresAt: Date.now() + CACHE_TTL_MS })
   return payload
 }
 
 export function clearRetentionCache(): void {
-  cache = null
+  cache.clear()
 }

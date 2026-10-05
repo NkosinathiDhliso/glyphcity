@@ -18,6 +18,7 @@
  *      read is never bypassed.
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ─── Mutable mock state (vi.hoisted so the factories can reference it) ────────
@@ -146,7 +147,7 @@ describe('getLiveStats splits today into Found_You and Walk_In visitors', () => 
     // Conservation: every consumer in the window is on exactly one side.
     expect(stats.foundYouToday + stats.walkInsToday).toBe(6)
 
-    expect(stats.receiptToday.headline).toBe('4 people found you on Area Code and checked in today.')
+    expect(stats.receiptToday.headline).toBe(`4 people found you on ${APP_NAME} and checked in today.`)
     expect(stats.receiptToday.walkIn).toBe('2 people who were already in the room also checked in.')
   })
 
@@ -158,7 +159,7 @@ describe('getLiveStats splits today into Found_You and Walk_In visitors', () => 
     expect(stats.foundYouToday).toBe(0)
     expect(stats.walkInsToday).toBe(1)
     // Zero takes the plain branch: no "0 people found you" headline.
-    expect(stats.receiptToday.headline).toBe('No one has found you on Area Code and checked in today yet.')
+    expect(stats.receiptToday.headline).toBe(`No one has found you on ${APP_NAME} and checked in today yet.`)
     expect(stats.receiptToday.headline).not.toContain('0 ')
     expect(stats.receiptToday.walkIn).toBe('1 person who was already in the room also checked in.')
   })
@@ -169,7 +170,7 @@ describe('getLiveStats splits today into Found_You and Walk_In visitors', () => 
     expect(stats.foundYouToday).toBe(0)
     expect(stats.walkInsToday).toBe(0)
     expect(stats.checkInsToday).toBe(0)
-    expect(stats.receiptToday.headline).toBe('No one has found you on Area Code and checked in today yet.')
+    expect(stats.receiptToday.headline).toBe(`No one has found you on ${APP_NAME} and checked in today yet.`)
     expect(stats.receiptToday.walkIn).toBe('No check-ins were recorded from people already in the room.')
   })
 
@@ -197,7 +198,7 @@ describe('getLiveStats DEV_MODE fixture', () => {
 
     expect(stats.foundYouToday).toBe(9)
     expect(stats.walkInsToday).toBe(13)
-    expect(stats.receiptToday.headline).toBe('9 people found you on Area Code and checked in today.')
+    expect(stats.receiptToday.headline).toBe(`9 people found you on ${APP_NAME} and checked in today.`)
     expect(stats.receiptToday.walkIn).toBe('13 people who were already in the room also checked in.')
   })
 

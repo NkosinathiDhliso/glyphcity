@@ -5,8 +5,8 @@
  * to come. Three universal rules hold over the whole input space:
  *
  * 1. Zero live presence never reads as busy (`honest-presence.md`): the
- *    presence label is "Quiet right now" or "Be the first in", never
- *    Active/Buzzing/Popping, and no "N here now" clause is rendered.
+ *    presence label is "Quiet right now" or "Be the first in", never a
+ *    busy Plain_Scale label, and no "N here now" clause is rendered.
  * 2. The venue name is always present, in full, for any name inside the
  *    100-character node-name validator bound.
  * 3. The line stays under `SHARE_SNAPSHOT_MAX_LENGTH`, for any input.
@@ -16,6 +16,12 @@
  * **Validates: Requirements 1.3**
  */
 
+import {
+  PLAIN_SCALE_EN,
+  nodeStateFromScore,
+  stateLabelKey,
+  type StateLabelKey,
+} from '@area-code/shared/constants/state-labels'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 
@@ -24,8 +30,12 @@ import { buildShareSnapshot, SHARE_SNAPSHOT_MAX_LENGTH } from '../share-snapshot
 /** Segment separator used by the snapshot (U+00B7 middle dot). */
 const SEPARATOR = ' \u00b7 '
 
-/** Labels that read as a crowd. None may appear when nobody is there. */
-const BUSY_LABELS = ['Active', 'Buzzing', 'Popping']
+/** Plain_Scale labels that read as a crowd. None may appear when nobody is there. */
+const BUSY_LABELS: string[] = [
+  PLAIN_SCALE_EN['state.aLittleBusy'],
+  PLAIN_SCALE_EN['state.busy'],
+  PLAIN_SCALE_EN['state.veryBusy'],
+]
 
 /** The two honest readings of an empty room. */
 const EMPTY_LABELS = ['Quiet right now', 'Be the first in']
@@ -143,6 +153,63 @@ describe('Feature: Proof of demand, Property 4: share snapshot stays under the l
         },
       ),
       { numRuns: 300 },
+    )
+  })
+})
+
+/**
+ * Feature: GlyphCity rebrand, Property 2: label honesty.
+ *
+ * The presence label never ranks above the pulse band. The band oracle is the
+ * shared `nodeStateFromScore`, which `state-labels.property.test.ts` pins to
+ * the `pulse-decay.ts` bands. One allowance: real presence in a dormant band
+ * reads "Quiet" (rank 1), because the invite would deny someone who is there.
+ *
+ * **Validates: Requirements 2.6, 2.7**
+ */
+const LABEL_RANK: Record<string, number> = {
+  [PLAIN_SCALE_EN['state.firstIn']]: 0,
+  [PLAIN_SCALE_EN['state.quiet']]: 1,
+  'Quiet right now': 1,
+  [PLAIN_SCALE_EN['state.aLittleBusy']]: 2,
+  [PLAIN_SCALE_EN['state.busy']]: 3,
+  [PLAIN_SCALE_EN['state.veryBusy']]: 4,
+}
+
+const CAPACITY_WORDS = /\b(packed|full|rammed)\b/i
+
+function bandRank(score: number): number {
+  const key: StateLabelKey = stateLabelKey(nodeStateFromScore(Number.isFinite(score) ? score : 0))
+  return LABEL_RANK[PLAIN_SCALE_EN[key]] as number
+}
+
+describe('Feature: GlyphCity rebrand, Property 2: label honesty', () => {
+  const finiteScoreArb = fc.double({ min: -50, max: 500, noNaN: true, noDefaultInfinity: true })
+  const liveArb = fc.oneof(fc.constant(0), fc.integer({ min: 1, max: 5000 }))
+
+  it('presence label never ranks above the pulse band', () => {
+    fc.assert(
+      fc.property(inputArb, finiteScoreArb, liveArb, (input, pulseScore, liveCheckInCount) => {
+        const label = segmentsOf(buildShareSnapshot({ ...input, pulseScore, liveCheckInCount }))[1] as string
+        const rank = LABEL_RANK[label]
+        expect(rank).toBeDefined()
+        const floor = liveCheckInCount > 0 ? 1 : 0
+        expect(rank).toBeLessThanOrEqual(Math.max(bandRank(pulseScore), floor))
+        if (liveCheckInCount === 0) {
+          expect(EMPTY_LABELS).toContain(label)
+        }
+      }),
+      { numRuns: 300 },
+    )
+  })
+
+  it('no emitted presence label claims capacity', () => {
+    fc.assert(
+      fc.property(inputArb, pulseScoreArb, liveArb, (input, pulseScore, liveCheckInCount) => {
+        const label = segmentsOf(buildShareSnapshot({ ...input, pulseScore, liveCheckInCount }))[1] as string
+        expect(label).not.toMatch(CAPACITY_WORDS)
+      }),
+      { numRuns: 200 },
     )
   })
 })

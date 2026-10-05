@@ -1,3 +1,4 @@
+import { ACQUISITION_SOURCES, type AcquisitionSource } from '@area-code/shared/constants/attribution'
 import { z } from 'zod'
 
 export const updateProfileBodySchema = z.object({
@@ -34,7 +35,15 @@ export const consumerEmailSignupBodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(256),
   consentAnalytics: z.boolean().optional().default(false),
+  // No first-touch signal seen means organic: the honest reading, not a guess.
+  acquisitionSource: z.enum(ACQUISITION_SOURCES).optional().default('organic'),
 })
+
+/** Body of `POST /v1/auth/consumer/oauth-sync`. Used only when the sync creates the account. */
+export const consumerOAuthSyncBodySchema = z
+  .object({ acquisitionSource: z.enum(ACQUISITION_SOURCES).optional().default('organic') })
+  .optional()
+  .default({ acquisitionSource: 'organic' })
 
 export const verifyOtpBodySchema = z.object({
   phone: z.string().regex(/^\+\d{10,15}$/),
@@ -147,6 +156,8 @@ export interface User {
   emailVerified?: boolean
   onboardingComplete?: boolean
   streakStartDate?: string
+  /** First-touch source, written once at sign-up (GlyphCity rebrand R10.3). Never updated. */
+  acquisitionSource?: AcquisitionSource
   createdAt: string
   updatedAt?: string
 }

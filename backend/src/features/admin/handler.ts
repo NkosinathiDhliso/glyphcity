@@ -28,6 +28,12 @@ async function getAdminRole(request: FastifyRequest): Promise<AdminRole> {
   return (attrs?.['custom:admin_role'] as AdminRole) ?? 'support_agent'
 }
 
+/** The `weeks` query for a cohort read, clamped to [min, 26]. */
+function weeksQuery(request: FastifyRequest, fallback: number, min: number): number {
+  const weeks = parseInt((request.query as Record<string, string>)['weeks'] ?? '', 10) || fallback
+  return Math.min(Math.max(weeks, min), 26)
+}
+
 export async function adminRoutes(app: FastifyInstance) {
   const adminAuth = requireAuth('admin')
 
@@ -253,11 +259,13 @@ export async function adminRoutes(app: FastifyInstance) {
   // GET /v1/admin/retention?weeks=12
   app.get('/v1/admin/retention', { preHandler: [adminAuth] }, async (request) => {
     const role = await getAdminRole(request)
-    const weeks = Math.min(
-      Math.max(parseInt((request.query as Record<string, string>)['weeks'] ?? '12', 10) || 12, 1),
-      26,
-    )
-    return service.getRetentionCohorts(role, weeks)
+    return service.getRetentionCohorts(role, weeksQuery(request, 12, 1))
+  })
+
+  // GET /v1/admin/acquisition-funnel?weeks=8
+  app.get('/v1/admin/acquisition-funnel', { preHandler: [adminAuth] }, async (request) => {
+    const role = await getAdminRole(request)
+    return service.getAcquisitionFunnel(role, weeksQuery(request, 8, 2))
   })
 
   // GET /v1/admin/audit-logs

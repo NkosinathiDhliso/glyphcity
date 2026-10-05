@@ -7,6 +7,7 @@
  * Feature: proof-of-demand (R4.4, R4.5, R4.6, R4.7, R5.5, R6.3)
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { OnboardingStatus } from '@area-code/shared/types'
 import { describe, expect, it } from 'vitest'
 
@@ -32,7 +33,7 @@ describe('buildReceiptCopy — the measured window', () => {
   it('leads on Found_You and follows with the room, with the window phrase', () => {
     const copy = buildReceiptCopy(receiptOf(), COMPLETE, 'trial')
 
-    expect(copy.headline).toBe('9 people found you on Area Code and checked in during your trial.')
+    expect(copy.headline).toBe(`9 people found you on ${APP_NAME} and checked in during your trial.`)
     expect(copy.walkIn).toBe('12 people who were already in the room also checked in.')
     expect(copy.firstTimers).toBe('6 of them had never been in before.')
     expect(copy.bySource).toBe('Recorded sources: 6 from the map, 2 from a shared link, 1 from search.')
@@ -51,7 +52,7 @@ describe('buildReceiptCopy — the measured window', () => {
       }),
     )
 
-    expect(copy.headline).toBe('1 person found you on Area Code and checked in.')
+    expect(copy.headline).toBe(`1 person found you on ${APP_NAME} and checked in.`)
     expect(copy.walkIn).toBe('1 person who was already in the room also checked in.')
   })
 
@@ -97,7 +98,7 @@ describe('buildReceiptCopy — the zero Found_You branch', () => {
   it('states the quiet window plainly, with no number in the headline', () => {
     const copy = buildReceiptCopy(zeroReceipt, COMPLETE, 'week')
 
-    expect(copy.headline).toBe('No one has found you on Area Code and checked in this week yet.')
+    expect(copy.headline).toBe(`No one has found you on ${APP_NAME} and checked in this week yet.`)
     expect(copy.headline).not.toMatch(/\d/)
     expect(copy.firstTimers).toBeNull()
     expect(copy.bySource).toBeNull()

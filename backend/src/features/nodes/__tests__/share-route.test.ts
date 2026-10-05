@@ -68,6 +68,7 @@ vi.mock('../../presence/repository.js', () => ({
   getMomentum: vi.fn(),
 }))
 
+import { FIRST_IN_KEY, PLAIN_SCALE_EN } from '@area-code/shared/constants/state-labels'
 import type { FastifyInstance } from 'fastify'
 
 import { PUBLIC_NODE_RATE_LIMIT } from '../rate-limits.js'
@@ -201,7 +202,7 @@ describe('GET /v1/share/node/:slug — venue fields (R1.2)', () => {
 
     expect(res.html).toContain('<meta property="og:title" content="Ramona&#39;s" />')
     expect(res.html).toContain(
-      '<meta property="og:description" content="Ramona&#39;s \u00b7 Buzzing \u00b7 12 here now \u00b7 1 get live" />',
+      `<meta property="og:description" content="Ramona&#39;s \u00b7 ${PLAIN_SCALE_EN['state.busy']} \u00b7 12 here now \u00b7 1 get live" />`,
     )
     expect(res.html).toContain('<meta property="og:url" content="https://areacode.co.za/node/ramonas-a1b2c3" />')
   })
@@ -234,7 +235,9 @@ describe('GET /v1/share/node/:slug — venue fields (R1.2)', () => {
 
     const res = await request(SLUG)
 
-    expect(res.html).toContain('<meta property="og:description" content="Ramona&#39;s \u00b7 Be the first in')
+    expect(res.html).toContain(
+      `<meta property="og:description" content="Ramona&#39;s \u00b7 ${PLAIN_SCALE_EN[FIRST_IN_KEY]}`,
+    )
   })
 
   it('never reads as busy when pulse lingers but nobody is there', async () => {
@@ -245,7 +248,8 @@ describe('GET /v1/share/node/:slug — venue fields (R1.2)', () => {
     const res = await request(SLUG)
 
     expect(res.html).toContain('Quiet right now')
-    expect(res.html).not.toContain('Popping')
+    expect(res.html).not.toContain(PLAIN_SCALE_EN['state.veryBusy'])
+    expect(res.html).not.toMatch(/\b(Popping|Buzzing|Active|Dormant)\b/)
   })
 
   it('uses the venue header image on the Media_CDN when one is set', async () => {
@@ -261,7 +265,7 @@ describe('GET /v1/share/node/:slug — venue fields (R1.2)', () => {
 
     const res = await request(SLUG)
 
-    expect(res.html).toContain('<meta property="og:image" content="https://www.areacode.co.za/og-image.png" />')
+    expect(res.html).toContain('<meta property="og:image" content="https://glyphcity.com/og-image.png" />')
   })
 
   it('escapes a hostile venue name instead of rendering it', async () => {

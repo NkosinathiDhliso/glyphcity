@@ -13,6 +13,7 @@
  * digest-optout-service.test.ts.
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 
 import { BANNED_CAUSAL_VERBS } from '../../reports/digest.js'
@@ -92,7 +93,7 @@ describe('getLatestDigestView (R4.1)', () => {
     // Copy strings accompany the metrics (one source of truth with the email).
     expect(Array.isArray(digest.copy)).toBe(true)
     expect(digest.copy.length).toBeGreaterThan(0)
-    expect(digest.copy.some((line) => line.includes('recorded through Area Code'))).toBe(true)
+    expect(digest.copy.some((line) => line.includes(`recorded through ${APP_NAME}`))).toBe(true)
     // Honest_Framing holds in the assembled copy: no causal verbs.
     for (const line of digest.copy) {
       for (const verb of BANNED_CAUSAL_VERBS) {

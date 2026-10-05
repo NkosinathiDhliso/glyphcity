@@ -1,8 +1,10 @@
+import { APP_NAME, APP_URL } from '@area-code/shared/constants/brand'
 import {
   NOTIFICATION_PREFERENCE_DEFAULTS as DEFAULTS,
   type NotificationPreferenceKey,
 } from '@area-code/shared/constants/notification-preferences'
 
+import { requireEnv } from '../../shared/config/env.js'
 import { kvGet, kvIncr } from '../../shared/kv/dynamodb-kv.js'
 import { emitNotificationNew, emitToUser } from '../../shared/socket/events.js'
 
@@ -213,7 +215,7 @@ export async function notifyUser(userId: string, event: string, payload: Record<
     return { delivered: 'no_tokens' }
   }
 
-  const title = (payload['title'] as string) ?? 'Area Code'
+  const title = (payload['title'] as string) ?? APP_NAME
   const body = (payload['message'] as string) ?? ''
 
   const results = await Promise.allSettled(
@@ -302,11 +304,10 @@ async function sendWebPush(
 
     const vapidPublic = process.env['AREA_CODE_VAPID_PUBLIC_KEY'] ?? ''
     const vapidPrivate = process.env['AREA_CODE_VAPID_PRIVATE_KEY'] ?? ''
-    const vapidSubject = process.env['AREA_CODE_VAPID_SUBJECT'] ?? 'mailto:tech@areacode.co.za'
-
     if (!vapidPublic || !vapidPrivate) {
       return { success: false }
     }
+    const vapidSubject = requireEnv('AREA_CODE_VAPID_SUBJECT', APP_URL)
 
     webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate)
 

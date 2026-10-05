@@ -1,25 +1,29 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2'
 
-import { AWS_REGION } from '../config/env.js'
+import { AWS_REGION, businessBaseUrl, fromEmail } from '../config/env.js'
 import { escapeHtml } from '../html/escape.js'
 
 const ses = new SESv2Client({ region: AWS_REGION })
-const FROM_EMAIL = process.env['AREA_CODE_FROM_EMAIL'] ?? 'noreply@areacode.co.za'
+
+/** Outdoor_Palette hex for email HTML, which cannot read CSS variables.
+ *  Mirrors light-theme `--accent` (Bush ink) and `--on-accent` (Lichen). */
+export const EMAIL_PALETTE = { ink: '#13211b', ground: '#edf0e8' } as const
 
 export async function sendPasswordResetEmail(to: string, code: string) {
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: 'Reset your Area Code password' },
+          Subject: { Data: `Reset your ${APP_NAME} password` },
           Body: {
             Text: {
               Data: `Your password reset code is: ${code}\n\nThis code expires in 10 minutes. If you didn't request this, ignore this email.`,
             },
             Html: {
-              Data: `<div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:20px"><h2 style="color:#333">Reset your password</h2><p>Your code is:</p><p style="font-size:32px;font-weight:bold;letter-spacing:4px;color:#6366f1">${code}</p><p style="color:#666;font-size:14px">This code expires in 10 minutes. If you didn't request this, ignore this email.</p></div>`,
+              Data: `<div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:20px"><h2 style="color:#333">Reset your password</h2><p>Your code is:</p><p style="font-size:32px;font-weight:bold;letter-spacing:4px;color:${EMAIL_PALETTE.ink}">${code}</p><p style="color:#666;font-size:14px">This code expires in 10 minutes. If you didn't request this, ignore this email.</p></div>`,
             },
           },
         },
@@ -51,11 +55,11 @@ export async function sendTrialExpiryEmail(to: string, businessName: string, day
   )
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: `Your Area Code trial ends in ${daysLeft} ${dayWord}` },
+          Subject: { Data: `Your ${APP_NAME} trial ends in ${daysLeft} ${dayWord}` },
           Body: {
             Text: { Data: body.text },
             Html: { Data: body.html },
@@ -79,14 +83,14 @@ export async function sendTrialExpiryEmail(to: string, businessName: string, day
 export async function sendRenewalReminderEmail(to: string, businessName: string) {
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: 'Your Area Code subscription has lapsed' },
+          Subject: { Data: `Your ${APP_NAME} subscription has lapsed` },
           Body: {
             Text: {
-              Data: `Hi ${businessName},\n\nYour Area Code subscription has lapsed. You have 7 days to renew before your venues come off the map and your plan drops to starter.\n\nVisit your Plans panel to renew and keep your Growth/Pro features.`,
+              Data: `Hi ${businessName},\n\nYour ${APP_NAME} subscription has lapsed. You have 7 days to renew before your venues come off the map and your plan drops to starter.\n\nVisit your Plans panel to renew and keep your Growth/Pro features.`,
             },
           },
         },
@@ -123,15 +127,15 @@ export async function sendRenewalUpcomingEmail(
   const body = lifecycleEmailBody(
     businessName,
     receiptLines,
-    `Your Area Code subscription expires in ${daysLeft} ${dayWord}. Renew to keep your venues on the map.`,
+    `Your ${APP_NAME} subscription expires in ${daysLeft} ${dayWord}. Renew to keep your venues on the map.`,
   )
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: `Your Area Code subscription renews in ${daysLeft} ${dayWord}` },
+          Subject: { Data: `Your ${APP_NAME} subscription renews in ${daysLeft} ${dayWord}` },
           Body: {
             Text: { Data: body.text },
             Html: { Data: body.html },
@@ -163,7 +167,7 @@ export async function sendCampaignEmail(
 ): Promise<void> {
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
@@ -177,7 +181,7 @@ export async function sendCampaignEmail(
               Data: `${bodyText}\n\n---\nYou're receiving this because you've visited ${businessName}.\nUnsubscribe: ${unsubscribeUrl}`,
             },
             Html: {
-              Data: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px"><p style="color:#333;font-size:16px;line-height:1.5;white-space:pre-wrap">${escapeHtml(bodyText)}</p><hr style="border:none;border-top:1px solid #eee;margin:24px 0"><p style="color:#999;font-size:12px">You're receiving this because you've visited ${escapeHtml(businessName)}. <a href="${unsubscribeUrl}" style="color:#6366f1">Unsubscribe</a>.</p></div>`,
+              Data: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px"><p style="color:#333;font-size:16px;line-height:1.5;white-space:pre-wrap">${escapeHtml(bodyText)}</p><hr style="border:none;border-top:1px solid #eee;margin:24px 0"><p style="color:#999;font-size:12px">You're receiving this because you've visited ${escapeHtml(businessName)}. <a href="${unsubscribeUrl}" style="color:${EMAIL_PALETTE.ink}">Unsubscribe</a>.</p></div>`,
             },
           },
         },
@@ -202,21 +206,21 @@ export async function sendReportReadyEmail(
   reportId: string,
   periodType: string,
 ): Promise<void> {
-  const reportsUrl = `${businessPortalBaseUrl()}/reports`
+  const reportsUrl = `${businessBaseUrl()}/reports`
   const periodLabel = periodType === 'monthly' ? 'monthly' : 'weekly'
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: 'Your Area Code report is ready' },
+          Subject: { Data: `Your ${APP_NAME} report is ready` },
           Body: {
             Text: {
-              Data: `Hi ${businessName},\n\nYour ${periodLabel} Area Code intelligence report is ready.\n\nOpen the Reports panel to see your latest crowd insights:\n${reportsUrl}\n\nReport reference: ${reportId}`,
+              Data: `Hi ${businessName},\n\nYour ${periodLabel} ${APP_NAME} intelligence report is ready.\n\nOpen the Reports panel to see your latest crowd insights:\n${reportsUrl}\n\nReport reference: ${reportId}`,
             },
             Html: {
-              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">Your report is ready</h2><p style="color:#444;font-size:15px;line-height:1.5">Hi ${escapeHtml(businessName)}, your ${periodLabel} Area Code intelligence report is ready with your latest crowd insights.</p><p style="margin:24px 0"><a href="${escapeHtml(reportsUrl)}" style="background:#6366f1;color:#fff;text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">Open Reports</a></p><p style="color:#999;font-size:12px;margin-top:24px">Report reference: ${escapeHtml(reportId)}</p></div>`,
+              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">Your report is ready</h2><p style="color:#444;font-size:15px;line-height:1.5">Hi ${escapeHtml(businessName)}, your ${periodLabel} ${APP_NAME} intelligence report is ready with your latest crowd insights.</p><p style="margin:24px 0"><a href="${escapeHtml(reportsUrl)}" style="background:${EMAIL_PALETTE.ink};color:${EMAIL_PALETTE.ground};text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">Open Reports</a></p><p style="color:#999;font-size:12px;margin-top:24px">Report reference: ${escapeHtml(reportId)}</p></div>`,
             },
           },
         },
@@ -258,7 +262,7 @@ export async function sendDigestEmail(
 
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
@@ -271,15 +275,6 @@ export async function sendDigestEmail(
       },
     }),
   )
-}
-
-/**
- * Base URL of the business portal (Reports/Plans panels live here). Mirrors the
- * `webBaseUrl()` accessor in `shared/config/env.ts`; the default matches the
- * prod business subdomain in `shared/security/origins.ts`.
- */
-function businessPortalBaseUrl(): string {
-  return (process.env['AREA_CODE_BUSINESS_URL'] ?? 'https://business.areacode.co.za').replace(/\/+$/, '')
 }
 
 /**
@@ -297,7 +292,7 @@ function lifecycleEmailBody(
   receiptLines: string[],
   stateLine: string,
 ): { text: string; html: string } {
-  const ctaUrl = `${businessPortalBaseUrl()}/plans`
+  const ctaUrl = `${businessBaseUrl()}/plans`
   const paragraphs = [`Hi ${businessName},`, ...receiptLines, stateLine]
 
   const text = `${paragraphs.join('\n\n')}\n\nOpen your Plans panel:\n${ctaUrl}`
@@ -307,7 +302,7 @@ function lifecycleEmailBody(
     .join('')
   const html =
     `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px">${htmlParagraphs}` +
-    `<p style="margin:24px 0"><a href="${escapeHtml(ctaUrl)}" style="background:#6366f1;color:#fff;` +
+    `<p style="margin:24px 0"><a href="${escapeHtml(ctaUrl)}" style="background:${EMAIL_PALETTE.ink};color:${EMAIL_PALETTE.ground};` +
     `text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">` +
     `Open your Plans panel</a></p></div>`
 
@@ -323,17 +318,17 @@ function lifecycleEmailBody(
 export async function sendEmailVerificationEmail(to: string, verifyUrl: string): Promise<void> {
   await ses.send(
     new SendEmailCommand({
-      FromEmailAddress: FROM_EMAIL,
+      FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: 'Confirm your email for Area Code' },
+          Subject: { Data: `Confirm your email for ${APP_NAME}` },
           Body: {
             Text: {
-              Data: `Welcome to Area Code!\n\nConfirm your email address to unlock rewards and keep your account secure:\n${verifyUrl}\n\nThis link expires in 24 hours. If you didn't create an account, you can ignore this email.`,
+              Data: `Welcome to ${APP_NAME}!\n\nConfirm your email address to unlock rewards and keep your account secure:\n${verifyUrl}\n\nThis link expires in 24 hours. If you didn't create an account, you can ignore this email.`,
             },
             Html: {
-              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">Confirm your email</h2><p style="color:#444;font-size:15px;line-height:1.5">Welcome to Area Code! Confirm your email to unlock rewards and keep your account secure.</p><p style="margin:24px 0"><a href="${escapeHtml(verifyUrl)}" style="background:#6366f1;color:#fff;text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">Confirm email</a></p><p style="color:#888;font-size:13px">Or paste this link into your browser:<br><span style="word-break:break-all">${escapeHtml(verifyUrl)}</span></p><p style="color:#999;font-size:12px;margin-top:24px">This link expires in 24 hours. If you didn't create an account, ignore this email.</p></div>`,
+              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">Confirm your email</h2><p style="color:#444;font-size:15px;line-height:1.5">Welcome to ${APP_NAME}! Confirm your email to unlock rewards and keep your account secure.</p><p style="margin:24px 0"><a href="${escapeHtml(verifyUrl)}" style="background:${EMAIL_PALETTE.ink};color:${EMAIL_PALETTE.ground};text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">Confirm email</a></p><p style="color:#888;font-size:13px">Or paste this link into your browser:<br><span style="word-break:break-all">${escapeHtml(verifyUrl)}</span></p><p style="color:#999;font-size:12px;margin-top:24px">This link expires in 24 hours. If you didn't create an account, ignore this email.</p></div>`,
             },
           },
         },

@@ -18,6 +18,7 @@
  * Runs under the standard `pnpm test` (default node env).
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect } from 'vitest'
 
 import { getEffectiveTier } from '../../business/service.js'
@@ -168,7 +169,7 @@ describe('the digest is not tier-gated: same metrics, only the close changes (R5
     const growthBody = buildDigestCopy(DIGEST, 'growth').join(' ')
 
     for (const body of [starterBody, growthBody]) {
-      expect(body).toContain('23 visits recorded through Area Code this week')
+      expect(body).toContain(`23 visits recorded through ${APP_NAME} this week`)
       expect(body).toContain('20 unique visitors recorded')
     }
   })

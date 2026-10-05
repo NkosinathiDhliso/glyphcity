@@ -22,6 +22,7 @@
  * Runs under the standard `pnpm test` (default node env).
  */
 
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // ─── Mutable mock state ──────────────────────────────────────────────────────
@@ -123,7 +124,7 @@ import { handleTrialReminders } from '../trial-reminder.js'
 // ─── Harness ─────────────────────────────────────────────────────────────────
 
 const DAY_MS = 24 * 60 * 60 * 1000
-const CTA_URL = 'https://business.areacode.co.za/plans'
+const CTA_URL = 'https://business.glyphcity.com/plans'
 
 interface SimpleContent {
   Subject: { Data: string }
@@ -213,10 +214,10 @@ describe('trial reminder carries the trial-window Receipt (R6.1)', () => {
     const { to, subject, text, html } = lastEmail()
     expect(to).toBe('owner@venue.co.za')
     expect(subject).toContain(`${daysLeft} day`)
-    expect(text).toContain('5 people found you on Area Code and checked in during your trial.')
+    expect(text).toContain(`5 people found you on ${APP_NAME} and checked in during your trial.`)
     expect(text).toContain('already in the room')
     // The HTML body renders the same sentences, escaped.
-    expect(html).toContain('5 people found you on Area Code and checked in during your trial.')
+    expect(html).toContain(`5 people found you on ${APP_NAME} and checked in during your trial.`)
     expect(html).toContain('The Grand Cafe')
     expectHonestSingleCtaEmail()
   })
@@ -229,7 +230,7 @@ describe('trial reminder carries the trial-window Receipt (R6.1)', () => {
     const { text } = lastEmail()
     expect(text).toContain('Your free trial ends in 3 days.')
     // Receipt first, decision second: the measured fact precedes the ask.
-    expect(text.indexOf('found you on Area Code')).toBeLessThan(text.indexOf('Your free trial ends'))
+    expect(text.indexOf(`found you on ${APP_NAME}`)).toBeLessThan(text.indexOf('Your free trial ends'))
   })
 
   it('names the recorded sources once the split clears the floor', async () => {
@@ -259,7 +260,7 @@ describe('a zero-Found_You trial reads as the missing checklist step (R6.3)', ()
     await handleTrialReminders()
 
     const { text } = lastEmail()
-    expect(text).toContain('No one has found you on Area Code and checked in during your trial yet.')
+    expect(text).toContain(`No one has found you on ${APP_NAME} and checked in during your trial yet.`)
     expect(text).not.toMatch(/\b0 people\b/)
     expect(text).toContain('Publish one get so a first-timer has a reason to walk in.')
     expectHonestSingleCtaEmail()
@@ -285,7 +286,7 @@ describe('a zero-Found_You trial reads as the missing checklist step (R6.3)', ()
 
     expect(result.sent).toBe(1)
     const { text } = lastEmail()
-    expect(text).not.toContain('found you on Area Code')
+    expect(text).not.toContain(`found you on ${APP_NAME}`)
     expect(text).toContain('Your free trial ends in 3 days.')
     expectHonestSingleCtaEmail()
   })
@@ -323,9 +324,9 @@ describe('pre-lapse renewal reminder carries the paid-period Receipt (R6.4)', ()
 
     expect(result.reminded).toBe(1)
     const { text, html } = lastEmail()
-    expect(text).toContain('5 people found you on Area Code and checked in during your paid period.')
+    expect(text).toContain(`5 people found you on ${APP_NAME} and checked in during your paid period.`)
     expect(text).toContain('already in the room')
-    expect(text).toContain('Your Area Code subscription expires in 3 days.')
+    expect(text).toContain(`Your ${APP_NAME} subscription expires in 3 days.`)
     expect(html).toContain('during your paid period')
     expectHonestSingleCtaEmail()
   })
@@ -336,7 +337,7 @@ describe('pre-lapse renewal reminder carries the paid-period Receipt (R6.4)', ()
     await sendRenewalReminders()
 
     const { text } = lastEmail()
-    expect(text).toContain('No one has found you on Area Code and checked in during your paid period yet.')
+    expect(text).toContain(`No one has found you on ${APP_NAME} and checked in during your paid period yet.`)
     expect(text).toContain('Publish one get so a first-timer has a reason to walk in.')
     expectHonestSingleCtaEmail()
   })
@@ -349,8 +350,8 @@ describe('pre-lapse renewal reminder carries the paid-period Receipt (R6.4)', ()
 
     expect(result.reminded).toBe(1)
     const { text } = lastEmail()
-    expect(text).not.toContain('found you on Area Code')
-    expect(text).toContain('Your Area Code subscription expires in 3 days.')
+    expect(text).not.toContain(`found you on ${APP_NAME}`)
+    expect(text).toContain(`Your ${APP_NAME} subscription expires in 3 days.`)
     expectHonestSingleCtaEmail()
   })
 })

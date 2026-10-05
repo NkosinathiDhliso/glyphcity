@@ -30,6 +30,7 @@ import {
   ListUsersCommand,
   type AuthFlowType,
 } from '@aws-sdk/client-cognito-identity-provider'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 
 import { AWS_REGION, requireEnv } from '../config/env.js'
 import type { AuthRole } from '../middleware/auth.js'
@@ -505,7 +506,7 @@ export async function adminAssociateSoftwareToken(session: string): Promise<{ se
 export async function adminVerifySoftwareToken(session: string, code: string): Promise<{ session: string }> {
   const result = await withCognitoErrorMapping(() =>
     cognitoClient.send(
-      new VerifySoftwareTokenCommand({ Session: session, UserCode: code, FriendlyDeviceName: 'Area Code Admin' }),
+      new VerifySoftwareTokenCommand({ Session: session, UserCode: code, FriendlyDeviceName: `${APP_NAME} Admin` }),
     ),
   )
   if (result.Status !== 'SUCCESS' || !result.Session) {

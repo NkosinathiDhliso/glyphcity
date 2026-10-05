@@ -767,6 +767,13 @@ export async function getRetentionCohorts(adminRole: AdminRole, weeks = 12) {
   return { ...payload, topLeakingVenues: namedLeaks }
 }
 
+/** Funnels split by Acquisition_Source, with the silence verdict (GlyphCity rebrand R11.2). */
+export async function getAcquisitionFunnel(adminRole: AdminRole, weeks = 8) {
+  checkPermission(adminRole, 'view_user')
+  const { computeAcquisitionFunnel } = await import('./acquisition-funnel.js')
+  return computeAcquisitionFunnel(weeks)
+}
+
 // ─── Audit Logs ─────────────────────────────────────────────────────────────
 
 export async function getAuditLogs(
