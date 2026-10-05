@@ -423,6 +423,11 @@ function Test-CommitParity {
     if (-not $gitAvailable) { return "unknown" }
     if ([string]::IsNullOrEmpty($CommitId)) { return "unknown" }
 
+    # Under 5.1 with the script-wide "Stop", git's stderr for a SHA missing from
+    # this clone (e.g. the Area Code site app, built from its own repo) throws
+    # instead of reaching the exit-code check below. Scoped to this function.
+    $ErrorActionPreference = "Continue"
+
     # Both commits must exist locally before merge-base can be trusted; a SHA
     # not in the clone (fresh/shallow checkout) means we cannot verify parity.
     & git -C $RootDir cat-file -e "$fixCommit^{commit}" 2>$null
