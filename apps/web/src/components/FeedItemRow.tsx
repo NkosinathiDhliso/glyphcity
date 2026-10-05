@@ -1,4 +1,5 @@
 import { Avatar } from '@area-code/shared/components/Avatar'
+import { PLAIN_SCALE_EN, stateLabelKey } from '@area-code/shared/constants/state-labels'
 import { formatRelativeTime } from '@area-code/shared/lib/formatters'
 import type { NodeCategory, NodeState, Tier } from '@area-code/shared/types'
 import { Trophy, Share2, Zap } from 'lucide-react'
@@ -129,8 +130,8 @@ export function FeedItemRow({ item, onFocusVenue }: FeedItemRowProps) {
         {/* Vibe row: pulse state + live count (R11.1.1). */}
         <div className="flex items-center gap-2 mt-0.5">
           {item.venuePulseState && stateColour && (
-            <span className="text-xs font-semibold capitalize" style={{ color: stateColour }}>
-              {t(`pulse.state.${item.venuePulseState}`, item.venuePulseState)}
+            <span className="text-xs font-semibold" style={{ color: stateColour }}>
+              {t(stateLabelKey(item.venuePulseState), PLAIN_SCALE_EN[stateLabelKey(item.venuePulseState)])}
             </span>
           )}
           {item.venueCheckInCount > 0 && (
@@ -158,7 +159,7 @@ export function FeedItemRow({ item, onFocusVenue }: FeedItemRowProps) {
         <button
           type="button"
           onClick={() => onFocusVenue(node.id)}
-          className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--accent-cta)] text-white transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+          className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--accent-cta)] text-[var(--on-accent)] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         >
           {t('feed.joinThem', 'Join them?')}
         </button>

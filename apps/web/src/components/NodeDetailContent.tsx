@@ -1,10 +1,11 @@
 import { MediaImage } from '@area-code/shared/components/MediaImage'
 import { PhotoUnavailable } from '@area-code/shared/components/PhotoUnavailable'
+import { categoryLabel, categoryLabelKey } from '@area-code/shared/constants/node-categories'
 import { SOCIAL_PLATFORMS, socialProfileUrl } from '@area-code/shared/constants/social-platforms'
+import { PLAIN_SCALE_EN, stateLabelKey } from '@area-code/shared/constants/state-labels'
 import { useSafeTimeout } from '@area-code/shared/hooks/useSafeTimeout'
 import { api } from '@area-code/shared/lib/api'
 import { describeApiError } from '@area-code/shared/lib/apiError'
-import { clipboardFailureCopy, copyToClipboard } from '@area-code/shared/lib/clipboard'
 import { mediaUrl } from '@area-code/shared/lib/mediaUrl'
 import { useBusinessAuthStore } from '@area-code/shared/stores/businessAuthStore'
 import { useConsumerAuthStore } from '@area-code/shared/stores/consumerAuthStore'
@@ -17,15 +18,17 @@ import type { Node, Reward, NodeState } from '@area-code/shared/types'
 import { useState, memo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { resolveArchetypeDisplayName } from '../lib/archetypeDisplay'
+import { useVenueProbe } from '../hooks/useVenueProbe'
 import { getCtaInfo } from '../lib/checkInCta'
+import { shareVenue } from '../lib/shareVenue'
 import { reportVenueOpen } from '../lib/venueOpen'
 
-import { ArchetypeGlyph } from './ArchetypeGlyph'
 import { CrowdVibeSection } from './CrowdVibeSection'
 import { DirectionsSheet } from './DirectionsSheet'
+import { GlyphNameplate } from './GlyphNameplate'
 import { MomentumBadge } from './MomentumBadge'
 import { QrScannerSheet } from './QrScannerSheet'
+import { SkyHeader } from './SkyHeader'
 import { TonightBlock } from './TonightBlock'
 
 /**
@@ -76,6 +79,7 @@ export interface NodeDetailContentProps {
 export const NodeDetailContent = memo(function NodeDetailContent({
   node,
   rewards,
+  pulseScore,
   state,
   onCheckIn,
   onSignIn,
@@ -148,6 +152,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
     // decides whether this is a new open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeId])
+  useVenueProbe(nodeId)
 
   if (!node) return null
 
@@ -178,7 +183,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
 
   function handleQrScanned(raw: string) {
     setQrSheetOpen(false)
-    // The venue's printed QR encodes https://areacode.co.za/qr/{nodeId}/{token}.
+    // The venue's printed QR encodes https://glyphcity.com/qr/{nodeId}/{token}.
     // Navigate to that URL so the deep-link handler runs the check-in flow
     // with the same code path as a native camera scan.
     const match = raw.match(/\/qr\/([^/?#]+)\/([^/?#]+)/)
@@ -189,50 +194,19 @@ export const NodeDetailContent = memo(function NodeDetailContent({
         return
       }
     }
-    // Unknown QR format - tell the user this isn't a valid Area Code QR
+    // Unknown QR format - tell the user this isn't one of our venue QR codes
     useErrorStore
       .getState()
       .showError(
         t(
           'qr.invalidFormat',
-          "That QR code isn't from Area Code. Look for the poster at the venue entrance or counter.",
+          "That QR code isn't from {{appName}}. Look for the poster at the venue entrance or counter.",
         ),
       )
   }
 
   function handleShare() {
-    const url = `https://areacode.co.za/node/${node!.slug}`
-    // Tag the venue's own social handle in the share text so a customer's post
-    // credits the venue (word-of-mouth that points back, not just a link out).
-    const links = node!.socialLinks ?? {}
-    const primaryHandle = links.instagram ?? links.tiktok ?? links.x ?? links.facebook ?? links.youtube
-    const shareText = primaryHandle
-      ? t('share.venueTagged', { name: node!.name, handle: `@${primaryHandle}` })
-      : t('share.venue', { name: node!.name })
-    // Record a completed share so the venue's weekly digest can show an honest
-    // "shares recorded" count. Fire-and-forget beacon, never blocks the share
-    // and never surfaces an error to the user.
-    const recordShare = () => {
-      void api.post(`/v1/nodes/${node!.id}/share`, {}).catch(() => {})
-    }
-    // Two surfaces, neither guaranteed. The native share sheet is absent on
-    // desktop browsers, and `navigator.clipboard` is absent (not merely
-    // blocked) on an insecure origin and inside the in-app webviews a
-    // consumer arrives through. Ask before calling, and when neither exists
-    // say so rather than throwing a TypeError that reads as a crash (R15.22).
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-      void navigator.share({ title: node!.name, text: shareText, url }).then(recordShare, () => {})
-    } else {
-      void copyToClipboard(url).then((outcome) => {
-        const failure = clipboardFailureCopy(outcome)
-        if (failure) {
-          useErrorStore.getState().showError(failure)
-          return
-        }
-        recordShare()
-        useErrorStore.getState().showError(t('share.copied', 'Link copied'))
-      })
-    }
+    shareVenue(node!, t)
     setMenuOpen(false)
   }
 
@@ -291,12 +265,25 @@ export const NodeDetailContent = memo(function NodeDetailContent({
 
   return (
     <>
+      {/* Dawn or dusk sky with the venue's own Cone_Node (R5.5). Compact so the
+          check-in CTA stays reachable. */}
+      <SkyHeader
+        nodeId={node.id}
+        category={node.category}
+        state={state}
+        archetypeId={archetypeId}
+        score={pulseScore}
+        height={120}
+        className="mb-4"
+      />
+
       {/* Header */}
       <div className="flex flex-row items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{node.name}</h2>
+          <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{node.name}</h2>
           <p className="text-[var(--text-secondary)] text-sm mt-1">
-            {node.category} · {state}
+            <span data-category-word>{t(categoryLabelKey(node.category), categoryLabel(node.category))}</span> ·{' '}
+            {t(stateLabelKey(state), PLAIN_SCALE_EN[stateLabelKey(state)])}
           </p>
           {node.socialLinks && Object.keys(node.socialLinks).length > 0 && (
             <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 mt-1">
@@ -474,20 +461,11 @@ export const NodeDetailContent = memo(function NodeDetailContent({
             </div>
           )}
 
-          {/* Live archetype glyph + display name (R8.10, R9.6).
-              `ArchetypeGlyph` positions itself absolutely against its
-              parent, so we wrap it in a relative-sized box. The display
-              name resolves through `resolveArchetypeDisplayName` which
-              emits a non-blocking warning for unknown ids per R9.10. */}
-          <div className="flex flex-row items-center gap-2 mb-3">
-            <div className="relative w-6 h-6 shrink-0">
-              <ArchetypeGlyph archetypeId={archetypeId} pulseState={state} category={node.category} size={24} />
-            </div>
-            <span className="text-[var(--text-primary)] text-sm font-medium">
-              {resolveArchetypeDisplayName(archetypeId)}
-            </span>
+          {/* Live archetype glyph + Glyph_Name, never a description
+              (glyphcity-rebrand R3.1). */}
+          <GlyphNameplate archetypeId={archetypeId} pulseState={state} category={node.category} size={24}>
             <MomentumBadge momentum={momentum} size="md" />
-          </div>
+          </GlyphNameplate>
 
           {/* Crowd Vibe section */}
           <CrowdVibeSection nodeId={node.id} />
@@ -518,7 +496,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
       {isBusinessAuthenticated && node.claimStatus === 'unclaimed' && (
         <button
           onClick={() => setClaimModalOpen(true)}
-          className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-white font-medium rounded-xl py-3 text-sm mb-3 transition-all duration-150 active:scale-95"
+          className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-[var(--on-accent)] font-medium rounded-xl py-3 text-sm mb-3 transition-all duration-150 active:scale-95"
         >
           {t('node.claimVenue')}
         </button>
@@ -546,7 +524,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
           className={`w-full font-semibold rounded-xl py-4 text-base transition-all duration-150 active:scale-95 ${
             ctaInfo.disabled
               ? 'bg-[var(--bg-raised)] text-[var(--text-muted)] cursor-not-allowed'
-              : 'bg-[var(--accent-cta)] text-white'
+              : 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
           }`}
         >
           {ctaLabel}
@@ -557,7 +535,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
       {reportModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full max-h-[85dvh] overflow-y-auto shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
               {t('node.report', 'Report venue')}
             </h3>
             {reportSuccess ? (
@@ -610,7 +588,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                   <button
                     onClick={() => void handleSubmitReport()}
                     disabled={reporting}
-                    className="flex-1 bg-[var(--accent-cta)] text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50"
+                    className="flex-1 bg-[var(--accent-cta)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 active:scale-95"
                   >
                     {reporting ? t('common.submitting', 'Submitting…') : t('node.submitReport', 'Submit')}
                   </button>
@@ -625,7 +603,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
       {claimModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full max-h-[85dvh] overflow-y-auto shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">{t('node.claimVenue')}</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">{t('node.claimVenue')}</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">{t('node.claimDescription')}</p>
             {claimSuccess && <p className="text-[var(--success)] text-sm mb-4">{t('node.claimSuccess')}</p>}
             {claimError && <p className="text-[var(--danger)] text-sm mb-4">{claimError}</p>}
@@ -652,7 +630,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                   <button
                     onClick={() => void handleClaim()}
                     disabled={claiming || !registrationNumber.trim()}
-                    className="flex-1 bg-[var(--accent-cta)] text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50"
+                    className="flex-1 bg-[var(--accent-cta)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 active:scale-95"
                   >
                     {claiming ? t('node.claiming') : t('node.submitClaim')}
                   </button>

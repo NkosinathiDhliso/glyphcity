@@ -1,4 +1,5 @@
-import { ARCHETYPE_CATALOG } from '@area-code/shared/constants/archetype-catalog'
+import { getGlyphName } from '@area-code/shared/constants/archetype-catalog'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useSafeTimeout } from '@area-code/shared/hooks/useSafeTimeout'
 import { api } from '@area-code/shared/lib/api'
 import { useUserStore } from '@area-code/shared/stores/userStore'
@@ -7,12 +8,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { resolveArchetypeDisplayName } from '../lib/archetypeDisplay'
-
-import { ArchetypeReveal } from './ArchetypeReveal'
 import { ManualGenreSelector } from './ManualGenreSelector'
-
-const UNCHARTED_ARCHETYPE_ID = 'archetype-uncharted'
 
 const GENRE_LABELS: Record<MusicGenre, string> = {
   amapiano: 'Amapiano',
@@ -54,13 +50,8 @@ export function StreamingSection() {
   const setSafeTimeout = useSafeTimeout()
 
   const connected = user?.streamingProvider ?? null
-  // Look up the catalog entry by id so the rename module (R9.6) is the only
-  // source of consumer-facing display names. The legacy `archetype.name`
-  // field is preserved on the catalog for admin tools (R9.7) and is no
-  // longer rendered on consumer surfaces.
-  const archetypeId = user?.archetypeId ?? UNCHARTED_ARCHETYPE_ID
-  const archetype = ARCHETYPE_CATALOG.find((a) => a.id === archetypeId)
-  const archetypeDisplayName = resolveArchetypeDisplayName(archetypeId)
+  // The glyph itself renders in YourGlyphCard; here it is only named.
+  const glyphName = user?.archetypeId ? getGlyphName(user.archetypeId) : undefined
   const genres = user?.musicGenres ?? []
 
   // Handle Spotify OAuth callback, read query params after redirect back.
@@ -164,7 +155,7 @@ export function StreamingSection() {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 mb-3">
       <h3 className="text-[var(--text-secondary)] text-xs font-medium uppercase tracking-wider mb-3">
-        {t('profile.archetype.title')}
+        {t('profile.streaming.title')}
       </h3>
 
       {/* Success banner after Spotify OAuth callback */}
@@ -194,17 +185,6 @@ export function StreamingSection() {
           <span className="text-[var(--text-secondary)] text-xs">Syncing your Spotify genres and archetype</span>
         </div>
       )}
-
-      {/*
-        Archetype reveal card. Renders the rename-module display name,
-        the catalog description, and (for non-English names like Kasi)
-        an italicised etymology line beneath the display name. The same
-        component is also the "re-read" surface reachable from the
-        consumer profile screen per R9.11. For `archetype-uncharted` it
-        also surfaces the helper copy from `profile.archetype.uncharted`
-        as a call to action (R9.8).
-      */}
-      <ArchetypeReveal archetypeId={archetypeId} />
 
       {genres.length > 0 && (
         <div className="flex flex-row flex-wrap gap-2 mb-3">
@@ -237,7 +217,7 @@ export function StreamingSection() {
               </div>
               <p className="text-[var(--text-muted)] text-xs mt-1">
                 {genres.length > 0
-                  ? `${genres.length} genres synced${archetype ? `, ${archetypeDisplayName}` : ''}`
+                  ? `${genres.length} genres synced${glyphName ? `, ${glyphName}` : ''}`
                   : 'Connected. Add listening history or pick genres manually to shape your archetype.'}
               </p>
             </div>
@@ -282,7 +262,7 @@ export function StreamingSection() {
             </div>
 
             <p className="text-[var(--text-secondary)] text-xs mb-3">
-              Connect Spotify to read your top artists, map them into Area Code genres, and set your music personality.
+              Connect Spotify to read your top artists, map them into {APP_NAME} genres, and set your music personality.
               Reconnect anytime to refresh it.
             </p>
 
@@ -301,10 +281,10 @@ export function StreamingSection() {
             <button
               onClick={() => setShowConsent('spotify')}
               disabled={loading}
-              className="w-full bg-[var(--accent-cta)] text-white rounded-xl py-3 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-all active:scale-95"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] rounded-xl py-3 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-all active:scale-95"
             >
               {loading ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[var(--on-accent)] border-t-transparent rounded-full animate-spin" />
               ) : (
                 t('profile.streaming.connectSpotify')
               )}

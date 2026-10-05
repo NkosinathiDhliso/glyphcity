@@ -9,12 +9,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Area Code | Live venue map for South Africa</title>
+    <title>%APP_NAME% | Live venue map for South Africa</title>
     <meta
       name="description"
-      content="Area Code is a real-time venue discovery platform for South Africa. See which spots are buzzing right now, check in to earn rewards, and find places that match your taste in coffee, food, music, and nightlife."
+      content="%APP_NAME% is a real-time venue discovery platform for South Africa. See which spots are buzzing right now, check in to earn rewards, and find places that match your taste in coffee, food, music, and nightlife."
     />
-    <link rel="canonical" href="https://www.areacode.co.za/" />
+    <link rel="canonical" href="%APP_URL%/" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -98,29 +98,29 @@
          crawler match the app name on the consent screen with the home page. -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_ZA" />
-    <meta property="og:site_name" content="Area Code" />
-    <meta property="og:title" content="Area Code" />
-    <meta property="og:url" content="https://www.areacode.co.za/" />
+    <meta property="og:site_name" content="%APP_NAME%" />
+    <meta property="og:title" content="%APP_NAME%" />
+    <meta property="og:url" content="%APP_URL%/" />
     <meta
       property="og:description"
-      content="Area Code is a real-time venue discovery platform for South Africa. See which spots are buzzing right now, check in to earn rewards, and find places that match your taste in coffee, food, music, and nightlife."
+      content="%APP_NAME% is a real-time venue discovery platform for South Africa. See which spots are buzzing right now, check in to earn rewards, and find places that match your taste in coffee, food, music, and nightlife."
     />
     <!-- Social share image. Drop a 1200x630 PNG at apps/web/public/og-image.png. -->
-    <meta property="og:image" content="https://www.areacode.co.za/og-image.png" />
+    <meta property="og:image" content="%APP_URL%/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Area Code | live venue map for South Africa" />
-    <meta name="application-name" content="Area Code" />
-    <meta name="apple-mobile-web-app-title" content="Area Code" />
+    <meta property="og:image:alt" content="%APP_NAME% | live venue map for South Africa" />
+    <meta name="application-name" content="%APP_NAME%" />
+    <meta name="apple-mobile-web-app-title" content="%SPOKEN_NAME%" />
 
     <!-- Twitter / X card. Falls back to the og:* tags above for image-less previews. -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Area Code" />
+    <meta name="twitter:title" content="%APP_NAME%" />
     <meta
       name="twitter:description"
       content="A live map of which venues are buzzing right now in Johannesburg, Cape Town, and Durban. Check in, earn rewards."
     />
-    <meta name="twitter:image" content="https://www.areacode.co.za/og-image.png" />
+    <meta name="twitter:image" content="%APP_URL%/og-image.png" />
 
     <!-- Geo targeting for South Africa local search. -->
     <meta name="geo.region" content="ZA" />
@@ -131,12 +131,12 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Area Code",
-        "alternateName": ["AreaCode", "Area Code SA", "areacode.co.za"],
-        "url": "https://www.areacode.co.za/",
+        "name": "%APP_NAME%",
+        "alternateName": ["%SPOKEN_NAME%", "%APP_DOMAIN%"],
+        "url": "%APP_URL%/",
         "applicationCategory": "LifestyleApplication",
         "operatingSystem": "Any",
-        "description": "Area Code is a real-time venue discovery and rewards platform for South Africa. Consumers check in at participating venues to earn rewards, climb local leaderboards, and discover spots that match their taste.",
+        "description": "%APP_NAME% is a real-time venue discovery and rewards platform for South Africa. Consumers check in at participating venues to earn rewards, climb local leaderboards, and discover spots that match their taste.",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -144,13 +144,12 @@
         },
         "publisher": {
           "@type": "Organization",
-          "name": "Area Code",
-          "alternateName": "AreaCode",
-          "url": "https://www.areacode.co.za/",
+          "name": "%APP_NAME%",
+          "url": "%APP_URL%/",
           "areaServed": ["Johannesburg", "Cape Town", "Durban", "South Africa"]
         },
-        "privacyPolicy": "https://www.areacode.co.za/legal/privacy",
-        "termsOfService": "https://www.areacode.co.za/legal/terms"
+        "privacyPolicy": "%APP_URL%/legal/privacy",
+        "termsOfService": "%APP_URL%/legal/terms"
       }
     </script>
 
@@ -227,18 +226,18 @@
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;700;800&family=Funnel+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
     />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;700;800&family=Funnel+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
       media="print"
       onload="this.media = 'all'"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;700;800&family=Funnel+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
       />
     </noscript>
 
@@ -255,7 +254,7 @@
     <div id="root">
       <noscript>
         <p style="background: #fffbe6; color: #5b4500; padding: 12px; text-align: center; margin: 0">
-          Area Code requires JavaScript. Please enable it in your browser settings to use the app.
+          %APP_NAME% requires JavaScript. Please enable it in your browser settings to use the app.
         </p>
         <main
           style="
@@ -269,21 +268,21 @@
             color: #e6e1d6;
           "
         >
-          <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px">Area Code</h1>
+          <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px">%APP_NAME%</h1>
           <p style="color: #a8a397; margin: 0 0 16px; font-size: 16px">
             A real-time venue discovery and rewards app for South Africa.
           </p>
           <p style="font-size: 15px; line-height: 1.5; color: #c9c4b6">
-            Area Code is a mobile and web application that lets people in Johannesburg, Cape Town, and Durban see which
+            %APP_NAME% is a mobile and web application that lets people in Johannesburg, Cape Town, and Durban see which
             cafes, restaurants, bars, and nightlife venues are alive right now. Each venue shows a live status (quiet,
             active, buzzing, or popping) updated in real time as customers check in.
           </p>
           <p style="margin-top: 24px; font-size: 14px">
-            <a href="https://www.areacode.co.za/legal/privacy" style="color: #87a8d3">Privacy Policy</a>
+            <a href="%APP_URL%/legal/privacy" style="color: #87a8d3">Privacy Policy</a>
             &middot;
-            <a href="https://www.areacode.co.za/legal/terms" style="color: #87a8d3">Terms of Service</a>
+            <a href="%APP_URL%/legal/terms" style="color: #87a8d3">Terms of Service</a>
             &middot;
-            <a href="mailto:support@areacode.co.za" style="color: #87a8d3">support@areacode.co.za</a>
+            <a href="mailto:%APP_SUPPORT_EMAIL%" style="color: #87a8d3">%APP_SUPPORT_EMAIL%</a>
           </p>
         </main>
       </noscript>

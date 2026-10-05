@@ -238,7 +238,7 @@ export function RankTrophyOverlay({ tier, playing, onDone }: RankTrophyOverlayPr
         </div>
 
         <span
-          className={`${prefersReducedMotion ? 'trophy-label-static' : 'trophy-label'} font-[Syne] text-2xl font-bold`}
+          className={`${prefersReducedMotion ? 'trophy-label-static' : 'trophy-label'} font-display text-2xl font-bold`}
           style={{ color: 'var(--text-primary)' }}
         >
           {getTierLabel(tier)}

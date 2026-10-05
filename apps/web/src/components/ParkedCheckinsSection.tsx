@@ -34,7 +34,7 @@ export function ParkedCheckinsSection() {
 
   return (
     <div className="mb-6" data-testid="parked-checkins">
-      <h2 className="text-[var(--text-primary)] font-bold text-lg font-[Syne] mb-1">Check-ins that need attention</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-lg font-display mb-1">Check-ins that need attention</h2>
       <p className="text-[var(--text-muted)] text-xs mb-3">
         These check-ins could not be sent after a few tries. Retry them or clear them out.
       </p>

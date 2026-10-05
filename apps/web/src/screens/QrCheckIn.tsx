@@ -23,7 +23,7 @@ type Phase = 'submitting' | 'success' | 'unauthenticated' | 'error'
  * Landing page for venue-printed QR codes.
  *
  * The business app generates posters whose QR encodes
- * `https://areacode.co.za/qr/{nodeId}/{token}`. When a visitor scans the
+ * `https://glyphcity.com/qr/{nodeId}/{token}`. When a visitor scans the
  * poster with their phone camera, the browser opens this page, which
  * posts the token to the check-in endpoint and then routes the user to
  * the map. No manual scanning inside the app is required for this path.
@@ -108,7 +108,7 @@ export function QrCheckIn({ nodeId, token, onNavigate }: QrCheckInProps) {
             <div className="animate-pulse">
               <MapPin size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
             </div>
-            <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+            <h1 className="text-[var(--text-primary)] font-bold text-xl font-display">
               {t('qr.checkingIn', 'Checking you in…')}
             </h1>
           </>
@@ -117,7 +117,7 @@ export function QrCheckIn({ nodeId, token, onNavigate }: QrCheckInProps) {
         {phase === 'success' && (
           <>
             <Check size={32} strokeWidth={1.5} className="text-[var(--success)]" />
-            <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+            <h1 className="text-[var(--text-primary)] font-bold text-xl font-display">
               {t('qr.success', 'Checked in')}
             </h1>
             <p className="text-[var(--text-secondary)] text-sm">{message}</p>
@@ -127,7 +127,7 @@ export function QrCheckIn({ nodeId, token, onNavigate }: QrCheckInProps) {
         {phase === 'unauthenticated' && (
           <>
             <Lock size={32} strokeWidth={1.5} className="text-[var(--accent)]" />
-            <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+            <h1 className="text-[var(--text-primary)] font-bold text-xl font-display">
               {t('qr.signInTitle', 'Sign in to check in')}
             </h1>
             <p className="text-[var(--text-secondary)] text-sm">
@@ -137,7 +137,7 @@ export function QrCheckIn({ nodeId, token, onNavigate }: QrCheckInProps) {
             </p>
             <button
               onClick={() => onNavigate('login')}
-              className="w-full bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm mt-2"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm mt-2 active:scale-95"
             >
               {t('qr.signInCta', 'Sign in')}
             </button>
@@ -147,13 +147,13 @@ export function QrCheckIn({ nodeId, token, onNavigate }: QrCheckInProps) {
         {phase === 'error' && (
           <>
             <AlertCircle size={32} strokeWidth={1.5} className="text-[var(--danger)]" />
-            <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+            <h1 className="text-[var(--text-primary)] font-bold text-xl font-display">
               {t('qr.errorTitle', "Couldn't check you in")}
             </h1>
             <p className="text-[var(--text-secondary)] text-sm">{message}</p>
             <button
               onClick={() => onNavigate('map')}
-              className="w-full bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm mt-2"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm mt-2 active:scale-95"
             >
               {t('qr.openMap', 'Open the map')}
             </button>

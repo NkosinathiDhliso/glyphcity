@@ -46,7 +46,7 @@ const NODE: Node = {
 
 const REWARDS: Reward[] = []
 const STATE: NodeState = 'buzzing'
-const SHARE_URL = 'https://areacode.co.za/node/test-venue'
+const SHARE_URL = 'https://glyphcity.com/node/test-venue'
 
 function renderDetail() {
   return render(

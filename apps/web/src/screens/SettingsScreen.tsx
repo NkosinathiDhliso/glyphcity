@@ -108,7 +108,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
         </button>
       </div>
 
-      <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] mb-6">{t('profile.settings')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-6">{t('profile.settings')}</h1>
 
       {/* Preferences */}
       <SectionHeading label={t('settings.section.preferences', 'Preferences')} />
@@ -123,7 +123,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
               onClick={() => setPreference(opt)}
               className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-150 ${
                 preference === opt
-                  ? 'gradient-accent'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)] border border-transparent'
                   : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border border-[var(--border)]'
               }`}
             >
@@ -207,7 +207,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
       {showDeleteAccountConfirm && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
               {t('profile.deleteAccountTitle', 'Delete your account?')}
             </h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">

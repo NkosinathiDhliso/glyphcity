@@ -1,6 +1,7 @@
 import { TIER_SIZE_MULTIPLIER } from '@area-code/shared/constants'
+import { accessibleNodeName } from '@area-code/shared/lib/accessibleNodeName'
 import { trackEvent } from '@area-code/shared/lib/usageEvents'
-import { useLocationStore, useMapStore, useSelectionStore } from '@area-code/shared/stores'
+import { useMapStore, useSelectionStore } from '@area-code/shared/stores'
 import { useUserStore } from '@area-code/shared/stores/userStore'
 import type { Node, NodeCategory, NodeState } from '@area-code/shared/types'
 // Type-only import: erased at build time. The Mapbox runtime is loaded lazily
@@ -9,14 +10,15 @@ import type { Node, NodeCategory, NodeState } from '@area-code/shared/types'
 import type mapboxgl from 'mapbox-gl'
 import { createElement, useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
+import { useTranslation } from 'react-i18next'
 
 import { ArchetypeGlyph } from '../components/ArchetypeGlyph'
-import { canRecenter } from '../lib/cameraControl'
 import { DEFAULT_ARCHETYPE_ID, GLYPH_ZOOM_THRESHOLD, PULSE_TEMPO } from '../lib/carouselConstants'
-import { vibeRank } from '../lib/carouselRanking'
 import { createLongPressHandlers } from '../lib/longPress'
 import { getMapboxGl } from '../lib/mapboxLoader'
 import { getNodeState, getCategoryColour } from '../lib/mapHelpers'
+import { applyMarkerAccessibleName, GLYPH_HIT_LAYER, wireKeyActivation } from '../lib/markerA11y'
+import { rankVenuesFromStores } from '../lib/rankVenues'
 import {
   beamContainerSize,
   ensureBeaconStack,
@@ -111,10 +113,7 @@ function applyZoomScale(markerEl: HTMLElement, zoom: number): void {
 const ACTIVE_RING_LAYER = 'active-ring'
 
 /** Marker sub-element that owns the React glyph mount. */
-const GLYPH_HOST_LAYER = 'glyph-host'
-
-/** Marker sub-element that owns the glyph tap target (selection input). */
-const GLYPH_HIT_LAYER = 'glyph-hit'
+export const GLYPH_HOST_LAYER = 'glyph-host'
 
 /**
  * Minimum tap target for a glyph marker (code-style 44px rule). The visual
@@ -148,7 +147,10 @@ function glyphHitSize(glyphSize: number, isActive: boolean): number {
  * are the Pulse_State channel (R8.5) and they don't compete with the
  * glyph for identity.
  */
-const STATE_CONFIG: Record<NodeState, { animation: string; speed: string; haloOpacity: number; ripple: boolean }> = {
+export const STATE_CONFIG: Record<
+  NodeState,
+  { animation: string; speed: string; haloOpacity: number; ripple: boolean }
+> = {
   dormant: { ...PULSE_TEMPO.dormant, haloOpacity: 0.12, ripple: false },
   quiet: { ...PULSE_TEMPO.quiet, haloOpacity: 0.2, ripple: false },
   active: { ...PULSE_TEMPO.active, haloOpacity: 0.3, ripple: false },
@@ -162,7 +164,7 @@ const STATE_CONFIG: Record<NodeState, { animation: string; speed: string; haloOp
  * the city-overview zoom. Floor of 16px (R8.9 floor of 8px is for the
  * inner SVG strokes, not the silhouette).
  */
-const GLYPH_SIZE: Record<NodeState, number> = {
+export const GLYPH_SIZE: Record<NodeState, number> = {
   dormant: 18,
   quiet: 22,
   active: 28,
@@ -170,7 +172,7 @@ const GLYPH_SIZE: Record<NodeState, number> = {
   popping: 46,
 }
 
-function getGlyphSize(state: NodeState, score: number): number {
+export function getGlyphSize(state: NodeState, score: number): number {
   const base = GLYPH_SIZE[state]
   return Math.min(base + score * 0.3, base * 1.8)
 }
@@ -201,8 +203,9 @@ function wireGlyphHit(glyphHit: HTMLElement, onTap: () => void, onLongPress?: ()
   })
 }
 
-function buildMarkerElement(
-  node: Node,
+export function buildMarkerElement(
+  // Only the id is read (marker tag); decorative mounts pass no full Node.
+  node: Pick<Node, 'id'>,
   glyphSize: number,
   colour: string,
   state: NodeState,
@@ -212,6 +215,8 @@ function buildMarkerElement(
   beamOptions: BeamVisualOptions = {},
   onCommitZoom?: () => void,
   onLongPress?: () => void,
+  /** From `accessibleNodeName` (R3.6); the hook passes it, tests may omit it. */
+  accessibleName?: string,
 ): HTMLDivElement {
   const cfg = STATE_CONFIG[state]
   const tierScale = beamOptions.tierBaseScale ?? 1
@@ -328,6 +333,7 @@ function buildMarkerElement(
     zIndex: '3',
   })
   wireGlyphHit(glyphHit, onTap, onLongPress)
+  wireKeyActivation(glyphHit, onTap)
   glyphWrapper.appendChild(glyphHit)
 
   const glyphHost = document.createElement('div')
@@ -395,32 +401,38 @@ function buildMarkerElement(
   // the raw "how many people are here right now" headcount - distinct from the
   // weighted Pulse_Score that drives glyph size and animation.
   if ((state === 'buzzing' || state === 'popping') && liveCount > 0) {
-    const badge = document.createElement('div')
-    Object.assign(badge.style, {
-      position: 'absolute',
-      top: '-6px',
-      right: '-6px',
-      background: '#1e1e2e',
-      border: '1px solid rgba(255,255,255,0.08)',
-      borderRadius: '9999px',
-      padding: '2px 6px',
-      fontSize: '11px',
-      fontWeight: '600',
-      color: '#f0f0f5',
-      lineHeight: '1.3',
-      whiteSpace: 'nowrap',
-      pointerEvents: 'none',
-    })
-    badge.textContent = liveCount > 99 ? '99+' : String(liveCount)
-    badge.dataset.layer = 'badge'
     // Pin the count to the glyph (top of the beam) so it rides the apex with
     // the symbol rather than floating near the ground coordinate.
-    glyphWrapper.appendChild(badge)
+    createBadge(glyphWrapper).textContent = liveCount > 99 ? '99+' : String(liveCount)
   }
 
   applyActiveStyling(container, isActive, colour)
+  if (accessibleName) applyMarkerAccessibleName(container, accessibleName)
 
   return container
+}
+
+/** Live count badge element, appended to the glyph wrapper. */
+function createBadge(glyphWrapper: HTMLElement): HTMLElement {
+  const badge = document.createElement('div')
+  Object.assign(badge.style, {
+    position: 'absolute',
+    top: '-6px',
+    right: '-6px',
+    background: '#1e1e2e',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '9999px',
+    padding: '2px 6px',
+    fontSize: '11px',
+    fontWeight: '600',
+    color: '#f0f0f5',
+    lineHeight: '1.3',
+    whiteSpace: 'nowrap',
+    pointerEvents: 'none',
+  })
+  badge.dataset.layer = 'badge'
+  glyphWrapper.appendChild(badge)
+  return badge
 }
 
 /**
@@ -563,27 +575,7 @@ function updateMarkerElement(
   // place on each `node:pulse_update` without detaching the marker (R18.1).
   let badge = el.querySelector('[data-layer="badge"]') as HTMLElement | null
   if ((state === 'buzzing' || state === 'popping') && liveCount > 0) {
-    if (!badge && glyphWrapper) {
-      badge = document.createElement('div')
-      Object.assign(badge.style, {
-        position: 'absolute',
-        top: '-6px',
-        right: '-6px',
-        background: '#1e1e2e',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '9999px',
-        padding: '2px 6px',
-        fontSize: '11px',
-        fontWeight: '600',
-        color: '#f0f0f5',
-        lineHeight: '1.3',
-        whiteSpace: 'nowrap',
-        pointerEvents: 'none',
-      })
-      badge.dataset.layer = 'badge'
-      // Pin to the glyph (top of the beam), matching buildMarkerElement.
-      glyphWrapper.appendChild(badge)
-    }
+    if (!badge && glyphWrapper) badge = createBadge(glyphWrapper)
     if (badge) badge.textContent = liveCount > 99 ? '99+' : String(liveCount)
   } else if (badge) {
     badge.remove()
@@ -624,6 +616,7 @@ export function useMapMarkers(
   extras: MapMarkerExtras = {},
 ) {
   const { is3D = true, brushedNodeId = null, onCommitZoom, onGlyphLongPress } = extras
+  const { t } = useTranslation()
   const nodes = useMapStore((s) => s.nodes)
   const pulseScores = useMapStore((s) => s.pulseScores)
   const checkInCounts = useMapStore((s) => s.checkInCounts)
@@ -783,19 +776,7 @@ export function useMapMarkers(
       // marker on enter and the full set rebuilds on exit (R4.1, R4.2).
       const visible = spotlightVenueId ? filtered.filter((n) => n.id === spotlightVenueId) : filtered
 
-      const positionFresh = canRecenter(useLocationStore.getState().capturedAt, Date.now())
-      const mapState = useMapStore.getState()
-      const ranked = vibeRank({
-        venues: visible,
-        pulseScores: mapState.pulseScores,
-        checkInCounts: mapState.checkInCounts,
-        lastKnownPosition: useLocationStore.getState().lastKnownPosition,
-        positionFresh,
-        consumerArchetypeId: useUserStore.getState().user?.archetypeId ?? null,
-        venueArchetypeIds: mapState.archetypeIds,
-        friendsAtVenue: mapState.friendsAtVenue,
-        hasLiveGets: mapState.hasLiveGets,
-      })
+      const ranked = rankVenuesFromStores(visible)
       const beamCap = constellationVisibleIds(ranked, curZoom, activeVenueId, pulseScores)
 
       const filteredIds = new Set(visible.filter((n) => beamCap === null || beamCap.has(n.id)).map((n) => n.id))
@@ -827,6 +808,7 @@ export function useMapMarkers(
         // (populated by `node:archetype_change`), then the node's
         // configured default, then the eclectic fallback.
         const archetypeId = archetypeIds[node.id] ?? node.defaultArchetypeId ?? DEFAULT_ARCHETYPE_ID
+        const label = accessibleNodeName(node, archetypeId, state, liveCount, t)
 
         if (existing) {
           existing.setLngLat([node.lng, node.lat])
@@ -839,6 +821,7 @@ export function useMapMarkers(
             active,
             beamOptionsFor(node.id, curZoom, glyphSize),
           )
+          applyMarkerAccessibleName(existing.getElement(), label)
           renderGlyph(
             glyphRootsRef.current,
             existing.getElement(),
@@ -864,6 +847,7 @@ export function useMapMarkers(
           beamOptionsFor(node.id, curZoom, glyphSize),
           () => onCommitZoomRef.current?.(node),
           onGlyphLongPressRef.current ? () => onGlyphLongPressRef.current?.(node) : undefined,
+          label,
         )
 
         const marker = new gl.Marker({
@@ -924,6 +908,7 @@ export function useMapMarkers(
     consumerArchetypeId,
     beamOptionsFor,
     spotlightVenueId,
+    t,
   ])
 
   // Tear down every glyph root on unmount so a remount of the map screen

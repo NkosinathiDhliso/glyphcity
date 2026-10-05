@@ -6,11 +6,10 @@ import {
   type SelectionMode,
   type SelectionSource,
 } from '@area-code/shared/stores'
-import { useUserStore } from '@area-code/shared/stores/userStore'
 import type { MapInstance, Node, NodeCategory } from '@area-code/shared/types'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { canRecenter, moveCameraToActive } from '../lib/cameraControl'
+import { moveCameraToActive } from '../lib/cameraControl'
 import {
   MAP_ARRIVAL_ZOOM,
   MIN_MARKER_ZOOM,
@@ -21,7 +20,8 @@ import {
   toVenueCardVM,
   type VenueCardVM,
 } from '../lib/carouselConstants'
-import { vibeRank, scopeToViewport, haversineMeters, type ViewportBounds } from '../lib/carouselRanking'
+import { scopeToViewport, haversineMeters, type ViewportBounds } from '../lib/carouselRanking'
+import { rankVenuesFromStores } from '../lib/rankVenues'
 
 /**
  * Browse scope for the Peek_Carousel strip:
@@ -295,20 +295,7 @@ export function useCarouselSelection({
     const allNodes = Object.values(mapState.nodes)
     const filtered = categoryFilter ? allNodes.filter((n) => n.category === categoryFilter) : allNodes
 
-    const positionFresh = canRecenter(useLocationStore.getState().capturedAt, Date.now())
-    const ranked = vibeRank({
-      venues: filtered,
-      pulseScores: mapState.pulseScores,
-      checkInCounts: mapState.checkInCounts,
-      lastKnownPosition: useLocationStore.getState().lastKnownPosition,
-      positionFresh,
-      // Taste-match and live-gets signals (vibe-ranked-browse R1, R15.3).
-      // Read from live snapshots so ranking always sees the latest values.
-      consumerArchetypeId: useUserStore.getState().user?.archetypeId ?? null,
-      venueArchetypeIds: mapState.archetypeIds,
-      friendsAtVenue: mapState.friendsAtVenue,
-      hasLiveGets: mapState.hasLiveGets,
-    })
+    const ranked = rankVenuesFromStores(filtered)
 
     const activeId = useSelectionStore.getState().activeVenueId
 

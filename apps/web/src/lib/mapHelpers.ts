@@ -1,12 +1,5 @@
+import { nodeStateFromScore } from '@area-code/shared/constants/state-labels'
 import type { NodeState, NodeCategory } from '@area-code/shared/types'
-
-const STATE_THRESHOLDS: ReadonlyArray<{ min: number; state: NodeState }> = [
-  { min: 61, state: 'popping' },
-  { min: 31, state: 'buzzing' },
-  { min: 11, state: 'active' },
-  { min: 1, state: 'quiet' },
-  { min: 0, state: 'dormant' },
-]
 
 const MARKER_BASES: Record<NodeState, number> = {
   dormant: 8,
@@ -16,11 +9,9 @@ const MARKER_BASES: Record<NodeState, number> = {
   popping: 28,
 }
 
+/** Pulse_State for a score; bands live once in the shared state-labels module. */
 export function getNodeState(score: number): NodeState {
-  for (const t of STATE_THRESHOLDS) {
-    if (score >= t.min) return t.state
-  }
-  return 'dormant'
+  return nodeStateFromScore(score)
 }
 
 export function getMarkerSize(state: NodeState, score: number): number {

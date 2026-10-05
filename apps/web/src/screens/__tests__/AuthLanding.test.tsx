@@ -16,6 +16,7 @@
  * Validates: Requirements 1.1, 1.2, 1.3
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -59,9 +60,9 @@ describe('AuthLanding honest trending empty state', () => {
     renderLanding()
 
     // The page still renders its static sections without crashing (R1.4).
-    expect(screen.getByText('About Area Code')).toBeTruthy()
+    expect(screen.getByText(`About ${APP_NAME}`)).toBeTruthy()
     // Hero/logo still present.
-    expect(screen.getByText('Area Code')).toBeTruthy()
+    expect(screen.getByText(APP_NAME)).toBeTruthy()
 
     // Let the query (with retry: 1) settle into its failed state.
     await waitFor(() => expect(apiGet).toHaveBeenCalledWith('/v1/nodes/trending'))
@@ -93,13 +94,35 @@ describe('AuthLanding honest trending empty state', () => {
     expect(screen.getByText('Trending Now')).toBeTruthy()
     expect(screen.getByText('Live')).toBeTruthy()
 
+    // State words come from the Plain_Scale (glyphcity-rebrand R2.1, R2.4).
+    expect(screen.getByText('Very busy')).toBeTruthy()
+    expect(screen.getByText('Busy')).toBeTruthy()
+    expect(screen.queryByText(/\b(Popping|Buzzing|Active|Dormant)\b/)).toBeNull()
+
     // Even with real data, the old fabricated names never appear.
     for (const name of OLD_FALLBACK_NAMES) {
       expect(screen.queryByText(name)).toBeNull()
     }
   })
 
+  it('renders the SkyHeader with a decorative Cone_Node (glyphcity-rebrand R5.5)', async () => {
+    apiGet.mockRejectedValue(new Error('network down'))
+    renderLanding()
+    const header = screen.getByTestId('sky-header')
+    expect(header.querySelector('[data-layer="beam-cone"]')).not.toBeNull()
+    expect(screen.getByTestId('cone-node-mount').getAttribute('aria-hidden')).toBe('true')
+    // The wordmark rides the sky header.
+    expect(header.textContent).toContain(APP_NAME)
+    await waitFor(() => expect(apiGet).toHaveBeenCalledWith('/v1/nodes/trending'))
+  })
+
   it('no longer defines FALLBACK_TRENDING in the source file (R1.2)', () => {
     expect(authLandingSource).not.toContain('FALLBACK_TRENDING')
+  })
+
+  it('holds no state label literals or state icons (glyphcity-rebrand R2.1)', () => {
+    expect(authLandingSource).not.toContain('STATE_CONFIG')
+    expect(authLandingSource).not.toMatch(/'(Popping|Buzzing|Active|Dormant)'/)
+    expect(authLandingSource).not.toMatch(/\b(Flame|CloudMoon)\b/)
   })
 })

@@ -61,7 +61,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
       }}
     >
       <div className="w-full max-w-sm flex flex-col gap-4">
-        <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] text-center">
+        <h1 className="text-[var(--text-primary)] font-bold text-xl font-display text-center">
           {phase === 'success' ? t('auth.resetSuccess', 'Password reset') : t('auth.forgotPassword', 'Forgot password')}
         </h1>
 
@@ -81,7 +81,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
             <button
               onClick={() => void handleRequestCode()}
               disabled={loading || !email.trim()}
-              className="w-full bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm disabled:opacity-50"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm disabled:opacity-50 active:scale-95"
             >
               {loading ? '...' : t('auth.sendCode', 'Send reset code')}
             </button>
@@ -112,7 +112,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
             <button
               onClick={() => void handleResetPassword()}
               disabled={loading || code.length !== 6 || newPassword.length < 8}
-              className="w-full bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm disabled:opacity-50"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm disabled:opacity-50"
             >
               {loading ? '...' : t('auth.resetPassword', 'Reset password')}
             </button>
@@ -126,7 +126,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
             </p>
             <button
               onClick={() => onNavigate('login')}
-              className="w-full bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm"
+              className="w-full bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm active:scale-95"
             >
               {t('auth.backToLogin', 'Back to sign in')}
             </button>

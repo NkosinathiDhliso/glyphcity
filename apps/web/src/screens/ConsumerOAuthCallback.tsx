@@ -12,6 +12,7 @@ import { useConsumerAuthStore } from '@area-code/shared/stores/consumerAuthStore
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { clearAcquisitionSource, readAcquisitionSource } from '../lib/acquisition'
 import { CONSUMER_OAUTH_PKCE_KEY, CONSUMER_OAUTH_STATE_KEY } from '../lib/startConsumerGoogleOAuth'
 import type { AppRoute } from '../types'
 
@@ -96,7 +97,10 @@ export function ConsumerOAuthCallback({ onNavigate }: ConsumerOAuthCallbackProps
           method: 'POST',
           headers: {
             Authorization: `Bearer ${tokens.access_token}`,
+            'Content-Type': 'application/json',
           },
+          // Used only if this sign-in creates the account; ignored for a returning user.
+          body: JSON.stringify({ acquisitionSource: readAcquisitionSource() }),
         })
 
         if (!syncRes.ok) {
@@ -114,6 +118,7 @@ export function ConsumerOAuthCallback({ onNavigate }: ConsumerOAuthCallbackProps
         if (cancelled) return
 
         setAuth(tokens.access_token, tokens.refresh_token, sync.userId)
+        clearAcquisitionSource()
         // Signup funnel completion for the Google OAuth path: a brand-new user
         // is a signup, a returning user is a sign-in (R4.1). Beacon gates on
         // consent (R4.2).
@@ -141,7 +146,7 @@ export function ConsumerOAuthCallback({ onNavigate }: ConsumerOAuthCallbackProps
 
   return (
     <div className="flex flex-col items-center justify-center h-dvh bg-[var(--bg-base)] px-5">
-      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne]">
+      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display">
         {t('auth.oauth.finishing', 'Finishing sign-in…')}
       </h1>
       {!error ? (

@@ -17,7 +17,7 @@ interface SignInSheetProps {
  *
  * Note: Earlier versions presented a "I'm a customer" / "I'm a business"
  * hard-fork here. We removed the business path because:
- *   1. Businesses live on a separate subdomain (business.areacode.co.za) and
+ *   1. Businesses live on a separate subdomain (business.glyphcity.com) and
  *      reach the portal via direct link from sales onboarding, not by
  *      discovering a toggle on a customer-facing surface.
  *   2. Surfacing a "I'm a business" button to consumers leaks that the
@@ -38,7 +38,7 @@ export function SignInSheet({ isOpen, onClose, onNavigate }: SignInSheetProps) {
             onClose()
             onNavigate('login')
           }}
-          className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95"
+          className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95"
         >
           {t('auth.signInSheet.cta', 'Sign in to continue')}
         </button>

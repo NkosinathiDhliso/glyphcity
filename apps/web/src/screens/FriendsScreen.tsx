@@ -83,7 +83,7 @@ export function FriendsScreen() {
         style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
         data-scroll-container
       >
-        <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] mb-4">{t('friends.title')}</h1>
+        <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-4">{t('friends.title')}</h1>
 
         {/* Tab bar */}
         <div className="flex flex-row gap-1 mb-4 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-1">
@@ -92,7 +92,7 @@ export function FriendsScreen() {
               key={tabKey}
               onClick={() => setTab(tabKey)}
               className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-150 ${
-                tab === tabKey ? 'gradient-accent text-white' : 'text-[var(--text-secondary)]'
+                tab === tabKey ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--text-secondary)]'
               }`}
             >
               {tabKey === 'search' ? 'Search' : tabKey.charAt(0).toUpperCase() + tabKey.slice(1)}
@@ -269,7 +269,7 @@ function FollowersTab({ onFindPeople }: { onFindPeople: () => void }) {
             <button
               onClick={() => followMutation.mutate(u.userId)}
               disabled={followMutation.isPending}
-              className="text-xs text-white gradient-accent rounded-xl px-3 py-1.5 transition-all active:scale-95"
+              className="text-xs bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-3 py-1.5 transition-all active:scale-95"
             >
               {t('friends.followBack')}
             </button>
@@ -360,7 +360,7 @@ function SearchTab({ search, setSearch }: { search: string; setSearch: (s: strin
                 <button
                   onClick={() => followMutation.mutate(u.userId)}
                   disabled={followMutation.isPending}
-                  className="text-xs text-white gradient-accent rounded-xl px-3 py-1.5 transition-all active:scale-95"
+                  className="text-xs bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-3 py-1.5 transition-all active:scale-95"
                 >
                   {t('friends.follow')}
                 </button>
@@ -429,7 +429,7 @@ function EmptyState({
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          className="text-sm text-white gradient-accent rounded-xl px-4 py-2 transition-all active:scale-95"
+          className="text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 transition-all active:scale-95"
         >
           {actionLabel}
         </button>

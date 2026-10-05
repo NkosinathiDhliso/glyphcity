@@ -22,12 +22,19 @@
  * The shared Web Push helper is mocked because it needs real browser APIs; its
  * own iOS detection is covered in `packages/shared/lib/__tests__/webPush.test.ts`.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string, fallback?: string) => (typeof fallback === 'string' ? fallback : key) }),
-}))
+vi.mock('react-i18next', async () => {
+  const brand = await import('@area-code/shared/constants/brand')
+  return {
+    useTranslation: () => ({
+      t: (key: string, fallback?: string) =>
+        (typeof fallback === 'string' ? fallback : key).replace('{{appName}}', brand.APP_NAME),
+    }),
+  }
+})
 
 const mocks = vi.hoisted(() => ({
   get: vi.fn(),
@@ -101,7 +108,7 @@ describe('iOS Safari outside an installed PWA gets the Home Screen step (R15.20)
   it('says how to get notifications instead of closing silently', async () => {
     sheet()
 
-    await waitFor(() => expect(installText()).toContain('Add Area Code to your Home Screen to get notifications'))
+    await waitFor(() => expect(installText()).toContain(`Add ${APP_NAME} to your Home Screen to get notifications`))
     expect(installText()).toContain('Add to Home Screen')
     expect(onClose).not.toHaveBeenCalled()
   })

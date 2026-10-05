@@ -137,7 +137,7 @@ export function CheckInCelebration({
         </div>
 
         <div>
-          <p className="font-[Syne] text-lg font-bold text-[var(--text-primary)]">
+          <p className="font-display text-lg font-bold text-[var(--text-primary)]">
             {t('checkin.celebrate.title', "You're in")}
           </p>
           <p className="mt-0.5 text-sm text-[var(--text-secondary)]">{venueName}</p>

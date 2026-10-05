@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 import { ParkedCheckinsSection } from '../components/ParkedCheckinsSection'
 import { RankTrophyOverlay } from '../components/RankTrophyOverlay'
 import { StreamingSection } from '../components/StreamingSection'
+import { YourGlyphCard } from '../components/YourGlyphCard'
 import type { AppRoute } from '../types'
 
 interface ProfileScreenProps {
@@ -132,7 +133,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         <p className="text-[var(--text-secondary)] text-sm">{t('auth.gated.signIn')}</p>
         <button
           onClick={() => onNavigate('login')}
-          className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 px-8 text-sm transition-all duration-150 active:scale-95"
+          className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 px-8 text-sm transition-all duration-150 active:scale-95"
         >
           {t('auth.gated.signInButton')}
         </button>
@@ -154,7 +155,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
           tier={tier}
         />
         <div className="flex-1">
-          <h1 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">{displayUser?.displayName}</h1>
+          <h1 className="text-[var(--text-primary)] font-bold text-lg font-display">{displayUser?.displayName}</h1>
           <p className="text-[var(--text-muted)] text-sm">@{displayUser?.username}</p>
         </div>
         <TierBadge tier={tier} />
@@ -188,7 +189,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
 
       {earnedCodes.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-[var(--text-primary)] font-bold text-lg font-[Syne] mb-1">{t('rewards.yourCodes')}</h2>
+          <h2 className="text-[var(--text-primary)] font-bold text-lg font-display mb-1">{t('rewards.yourCodes')}</h2>
           <p className="text-[var(--text-muted)] text-xs mb-3">{t('rewards.yourCodesHint')}</p>
           <div className="flex flex-col gap-3">
             {earnedCodes.map((c) => (
@@ -230,6 +231,8 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         </div>
       )}
 
+      <YourGlyphCard archetypeId={displayUser?.archetypeId} />
+
       <StreamingSection />
 
       {/* Navigation links with proper chevron icons (Issue #24) */}
@@ -248,7 +251,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
 function StatCard({ value, label }: { value: string | number; label: string }) {
   return (
     <div className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 text-center">
-      <p className="text-[var(--text-primary)] font-bold text-xl font-[Syne]" style={{ letterSpacing: '-0.03em' }}>
+      <p className="text-[var(--text-primary)] font-bold text-xl font-display" style={{ letterSpacing: '-0.03em' }}>
         {value}
       </p>
       <p className="text-[var(--text-muted)] text-xs mt-1">{label}</p>

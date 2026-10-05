@@ -1,4 +1,5 @@
 import { BottomSheet } from '@area-code/shared/components/BottomSheet'
+import { FIRST_IN_KEY, PLAIN_SCALE_EN } from '@area-code/shared/constants/state-labels'
 import { haptic } from '@area-code/shared/lib/haptics'
 import { useMapStore } from '@area-code/shared/stores/mapStore'
 import type { NodeCategory, NodeState, Reward } from '@area-code/shared/types'
@@ -281,7 +282,7 @@ export function PeekCarousel({
   const announcement = activeVenueVM
     ? `${activeVenueVM.name}, ${
         activeVenueVM.isFirstIn
-          ? t('venueCard.beFirst', 'Be the first in')
+          ? t(FIRST_IN_KEY, PLAIN_SCALE_EN[FIRST_IN_KEY])
           : `${activeVenueVM.liveCheckInCount} ${t('venueCard.hereNow', 'here now')}`
       }`
     : ''
@@ -388,7 +389,7 @@ function ConstellationMode({ vm, nearbyCount, nodeCategory, onZoomIn, onDismiss 
       <button
         type="button"
         onClick={onZoomIn}
-        className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm transition-all duration-150 active:scale-95"
+        className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm transition-all duration-150 active:scale-95"
       >
         {t('map.zoomIn', 'Zoom in')}
       </button>
@@ -563,7 +564,7 @@ function BrowseMode({
         type="button"
         onClick={onEnterCommit}
         disabled={activeVenueId === null}
-        className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 text-sm transition-all duration-150 active:scale-95 disabled:opacity-40"
+        className="w-full flex items-center justify-center gap-2 bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm transition-all duration-150 active:scale-95 disabled:opacity-40"
       >
         <ChevronUp size={16} strokeWidth={2} />
         {t('map.viewDetails', 'View details')}

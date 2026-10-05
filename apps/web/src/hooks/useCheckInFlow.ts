@@ -17,7 +17,7 @@
  *     surface anywhere in this flow (R14.3, R20.1, and the no-SMS steering rule);
  *   - offering the in-app `QrScannerSheet` when GPS places the consumer too far
  *     to check in (R14.4);
- *   - routing a scanned QR through {@link parseVenueQr}: a valid Area Code venue
+ *   - routing a scanned QR through {@link parseVenueQr}: a valid venue
  *     QR runs the check-in for the scanned venue (R14.5); anything else surfaces
  *     an invalid-QR message via the error store and performs no check-in
  *     (R14.6);
@@ -246,7 +246,7 @@ export function useCheckInFlow(params: UseCheckInFlowParams = {}): CheckInFlow {
   }, [activeNode, isAuthenticated, qrFallback, requestLocation, geoStatus, submitCheckIn, beginSubmit, endSubmit])
 
   /**
-   * Handler for a decoded QR payload from `QrScannerSheet`. A valid Area Code
+   * Handler for a decoded QR payload from `QrScannerSheet`. A valid
    * venue QR (`…/qr/{nodeId}/{token}`) runs the check-in for the scanned venue
    * using its token to prove presence (R14.5). Anything else surfaces an
    * invalid-QR message and performs no check-in (R14.6).
@@ -257,7 +257,7 @@ export function useCheckInFlow(params: UseCheckInFlowParams = {}): CheckInFlow {
 
       const parsed = parseVenueQr(raw)
       if (!parsed) {
-        showError(t('qr.invalid', "That QR code isn't a valid Area Code venue code."))
+        showError(t('qr.invalid', "That QR code isn't a valid {{appName}} venue code."))
         return
       }
 

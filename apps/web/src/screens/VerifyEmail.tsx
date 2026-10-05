@@ -45,7 +45,7 @@ export function VerifyEmail({ onNavigate }: VerifyEmailProps) {
     <div className="flex flex-col items-center justify-center min-h-dvh bg-[var(--bg-base)] px-5 text-center">
       {status === 'verifying' && (
         <>
-          <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne]">
+          <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display">
             {t('auth.verifyEmail.checking', 'Confirming your email…')}
           </h1>
           <Spinner size="lg" />
@@ -54,7 +54,7 @@ export function VerifyEmail({ onNavigate }: VerifyEmailProps) {
 
       {status === 'success' && (
         <>
-          <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-3 font-[Syne]">
+          <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-3 font-display">
             {t('auth.verifyEmail.successTitle', 'Email confirmed')}
           </h1>
           <p className="text-[var(--text-secondary)] text-sm mb-8 max-w-xs">
@@ -63,7 +63,7 @@ export function VerifyEmail({ onNavigate }: VerifyEmailProps) {
           <button
             type="button"
             onClick={go}
-            className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 px-8 text-base transition-all duration-150 active:scale-95"
+            className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 px-8 text-base transition-all duration-150 active:scale-95"
           >
             {t('auth.verifyEmail.continue', 'Continue')}
           </button>
@@ -72,7 +72,7 @@ export function VerifyEmail({ onNavigate }: VerifyEmailProps) {
 
       {status === 'error' && (
         <>
-          <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-3 font-[Syne]">
+          <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-3 font-display">
             {t('auth.verifyEmail.errorTitle', 'Link expired or invalid')}
           </h1>
           <p className="text-[var(--text-secondary)] text-sm mb-8 max-w-xs">
@@ -84,7 +84,7 @@ export function VerifyEmail({ onNavigate }: VerifyEmailProps) {
           <button
             type="button"
             onClick={go}
-            className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 px-8 text-base transition-all duration-150 active:scale-95"
+            className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 px-8 text-base transition-all duration-150 active:scale-95"
           >
             {t('auth.verifyEmail.continue', 'Continue')}
           </button>

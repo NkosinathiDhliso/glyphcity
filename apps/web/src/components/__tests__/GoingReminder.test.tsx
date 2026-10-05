@@ -21,13 +21,19 @@
  * The Web Push helper is mocked because it needs real browser APIs; the
  * preference write is NOT mocked, so the asserted PATCH is the real one.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useConsumerAuthStore } from '@area-code/shared/stores/consumerAuthStore'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (_key: string, fallback?: string) => fallback ?? _key }),
-}))
+vi.mock('react-i18next', async () => {
+  const brand = await import('@area-code/shared/constants/brand')
+  return {
+    useTranslation: () => ({
+      t: (_key: string, fallback?: string) => (fallback ?? _key).replace('{{appName}}', brand.APP_NAME),
+    }),
+  }
+})
 
 const mocks = vi.hoisted(() => ({
   get: vi.fn(),
@@ -208,7 +214,7 @@ describe('the confirmation never promises a push that cannot arrive (R9.6)', () 
 
       fireEvent.click(remindButton() as HTMLButtonElement)
 
-      await waitFor(() => expect(note()).toContain('inside Area Code'))
+      await waitFor(() => expect(note()).toContain(`inside ${APP_NAME}`))
       expect(note()).toContain('cannot show notifications while the app is closed')
       // The consent is still recorded: socket delivery reaches them in the app.
       expect(mocks.patch).toHaveBeenCalledWith(PREFS_URL, { tonightReminder: true })

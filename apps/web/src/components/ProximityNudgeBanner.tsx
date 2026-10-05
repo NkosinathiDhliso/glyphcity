@@ -78,7 +78,7 @@ export function ProximityNudgeBanner({ onNavigate }: ProximityNudgeBannerProps) 
           dismiss()
           onNavigate('map')
         }}
-        className="bg-[var(--accent-cta)] text-white text-xs font-medium rounded-xl px-3 min-h-11 shrink-0 flex items-center justify-center active:scale-95 transition-transform"
+        className="bg-[var(--accent-cta)] text-[var(--on-accent)] text-xs font-medium rounded-xl px-3 min-h-11 shrink-0 flex items-center justify-center active:scale-95 transition-transform"
       >
         Check in
       </button>

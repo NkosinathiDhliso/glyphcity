@@ -12,6 +12,7 @@ import { USER_VIEW_ZOOM } from '../lib/cameraControl'
 import { cameraMotion } from '../lib/cameraEasing'
 import { deviceTier } from '../lib/deviceTier'
 import { loadMapboxGl } from '../lib/mapboxLoader'
+import { addContours, applyOutdoorPaint, contoursEnabled, prefersReducedData } from '../lib/mapTerrain'
 import { PITCH_3D, PITCH_FLAT, MAX_PITCH, pitchForZoom, computeRampTarget } from '../lib/pitchRamp'
 
 const MAPBOX_TOKEN = import.meta.env['VITE_MAPBOX_TOKEN'] as string | undefined
@@ -75,53 +76,55 @@ interface AtmosphereConfig {
 }
 
 const ATMOSPHERE: Record<ThemeMode, AtmosphereConfig> = {
+  // Dusk over the veld: a near-black sky with stars over an ember horizon.
   dark: {
     fog: {
-      color: '#0a0e16',
-      'high-color': '#243049',
+      color: '#120f0c',
+      'high-color': '#0b1413',
       'horizon-blend': 0.08,
       'space-color': '#03050a',
       'star-intensity': 0.8,
       range: [0.4, 14],
     },
     terrainExaggeration: 1.9,
-    buildingColor: '#1c2536',
-    buildingTopColor: '#3a4d78',
+    buildingColor: '#16201b',
+    buildingTopColor: '#24302a',
     buildingOpacity: 0.95,
     buildingVerticalScale: 1.45,
     // Towers read as dark mass with a subtle self-glow, not lit panels.
     buildingEmissiveStrength: 0.3,
     ambientOcclusionIntensity: 0.5,
     ambientOcclusionRadius: 3.5,
-    floodLightColor: '#3d5a99',
+    floodLightColor: '#3b2a20',
     floodLightIntensity: 0.3,
-    // Night sky: a dim slate dome (proven dark values), not a bright daytime
-    // blue. The sun intensity drives most of the sky brightness, so it stays
-    // low - a high value here was what washed dark mode out at country zoom.
-    skyAtmosphereColor: 'rgba(85, 110, 145, 1)',
-    skyAtmosphereHaloColor: 'rgba(150, 180, 210, 0.6)',
+    // Night sky: a dim veld-green dome with an ember halo at the horizon. The
+    // sun intensity drives most of the sky brightness, so it stays low - a high
+    // value here was what washed dark mode out at country zoom.
+    skyAtmosphereColor: 'rgba(52, 70, 62, 1)',
+    skyAtmosphereHaloColor: 'rgba(120, 80, 50, 0.55)',
     skyAtmosphereSun: [25, 88],
     skyAtmosphereSunIntensity: 4,
     // Scene lights stay dim in dark mode: enough directional rake to keep the
     // skyline 3D, not enough to light the city up like day.
-    ambientLightColor: '#9fb4d8',
+    ambientLightColor: '#a8b8ad',
     ambientLightIntensity: 0.4,
     directionalLightColor: '#dfe8ff',
     directionalLightIntensity: 0.6,
     directionalLightDirection: [215, 30],
   },
+  // Dawn: pale sky over a peach horizon, lichen-toned buildings.
   light: {
     fog: {
-      color: '#e6ecf2',
-      'high-color': '#aebfd6',
+      color: '#efe6da',
+      'high-color': '#c9dce3',
       'horizon-blend': 0.1,
-      'space-color': '#c2d2e6',
+      'space-color': '#c9dce3',
       'star-intensity': 0,
       range: [0.5, 16],
     },
     terrainExaggeration: 1.9,
-    buildingColor: '#d8d2c8',
-    buildingTopColor: '#f0e6d2',
+    buildingColor: '#dfe4d6',
+    buildingTopColor: '#eef0e6',
     buildingOpacity: 0.97,
     buildingVerticalScale: 1.4,
     buildingEmissiveStrength: 0.1,
@@ -129,8 +132,8 @@ const ATMOSPHERE: Record<ThemeMode, AtmosphereConfig> = {
     ambientOcclusionRadius: 3.0,
     floodLightColor: '#fff1d6',
     floodLightIntensity: 0.25,
-    skyAtmosphereColor: 'rgba(175, 200, 225, 1)',
-    skyAtmosphereHaloColor: 'rgba(230, 240, 250, 0.9)',
+    skyAtmosphereColor: 'rgba(201, 220, 227, 1)',
+    skyAtmosphereHaloColor: 'rgba(242, 216, 188, 0.9)',
     skyAtmosphereSun: [20, 78],
     skyAtmosphereSunIntensity: 12,
     ambientLightColor: '#fff6e8',
@@ -174,6 +177,16 @@ function suppressCtrlLinkFocus(container: HTMLElement): void {
  */
 function applyCustomLayers(map: mapboxgl.Map, theme: ThemeMode): void {
   const cfg = ATMOSPHERE[theme]
+
+  // ── Outdoor ground: lichen or veld land, spruit water, koppie parks, contours ──
+  applyOutdoorPaint(map, theme)
+  if (contoursEnabled(deviceTier, prefersReducedData())) {
+    try {
+      addContours(map, theme)
+    } catch {
+      /* contours are cosmetic - fail open */
+    }
+  }
 
   // ── Terrain DEM source ──
   // Adds real elevation so mountains & valleys lift off the map plane.

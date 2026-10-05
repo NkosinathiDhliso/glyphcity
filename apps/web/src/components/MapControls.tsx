@@ -138,7 +138,7 @@ export function MapControls({
             w-11 h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all
             ${
               is3D
-                ? 'bg-[var(--accent)] text-[var(--on-accent)] shadow-[var(--shadow-glow)]'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)] shadow-[var(--shadow-sm)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-raised)]'
             }
           `}
@@ -225,7 +225,7 @@ function ControlButton({ onClick, children, label, active, disabled, inactive, t
         w-11 h-11 rounded-xl flex items-center justify-center transition-all active:scale-95
         ${
           active
-            ? 'bg-[var(--accent)] text-[var(--on-accent)] shadow-[var(--shadow-glow)]'
+            ? 'bg-[var(--accent)] text-[var(--on-accent)] shadow-[var(--shadow-sm)]'
             : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-raised)]'
         }
         ${muted ? 'opacity-40 cursor-not-allowed' : ''}

@@ -10,7 +10,8 @@
  * a PNG Blob suitable for the Web Share API.
  */
 
-import { getArchetypeDisplayName, getTierLabel } from '@area-code/shared/constants'
+import { APP_NAME, getArchetypeDisplayName, getTierLabel } from '@area-code/shared/constants'
+import { APP_URL } from '@area-code/shared/constants/brand'
 import type { Tier } from '@area-code/shared/types'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -110,6 +111,34 @@ export function buildShareCardData(stats: ConsumerStats): ShareCardData {
 const CARD_WIDTH = 540
 const CARD_HEIGHT = 960
 
+interface CardFonts {
+  display: string
+  body: string
+  mono: string
+}
+
+/**
+ * Font stacks read from the type tokens in packages/shared/tokens.css, since
+ * canvas cannot resolve CSS vars. Waits for the web fonts so text drawn on the
+ * canvas does not silently render in the system fallback.
+ */
+async function loadCardFonts(): Promise<CardFonts> {
+  const style = getComputedStyle(document.documentElement)
+  const read = (token: string): string => {
+    const value = style.getPropertyValue(token).trim()
+    if (!value) throw new Error(`Share card: missing ${token} token`)
+    return value
+  }
+  const fonts = { display: read('--font-display'), body: read('--font-body'), mono: read('--font-mono') }
+  await Promise.all([
+    document.fonts.load(`700 48px ${fonts.display}`),
+    document.fonts.load(`400 20px ${fonts.body}`),
+    document.fonts.load(`600 20px ${fonts.body}`),
+    document.fonts.load(`500 16px ${fonts.mono}`),
+  ])
+  return fonts
+}
+
 /**
  * Renders a share card from `ShareCardData` using HTML5 Canvas.
  * Returns a PNG Blob suitable for the Web Share API.
@@ -118,6 +147,7 @@ const CARD_HEIGHT = 960
  * displayed, archetype glyph + name, tier badge, weekly count, and top venue.
  */
 export async function generateShareCard(data: ShareCardData): Promise<Blob> {
+  const f = await loadCardFonts()
   const canvas = document.createElement('canvas')
   canvas.width = CARD_WIDTH
   canvas.height = CARD_HEIGHT
@@ -139,29 +169,29 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob> {
 
   // ─── Brand header ─────────────────────────────────────────────────────
   ctx.fillStyle = '#94a3b8'
-  ctx.font = '500 16px system-ui, -apple-system, sans-serif'
+  ctx.font = `500 16px ${f.mono}`
   ctx.textAlign = 'center'
-  ctx.fillText('AREA CODE', CARD_WIDTH / 2, 60)
+  ctx.fillText(APP_NAME.toUpperCase(), CARD_WIDTH / 2, 60)
 
   // ─── Archetype glyph (large) ──────────────────────────────────────────
-  ctx.font = '72px system-ui, -apple-system, sans-serif'
+  ctx.font = `72px ${f.body}`
   ctx.textAlign = 'center'
   ctx.fillText(data.archetypeGlyph, CARD_WIDTH / 2, 180)
 
   // ─── Archetype name ───────────────────────────────────────────────────
   ctx.fillStyle = '#e2e8f0'
-  ctx.font = '600 28px system-ui, -apple-system, sans-serif'
+  ctx.font = `700 28px ${f.display}`
   ctx.fillText(data.archetypeName, CARD_WIDTH / 2, 230)
 
   // ─── Rank (hero element) ──────────────────────────────────────────────
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 96px system-ui, -apple-system, sans-serif'
+  ctx.font = `bold 96px ${f.display}`
   ctx.textAlign = 'center'
   ctx.fillText(`#${data.rank}`, CARD_WIDTH / 2, 370)
 
   // Rank subtitle
   ctx.fillStyle = '#94a3b8'
-  ctx.font = '400 20px system-ui, -apple-system, sans-serif'
+  ctx.font = `400 20px ${f.body}`
   ctx.fillText('This Week', CARD_WIDTH / 2, 405)
 
   // ─── Tier badge ───────────────────────────────────────────────────────
@@ -191,7 +221,7 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob> {
 
   // Badge text
   ctx.fillStyle = tierColour
-  ctx.font = '600 22px system-ui, -apple-system, sans-serif'
+  ctx.font = `600 22px ${f.body}`
   ctx.textAlign = 'center'
   ctx.fillText(tierText, CARD_WIDTH / 2, tierY + 8)
 
@@ -200,38 +230,38 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob> {
 
   // Weekly check-in count
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 48px system-ui, -apple-system, sans-serif'
+  ctx.font = `bold 48px ${f.display}`
   ctx.textAlign = 'center'
   ctx.fillText(`${data.weeklyCheckInCount}`, CARD_WIDTH / 2, statsY)
 
   ctx.fillStyle = '#94a3b8'
-  ctx.font = '400 18px system-ui, -apple-system, sans-serif'
+  ctx.font = `400 18px ${f.body}`
   ctx.fillText('check-ins this week', CARD_WIDTH / 2, statsY + 30)
 
   // ─── Top venue ────────────────────────────────────────────────────────
   if (data.topVenueName) {
     const venueY = 680
     ctx.fillStyle = '#64748b'
-    ctx.font = '400 16px system-ui, -apple-system, sans-serif'
+    ctx.font = `400 16px ${f.body}`
     ctx.textAlign = 'center'
     ctx.fillText('Powered by', CARD_WIDTH / 2, venueY)
 
     ctx.fillStyle = '#e2e8f0'
-    ctx.font = '600 24px system-ui, -apple-system, sans-serif'
+    ctx.font = `600 24px ${f.body}`
     ctx.fillText(truncateText(ctx, data.topVenueName, CARD_WIDTH - 80), CARD_WIDTH / 2, venueY + 35)
   }
 
   // ─── Display name (if present) ────────────────────────────────────────
   if (data.displayName) {
     ctx.fillStyle = '#cbd5e1'
-    ctx.font = '500 20px system-ui, -apple-system, sans-serif'
+    ctx.font = `500 20px ${f.body}`
     ctx.textAlign = 'center'
     ctx.fillText(data.displayName, CARD_WIDTH / 2, 800)
   }
 
   // ─── Footer / CTA ────────────────────────────────────────────────────
   ctx.fillStyle = '#475569'
-  ctx.font = '400 14px system-ui, -apple-system, sans-serif'
+  ctx.font = `400 14px ${f.body}`
   ctx.textAlign = 'center'
   ctx.fillText('See where the city comes alive', CARD_WIDTH / 2, CARD_HEIGHT - 50)
 
@@ -250,6 +280,7 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob> {
  * exposes no other user's data (R11.5.3).
  */
 export async function generateMilestoneCard(title: string, body: string): Promise<Blob> {
+  const f = await loadCardFonts()
   const canvas = document.createElement('canvas')
   canvas.width = CARD_WIDTH
   canvas.height = CARD_HEIGHT
@@ -264,19 +295,19 @@ export async function generateMilestoneCard(title: string, body: string): Promis
 
   ctx.textAlign = 'center'
   ctx.fillStyle = '#94a3b8'
-  ctx.font = '500 16px system-ui, -apple-system, sans-serif'
-  ctx.fillText('AREA CODE', CARD_WIDTH / 2, 80)
+  ctx.font = `500 16px ${f.mono}`
+  ctx.fillText(APP_NAME.toUpperCase(), CARD_WIDTH / 2, 80)
 
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 52px system-ui, -apple-system, sans-serif'
+  ctx.font = `bold 52px ${f.display}`
   ctx.fillText(truncateText(ctx, title, CARD_WIDTH - 80), CARD_WIDTH / 2, CARD_HEIGHT / 2 - 20)
 
   ctx.fillStyle = '#cbd5e1'
-  ctx.font = '400 24px system-ui, -apple-system, sans-serif'
+  ctx.font = `400 24px ${f.body}`
   ctx.fillText(truncateText(ctx, body, CARD_WIDTH - 80), CARD_WIDTH / 2, CARD_HEIGHT / 2 + 30)
 
   ctx.fillStyle = '#475569'
-  ctx.font = '400 14px system-ui, -apple-system, sans-serif'
+  ctx.font = `400 14px ${f.body}`
   ctx.fillText('See where the city comes alive', CARD_WIDTH / 2, CARD_HEIGHT - 50)
 
   return new Promise<Blob>((resolve, reject) => {
@@ -287,11 +318,11 @@ export async function generateMilestoneCard(title: string, body: string): Promis
 // ─── Share / copy (Web Share API with clipboard fallback) ───────────────────
 
 /**
- * Deep link included in every share so external viewers can discover Area Code.
+ * Deep link included in every share so external viewers can discover the app.
  * Points at the live web app, which prompts install on unsupported platforms
  * (R12.3, R14.2). Override via `VITE_APP_SHARE_URL` per environment.
  */
-export const APP_SHARE_URL = (import.meta.env?.['VITE_APP_SHARE_URL'] as string | undefined) ?? 'https://areacode.co.za'
+export const APP_SHARE_URL = (import.meta.env?.['VITE_APP_SHARE_URL'] as string | undefined) ?? APP_URL
 
 /**
  * Share a generated card via the Web Share API when available, falling back to
@@ -304,14 +335,15 @@ export const APP_SHARE_URL = (import.meta.env?.['VITE_APP_SHARE_URL'] as string 
  *
  * Requirements: 10.3.3, 10.3.4, 11.5.4, 12.3
  */
-export async function shareOrCopy(blob: Blob, text: string, url: string = APP_SHARE_URL): Promise<void> {
-  const file = new File([blob], 'area-code.png', { type: 'image/png' })
+export async function shareOrCopy(blob: Blob | null, text: string, url: string = APP_SHARE_URL): Promise<void> {
+  // A null blob shares text and url only (e.g. "Share my glyph" until its card lands).
+  const file = blob ? new File([blob], 'area-code.png', { type: 'image/png' }) : null
   const nav = typeof navigator !== 'undefined' ? navigator : undefined
 
   if (nav?.share) {
-    const canShareFiles = typeof nav.canShare === 'function' && nav.canShare({ files: [file] })
+    const canShareFiles = file !== null && typeof nav.canShare === 'function' && nav.canShare({ files: [file] })
     try {
-      await nav.share(canShareFiles ? { text, url, files: [file] } : { text, url })
+      await nav.share(canShareFiles && file ? { text, url, files: [file] } : { text, url })
       return
     } catch (err) {
       // AbortError = user dismissed the sheet; do not fall through to clipboard.

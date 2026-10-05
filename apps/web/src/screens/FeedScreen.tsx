@@ -192,7 +192,7 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
       style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
       data-scroll-container
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] mb-4">{t('feed.title')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-4">{t('feed.title')}</h1>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -244,7 +244,7 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
           </p>
           <button
             onClick={() => onNavigate('friends')}
-            className="text-sm text-white gradient-accent rounded-xl px-4 py-2 transition-all active:scale-95"
+            className="text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 transition-all active:scale-95"
           >
             {t('feed.findPeople', 'Find your people')}
           </button>

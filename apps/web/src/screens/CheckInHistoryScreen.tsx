@@ -93,7 +93,7 @@ export function CheckInHistoryScreen({ onNavigate }: CheckInHistoryScreenProps) 
         >
           <ChevronLeft size={16} strokeWidth={2} />
         </button>
-        <h1 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h1 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('profile.checkInHistory', 'Check-in History')}
         </h1>
       </div>
@@ -120,7 +120,7 @@ export function CheckInHistoryScreen({ onNavigate }: CheckInHistoryScreenProps) 
           </p>
           <button
             onClick={() => void refetch()}
-            className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3 px-6 text-sm transition-all duration-150 active:scale-95"
+            className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3 px-6 text-sm transition-all duration-150 active:scale-95"
           >
             {t('common.retry', 'Retry')}
           </button>

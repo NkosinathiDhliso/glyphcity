@@ -1,24 +1,16 @@
+import { APP_NAME, APP_URL, BUSINESS_URL, SUPPORT_EMAIL } from '@area-code/shared/constants/brand'
+import { PLAIN_SCALE_EN, stateLabelKey, toNodeState } from '@area-code/shared/constants/state-labels'
 import { api } from '@area-code/shared/lib/api'
 import { recordEvent } from '@area-code/shared/lib/rum'
 import { trackEvent } from '@area-code/shared/lib/usageEvents'
 import { useQuery } from '@tanstack/react-query'
-import {
-  Flame,
-  Zap,
-  Sparkles,
-  CloudMoon,
-  UtensilsCrossed,
-  Coffee,
-  Moon,
-  ShoppingBag,
-  Dumbbell,
-  Palette,
-  MapPin,
-} from 'lucide-react'
+import { Zap, Sparkles, UtensilsCrossed, Coffee, Moon, ShoppingBag, Dumbbell, Palette, MapPin } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { SkyHeader } from '../components/SkyHeader'
+import { DEFAULT_ARCHETYPE_ID } from '../lib/carouselConstants'
 import type { AppRoute } from '../types'
 
 interface AuthLandingProps {
@@ -35,14 +27,6 @@ interface TrendingSpot {
   category?: string
 }
 
-const STATE_CONFIG: Record<string, { Icon: LucideIcon; label: string }> = {
-  popping: { Icon: Flame, label: 'Popping' },
-  buzzing: { Icon: Zap, label: 'Buzzing' },
-  active: { Icon: Sparkles, label: 'Active' },
-  quiet: { Icon: CloudMoon, label: 'Quiet' },
-  dormant: { Icon: CloudMoon, label: 'Dormant' },
-}
-
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   food: UtensilsCrossed,
   coffee: Coffee,
@@ -52,9 +36,8 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   arts: Palette,
 }
 
-// The three-step "how it works" shown high on the landing page. Reuses icons
-// already imported for the category/state config so no new icon import is
-// needed. Copy lives behind i18n keys with inline English fallbacks.
+// The three-step "how it works" shown high on the landing page. Copy lives
+// behind i18n keys with inline English fallbacks.
 const HOW_IT_WORKS = [
   {
     Icon: MapPin,
@@ -110,11 +93,6 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
 
   return (
     <div className="relative h-full overflow-y-auto bg-[var(--bg-base)] text-[var(--text-primary)]">
-      {/* Glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-16 h-56 w-56 -translate-x-1/2 rounded-full bg-[var(--accent)]/15 blur-3xl" />
-      </div>
-
       <div
         className="relative mx-auto w-full max-w-md flex flex-col min-h-full px-5"
         style={{
@@ -122,16 +100,21 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
           paddingBottom: '2rem',
         }}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-10">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)]/20 ring-1 ring-[var(--border)]">
-            <div className="h-2 w-2 rounded-full bg-[var(--accent-bright)] animate-pulse" />
-          </div>
-          <span className="font-[Syne] text-xl font-extrabold tracking-tight">Area Code</span>
-        </div>
+        {/* Sky header with a representative Cone_Node as brand art (R5.5). A
+            fixed state and category, not a real venue, so it claims no presence. */}
+        <SkyHeader
+          nodeId="brand-art"
+          category="nightlife"
+          state="popping"
+          archetypeId={DEFAULT_ARCHETYPE_ID}
+          height={160}
+          className="mb-8"
+        >
+          <span className="px-4 pt-3 font-display text-xl font-extrabold tracking-tight">{APP_NAME}</span>
+        </SkyHeader>
 
         {/* Hero */}
-        <h1 className="font-[Geist] text-3xl font-semibold leading-tight tracking-[-0.01em]">
+        <h1 className="font-display text-3xl font-semibold leading-tight tracking-[-0.01em]">
           {t('landing.heroLine1', 'Find the spots')}
           <span className="block text-[var(--accent-bright)]">{t('landing.heroLine2', 'buzzing right now.')}</span>
         </h1>
@@ -194,11 +177,11 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
           Do not remove unless replacing with equivalent prose.
         */}
         <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-4">
-          <h2 className="font-[Syne] text-base font-bold mb-2">About Area Code</h2>
+          <h2 className="font-display text-base font-bold mb-2">About {APP_NAME}</h2>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-            Area Code is a real-time venue discovery and rewards app for South Africa. It shows a live map of cafes,
-            restaurants, bars, and nightlife in Johannesburg, Cape Town, and Durban, with each venue&apos;s status
-            (quiet, active, buzzing, or popping) updated as customers check in.
+            {APP_NAME} is a real-time venue discovery and rewards app for South Africa. It shows a live map of cafes,
+            restaurants, bars, and nightlife in Johannesburg, Cape Town, and Durban, with each venue&apos;s status (from
+            quiet to very busy) updated as customers check in.
           </p>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed mt-2">
             Customers check in when they arrive at a venue to earn rewards from that venue, climb local leaderboards,
@@ -222,7 +205,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
             </div>
             {trending.slice(0, 5).map((spot) => {
               const CategoryIcon = CATEGORY_ICONS[spot.category ?? ''] ?? MapPin
-              const stateConf = STATE_CONFIG[spot.state] ?? STATE_CONFIG.active!
+              const labelKey = stateLabelKey(toNodeState(spot.state))
 
               return (
                 <button
@@ -247,10 +230,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
                   </div>
                   <div className="text-right flex items-center gap-1.5">
                     <div>
-                      <p className="text-xs font-medium flex items-center gap-1 justify-end">
-                        <stateConf.Icon size={12} strokeWidth={2} className="text-[var(--accent)]" />
-                        {stateConf.label}
-                      </p>
+                      <p className="text-xs font-medium">{t(labelKey, PLAIN_SCALE_EN[labelKey])}</p>
                       <p className="text-[11px] text-[var(--text-muted)]">
                         {t('landing.checkIns', { count: spot.checkIns, defaultValue: `${spot.checkIns} check-ins` })}
                       </p>
@@ -271,11 +251,11 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
             link of your privacy policy to your homepage and this link should
             match the link you added on your OAuth consent screen configuration".
             The Privacy Policy URL configured in Google Cloud → Branding is
-            https://www.areacode.co.za/legal/privacy. Keep these in sync.
+            https://glyphcity.com/legal/privacy (APP_URL). Keep these in sync.
           */}
           <nav aria-label="Legal" className="mt-3 flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
             <a
-              href="https://www.areacode.co.za/legal/privacy"
+              href={`${APP_URL}/legal/privacy`}
               onClick={(e) => {
                 e.preventDefault()
                 go('legal-privacy', '/legal/privacy')
@@ -286,7 +266,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
             </a>
             <span aria-hidden="true">·</span>
             <a
-              href="https://www.areacode.co.za/legal/terms"
+              href={`${APP_URL}/legal/terms`}
               onClick={(e) => {
                 e.preventDefault()
                 go('legal-terms', '/legal/terms')
@@ -296,7 +276,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
               Terms
             </a>
             <span aria-hidden="true">·</span>
-            <a href="mailto:support@areacode.co.za" className="hover:text-[var(--accent)] underline underline-offset-2">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-[var(--accent)] underline underline-offset-2">
               Contact
             </a>
             <span aria-hidden="true">·</span>
@@ -304,14 +284,11 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
               Discoverable, low-key entry point to the business portal. Lives
               here (not in the sign-up sheet, not in the hero CTAs) so that a
               business owner who lands on the consumer site can still find
-              their way to business.areacode.co.za, without surfacing the
+              their way to the business portal, without surfacing the
               business path to ordinary customers. Uses a regular external
               link so the subdomain handles its own auth flow.
             */}
-            <a
-              href="https://business.areacode.co.za"
-              className="hover:text-[var(--accent)] underline underline-offset-2"
-            >
+            <a href={BUSINESS_URL} className="hover:text-[var(--accent)] underline underline-offset-2">
               For businesses →
             </a>
           </nav>

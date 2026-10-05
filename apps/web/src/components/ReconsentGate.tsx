@@ -105,13 +105,13 @@ export function ReconsentGate({ onNavigate }: ReconsentGateProps) {
   return (
     <BottomSheet isOpen={open} onClose={() => setOpen(false)}>
       <div className="flex flex-col gap-4">
-        <h2 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('consent.reconsent.title', 'We updated our terms')}
         </h2>
         <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
           {t(
             'consent.reconsent.body',
-            'Our Terms of Service have changed, including a clause confirming your tier and visit count are permanent. Please review and accept to keep using Area Code.',
+            'Our Terms of Service have changed, including a clause confirming your tier and visit count are permanent. Please review and accept to keep using {{appName}}.',
           )}
         </p>
 
@@ -125,10 +125,10 @@ export function ReconsentGate({ onNavigate }: ReconsentGateProps) {
         <button
           onClick={() => void handleAccept()}
           disabled={saving}
-          className="min-h-[44px] bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="min-h-[44px] bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {saving ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('consent.reconsent.accept', 'Accept and continue')
           )}

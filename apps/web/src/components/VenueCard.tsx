@@ -1,3 +1,6 @@
+import { getGlyphName } from '@area-code/shared/constants/archetype-catalog'
+import { categoryLabel, categoryLabelKey } from '@area-code/shared/constants/node-categories'
+import { FIRST_IN_KEY, PLAIN_SCALE_EN } from '@area-code/shared/constants/state-labels'
 import { goingCountToShow } from '@area-code/shared/lib/going'
 import type { NodeCategory } from '@area-code/shared/types'
 import { memo } from 'react'
@@ -42,13 +45,18 @@ const GLYPH_SIZE_PX = 28
 export const VenueCard = memo(function VenueCard({ vm, category, isActive = false, onSelect }: VenueCardProps) {
   const { t } = useTranslation()
   const pulseColour = getPulseStateColour(vm.pulseState)
+  // Category word so category is never colour alone (glyphcity-rebrand R3.5).
+  const categoryWord = t(categoryLabelKey(category), categoryLabel(category))
+  // Glyph_Name on the selected card only; a name on every browse card is a
+  // later cue gated on measurement (R3.1, R11.3). Never the description.
+  const glyphName = isActive ? getGlyphName(vm.archetypeId) : undefined
 
   // The numeric count is rendered directly in JSX (not via i18n interpolation)
   // so the live headcount is always present in the DOM; only the trailing
   // "here now" label is translated. When the count is zero the whole count is
   // replaced by the "be the first in" affordance (R4.6 / Property 2).
   const hereNowLabel = t('venueCard.hereNow', 'here now')
-  const beFirstLabel = t('venueCard.beFirst', 'Be the first in')
+  const beFirstLabel = t(FIRST_IN_KEY, PLAIN_SCALE_EN[FIRST_IN_KEY])
   const countText = `${vm.liveCheckInCount} ${hereNowLabel}`
   // The momentum badge icon is aria-hidden, so the trend is surfaced textually
   // through the card's aria-label for screen-reader parity.
@@ -92,7 +100,7 @@ export const VenueCard = memo(function VenueCard({ vm, category, isActive = fals
       data-venue-card={vm.id}
       data-pulse-state={vm.pulseState}
       aria-pressed={isActive}
-      aria-label={`${vm.name}, ${vm.isFirstIn ? beFirstLabel : countText}${momentumLabel ? `, ${momentumLabel}` : ''}${
+      aria-label={`${vm.name}, ${categoryWord}${glyphName ? `, ${glyphName}` : ''}, ${vm.isFirstIn ? beFirstLabel : countText}${momentumLabel ? `, ${momentumLabel}` : ''}${
         tonightLine ? `, ${tonightLine}` : ''
       }${goingLine ? `, ${goingLine}` : ''}`}
       className={`glass-raised flex flex-col items-start gap-2 rounded-2xl px-4 py-3 w-full text-left transition-all duration-150 active:scale-95 focus:outline-none focus-visible:border-[var(--accent)] ${
@@ -113,9 +121,18 @@ export const VenueCard = memo(function VenueCard({ vm, category, isActive = fals
             silhouetteColour={pulseColour}
           />
         </div>
-        <h3 className="text-[var(--text-primary)] font-semibold text-sm font-[Syne] truncate flex-1 min-w-0">
-          {vm.name}
-        </h3>
+        {/* Name over a one-line meta (category word, plus the Glyph_Name on the
+            active card only). Line heights sum to the glyph's 28px, so the
+            header row keeps its height. */}
+        <div className="flex flex-col flex-1 min-w-0">
+          <h3 className="text-[var(--text-primary)] font-semibold text-sm leading-4 font-display truncate">
+            {vm.name}
+          </h3>
+          <span className="text-[var(--text-secondary)] text-[11px] leading-3 truncate">
+            <span data-category-word>{categoryWord}</span>
+            {glyphName && <span data-glyph-name>{` \u00b7 ${glyphName}`}</span>}
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-row items-center gap-2 flex-wrap">

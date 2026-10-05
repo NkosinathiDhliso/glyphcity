@@ -8,7 +8,7 @@ interface QrScannerSheetProps {
   onClose: () => void
   /**
    * Called when a QR code is decoded. The raw string could be either:
-   * - an areacode.co.za/qr/{nodeId}/{token} URL (from a venue's printed poster),
+   * - an glyphcity.com/qr/{nodeId}/{token} URL (from a venue's printed poster),
    * - or any other string, in which case the caller can choose to ignore it.
    */
   onScanned: (raw: string) => void
@@ -134,7 +134,7 @@ export function QrScannerSheet({ isOpen, onClose, onScanned }: QrScannerSheetPro
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col items-center gap-4 pb-4">
-        <h2 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('qr.scanTitle', 'Scan the venue QR code')}
         </h2>
         <p className="text-[var(--text-secondary)] text-xs text-center max-w-[280px]">

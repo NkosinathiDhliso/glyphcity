@@ -1,5 +1,7 @@
 /* global URL */
-// Service worker for Area Code: Web Push + offline app shell.
+// Service worker for the consumer app: Web Push + offline app shell.
+// `%APP_NAME%` placeholders are filled from Brand_Constants by the shared
+// brand Vite plugin (packages/shared/vite/brandPlugin.ts).
 //
 // Two responsibilities:
 //   1. Web Push notifications (push / notificationclick handlers).
@@ -120,7 +122,7 @@ self.addEventListener('push', (event) => {
 
   try {
     const payload = event.data.json()
-    const title = payload.title || 'Area Code'
+    const title = payload.title || '%APP_NAME%'
     const options = {
       body: payload.body || '',
       icon: '/icon-192.png',

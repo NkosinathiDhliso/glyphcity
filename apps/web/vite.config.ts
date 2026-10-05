@@ -3,10 +3,15 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'node:path'
 
+import { brandPlugin } from '../../packages/shared/vite/brandPlugin'
 import pkg from './package.json' with { type: 'json' }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    brandPlugin({ publicTemplates: ['manifest.webmanifest', 'sw.js', 'robots.txt', 'sitemap.xml'] }),
+  ],
   server: { port: 3000 },
   envDir: resolve(__dirname, '../..'),
   // App version/build, injected at build time for the HD-3 diagnostics readout.

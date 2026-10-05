@@ -52,7 +52,7 @@ export function NotificationCenter({ onNavigate }: NotificationCenterProps) {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('notif.center.title')}</h1>
+          <h1 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('notif.center.title')}</h1>
         </div>
         <button
           onClick={() => onNavigate('notification-settings')}

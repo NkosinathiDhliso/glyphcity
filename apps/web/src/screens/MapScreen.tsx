@@ -22,6 +22,7 @@ import { CheckInCelebration } from '../components/CheckInCelebration'
 import { MapControls } from '../components/MapControls'
 import { NotificationPrimingSheet, isDeferredRecently } from '../components/NotificationPrimingSheet'
 import { PeekCarousel } from '../components/PeekCarousel'
+import { PointModeEntry } from '../components/PointModeEntry'
 import { ProximityNudgeBanner } from '../components/ProximityNudgeBanner'
 import { QrScannerSheet } from '../components/QrScannerSheet'
 import { SearchSheet, type SearchResult } from '../components/SearchSheet'
@@ -126,6 +127,7 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
   const citySlug = useUserStore((s) => s.user?.citySlug) ?? 'johannesburg'
 
   const [searchOpen, setSearchOpen] = useState(false)
+  const [pointModeOpen, setPointModeOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<NodeCategory | null>(null)
   const [locationBannerDismissed, setLocationBannerDismissed] = useState(false)
   // Session flags that gate the Notification_Priming_Sheet (R14.7, R17.5). The
@@ -580,7 +582,7 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
           <p className="text-[var(--text-secondary)] text-sm mb-6 text-center max-w-[280px]">{mapError}</p>
           <button
             onClick={retryMap}
-            className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl px-6 py-3 text-sm"
+            className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl px-6 py-3 text-sm active:scale-95"
           >
             Retry
           </button>
@@ -599,6 +601,12 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
           >
             <Search size={18} strokeWidth={1.75} />
           </button>
+          <PointModeEntry
+            open={pointModeOpen}
+            onOpenChange={setPointModeOpen}
+            onCheckIn={checkInFlow.activateCheckIn}
+            isCheckingIn={checkInFlow.isPending}
+          />
           <div className="flex-1 min-w-0">
             <CategoryFilterBar onFilter={setCategoryFilter} />
           </div>
@@ -629,7 +637,7 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
             </div>
             <button
               onClick={handleEnableLocation}
-              className="bg-[var(--accent-cta)] text-white text-xs font-semibold rounded-lg px-3 py-1.5 mr-2"
+              className="bg-[var(--accent-cta)] text-[var(--on-accent)] text-xs font-semibold rounded-lg px-3 py-1.5 mr-2 active:scale-95"
             >
               {t('location.enable')}
             </button>
@@ -688,7 +696,7 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
             {nodesFetchFailed && (
               <button
                 onClick={() => void refetchNodes()}
-                className="bg-[var(--accent-cta)] text-white text-xs font-semibold rounded-lg px-3 py-1.5 shrink-0"
+                className="bg-[var(--accent-cta)] text-[var(--on-accent)] text-xs font-semibold rounded-lg px-3 py-1.5 shrink-0 active:scale-95"
               >
                 {t('common.retry', 'Retry')}
               </button>
@@ -707,7 +715,8 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
           document.body, so without this gate it would stay visible over the
           other tabs when the map is hidden (display:none). Selection state
           lives in selectionStore, so the carousel restores on return. */}
-      {active && (
+      {/* Point_Mode has its own card, so the carousel steps aside while it is open. */}
+      {active && !pointModeOpen && (
         <PeekCarousel
           selection={selection}
           rewards={nodeRewards ?? []}

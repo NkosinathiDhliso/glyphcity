@@ -158,3 +158,15 @@ describe('NodeDetailContent check-out CTA', () => {
     }
   })
 })
+
+describe('NodeDetailContent sky header (glyphcity-rebrand R5.5)', () => {
+  it("renders a compact, decorative SkyHeader with the venue's Cone_Node above the CTA", () => {
+    renderDetail()
+    const header = screen.getByTestId('sky-header')
+    expect(header.style.height).toBe('120px')
+    expect(header.querySelector(`.node-marker[data-node-id="${NODE_ID}"]`)).not.toBeNull()
+    expect(screen.getByTestId('cone-node-mount').getAttribute('aria-hidden')).toBe('true')
+    // The decorative instance adds no button to the accessible tree.
+    expect(screen.getByRole('button', { name: 'checkin.button' })).toBeTruthy()
+  })
+})

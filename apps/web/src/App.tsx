@@ -19,6 +19,7 @@ import { ReconsentGate } from './components/ReconsentGate'
 import { VerifyEmailBanner } from './components/VerifyEmailBanner'
 import { useCheckinOutbox } from './hooks/useCheckinOutbox'
 import { useFriendsPresence } from './hooks/useFriendsPresence'
+import { captureAcquisitionFromLocation } from './lib/acquisition'
 import { clearQrCheckIn, readQrCheckIn } from './lib/pendingQrCheckIn'
 import { captureVenueArrivalFromLocation, hasPendingVenueArrival } from './lib/venueArrival'
 import { AuthLanding } from './screens/AuthLanding'
@@ -183,6 +184,8 @@ function AppContent() {
   // (R1.7, R12.3). `/node/{slug}` and `/map?venue={slug}&src=…` both stash
   // `{ slug, source }`; `useVenueArrival` on the map consumes it.
   useEffect(() => {
+    // First touch first: the arrival capture below rewrites the address bar.
+    captureAcquisitionFromLocation()
     captureVenueArrivalFromLocation()
   }, [])
 
@@ -232,7 +235,7 @@ function AppContent() {
   }, [isAuthenticated, onboardingChecked, setRoute])
 
   // Resume a pending QR check-in after sign-in.
-  // When an unauthenticated visitor scans a venue QR (areacode.co.za/qr/...),
+  // When an unauthenticated visitor scans a venue QR (glyphcity.com/qr/...),
   // the QrCheckIn screen stashes {nodeId, token} in sessionStorage and routes
   // them to login. Once authenticated, send them back to the same deep link so
   // the check-in completes.

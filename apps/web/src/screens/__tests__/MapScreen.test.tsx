@@ -77,7 +77,11 @@ vi.mock('@area-code/shared/hooks', () => ({
   useCheckOut: () => ({ checkOut: vi.fn(), isPending: false, error: null }),
 }))
 
-vi.mock('@area-code/shared/lib/featureGating', () => ({ useLiveVibeOnMap: () => false }))
+vi.mock('@area-code/shared/lib/featureGating', () => ({
+  useLiveVibeOnMap: () => false,
+  // Point_Mode is off by default (glyphcity-rebrand R8.10).
+  usePointMode: () => false,
+}))
 
 vi.mock('@area-code/shared/lib/api', () => ({
   api: {

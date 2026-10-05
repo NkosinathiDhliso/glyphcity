@@ -1,4 +1,4 @@
-# Area Code - allow all crawlers, point them at the sitemap.
+# Consumer app: allow all crawlers, point them at the sitemap.
 User-agent: *
 Allow: /
 
@@ -6,4 +6,4 @@ Allow: /
 Disallow: /login
 Disallow: /signup
 
-Sitemap: https://www.areacode.co.za/sitemap.xml
+Sitemap: %APP_URL%/sitemap.xml

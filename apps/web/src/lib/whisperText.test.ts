@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
+import { PLAIN_SCALE_EN } from '@area-code/shared/constants/state-labels'
 import type { Node } from '@area-code/shared/types'
 import { describe, it, expect } from 'vitest'
 
-import { computeWhisperText } from './whisperText'
+import { computeWhisperText, type StateLabelTranslator } from './whisperText'
+
+const translate: StateLabelTranslator = (key) => PLAIN_SCALE_EN[key]
 
 function makeNode(overrides: Partial<Node> = {}): Node {
   return {
@@ -45,7 +48,7 @@ function makeMapState(
 
 describe('computeWhisperText', () => {
   it('returns null for undefined node', () => {
-    const result = computeWhisperText('node-1', undefined, makeMapState())
+    const result = computeWhisperText('node-1', undefined, makeMapState(), translate)
     expect(result).toBeNull()
   })
 
@@ -55,7 +58,7 @@ describe('computeWhisperText', () => {
       friendsAtVenue: { 'node-1': ['friend-a', 'friend-b'] },
       pulseScores: { 'node-1': 50 },
     })
-    const result = computeWhisperText('node-1', node, state)
+    const result = computeWhisperText('node-1', node, state, translate)
     expect(result).toBe('Your crowd \u00b7 Vibe Lounge')
   })
 
@@ -65,8 +68,8 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 35 },
       checkInCounts: { 'node-1': 8 },
     })
-    const result = computeWhisperText('node-1', node, state)
-    expect(result).toBe('Buzzing \u00b7 Club Nova')
+    const result = computeWhisperText('node-1', node, state, translate)
+    expect(result).toBe(`${PLAIN_SCALE_EN['state.busy']} \u00b7 Club Nova`)
   })
 
   it('returns popping whisper for popping venues', () => {
@@ -75,8 +78,8 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 70 },
       checkInCounts: { 'node-1': 20 },
     })
-    const result = computeWhisperText('node-1', node, state)
-    expect(result).toBe('Popping \u00b7 Mega Bar')
+    const result = computeWhisperText('node-1', node, state, translate)
+    expect(result).toBe(`${PLAIN_SCALE_EN['state.veryBusy']} \u00b7 Mega Bar`)
   })
 
   it('returns aliveness whisper for active venues with check-ins', () => {
@@ -85,8 +88,8 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 15 },
       checkInCounts: { 'node-1': 3 },
     })
-    const result = computeWhisperText('node-1', node, state)
-    expect(result).toBe('Live \u00b7 Chill Spot')
+    const result = computeWhisperText('node-1', node, state, translate)
+    expect(result).toBe(`${PLAIN_SCALE_EN['state.aLittleBusy']} \u00b7 Chill Spot`)
   })
 
   it('returns quiet whisper for quiet venues with some presence', () => {
@@ -95,8 +98,8 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 5 },
       checkInCounts: { 'node-1': 1 },
     })
-    const result = computeWhisperText('node-1', node, state)
-    expect(result).toBe('Quiet \u00b7 Quiet Cafe')
+    const result = computeWhisperText('node-1', node, state, translate)
+    expect(result).toBe(`${PLAIN_SCALE_EN['state.quiet']} \u00b7 Quiet Cafe`)
   })
 
   it('returns null for dormant venues (honest, no fabrication)', () => {
@@ -105,7 +108,7 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 0 },
       checkInCounts: { 'node-1': 0 },
     })
-    const result = computeWhisperText('node-1', node, state)
+    const result = computeWhisperText('node-1', node, state, translate)
     expect(result).toBeNull()
   })
 
@@ -116,7 +119,7 @@ describe('computeWhisperText', () => {
       checkInCounts: { 'node-1': 12 },
       momentum: { 'node-1': 'filling_up' },
     })
-    const result = computeWhisperText('node-1', node, state)
+    const result = computeWhisperText('node-1', node, state, translate)
     expect(result).toBe('Filling up · Rising Spot')
   })
 
@@ -127,8 +130,8 @@ describe('computeWhisperText', () => {
       checkInCounts: { 'node-1': 6 },
       momentum: { 'node-1': 'winding_down' },
     })
-    const result = computeWhisperText('node-1', node, state)
-    expect(result).toBe('Buzzing · Fading Spot')
+    const result = computeWhisperText('node-1', node, state, translate)
+    expect(result).toBe(`${PLAIN_SCALE_EN['state.busy']} \u00b7 Fading Spot`)
   })
 
   it('prioritises belonging over momentum', () => {
@@ -138,8 +141,16 @@ describe('computeWhisperText', () => {
       checkInCounts: { 'node-1': 30 },
       friendsAtVenue: { 'node-1': ['friend-1'] },
     })
-    const result = computeWhisperText('node-1', node, state)
+    const result = computeWhisperText('node-1', node, state, translate)
     expect(result).toBe('Your crowd \u00b7 Hot Spot')
+  })
+
+  it('never whispers a retired state word', () => {
+    for (const score of [0, 5, 15, 35, 70]) {
+      const state = makeMapState({ pulseScores: { 'node-1': score }, checkInCounts: { 'node-1': 4 } })
+      const result = computeWhisperText('node-1', makeNode(), state, translate) ?? ''
+      expect(result).not.toMatch(/\b(Popping|Buzzing|Active|Dormant)\b/)
+    }
   })
 
   it('returns null for quiet venues with zero check-ins', () => {
@@ -148,7 +159,7 @@ describe('computeWhisperText', () => {
       pulseScores: { 'node-1': 3 },
       checkInCounts: { 'node-1': 0 },
     })
-    const result = computeWhisperText('node-1', node, state)
+    const result = computeWhisperText('node-1', node, state, translate)
     expect(result).toBeNull()
   })
 })

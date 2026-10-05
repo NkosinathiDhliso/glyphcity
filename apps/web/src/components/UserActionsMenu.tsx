@@ -149,14 +149,14 @@ function ReportDialog({
             </p>
             <button
               onClick={onClose}
-              className="text-sm text-white gradient-accent rounded-xl px-4 py-2 transition-all active:scale-95"
+              className="text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 transition-all active:scale-95"
             >
               {t('common.done', 'Done')}
             </button>
           </div>
         ) : (
           <>
-            <h2 className="text-[var(--text-primary)] font-bold text-base font-[Syne] mb-1">
+            <h2 className="text-[var(--text-primary)] font-bold text-base font-display mb-1">
               {t('friends.reportTitle', 'Report {{name}}', { name: targetName })}
             </h2>
             <p className="text-[var(--text-muted)] text-xs mb-4">
@@ -197,7 +197,7 @@ function ReportDialog({
               <button
                 onClick={() => reportMutation.mutate()}
                 disabled={reportMutation.isPending || description.trim().length === 0}
-                className="flex-1 text-sm text-white gradient-accent rounded-xl px-4 py-2.5 transition-all active:scale-95 disabled:opacity-50"
+                className="flex-1 text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2.5 transition-all active:scale-95 disabled:opacity-50"
               >
                 {t('friends.reportSubmit', 'Submit report')}
               </button>

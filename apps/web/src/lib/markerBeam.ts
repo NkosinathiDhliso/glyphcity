@@ -31,7 +31,7 @@ export interface BeamVisualOptions {
 }
 
 /** Pillar height (px) by Pulse_State - aliveness only, not business tier. */
-const BEAM_HEIGHT: Record<NodeState, number> = {
+export const BEAM_HEIGHT: Record<NodeState, number> = {
   dormant: 62,
   quiet: 78,
   active: 98,
@@ -40,7 +40,7 @@ const BEAM_HEIGHT: Record<NodeState, number> = {
 }
 
 /** Cone top width (px) by Pulse_State before tier multiplier - wide mouth under glyph. */
-const CONE_TOP: Record<NodeState, number> = {
+export const CONE_TOP: Record<NodeState, number> = {
   dormant: 16,
   quiet: 20,
   active: 28,
@@ -49,9 +49,9 @@ const CONE_TOP: Record<NodeState, number> = {
 }
 
 /** Wide at top (glyph), tip pinned to venue coordinate at bottom. */
-const CONE_CLIP = 'polygon(4% 0%, 96% 0%, 50% 100%)'
+export const CONE_CLIP = 'polygon(4% 0%, 96% 0%, 50% 100%)'
 
-const BEAM_OPACITY: Record<NodeState, number> = {
+export const BEAM_OPACITY: Record<NodeState, number> = {
   dormant: 0.35,
   quiet: 0.5,
   active: 0.65,
@@ -68,7 +68,7 @@ function coneTopWidth(state: NodeState, tierScale: number, hybrid: boolean): num
   return Math.round(top)
 }
 
-function beamGradient(colour: string): string {
+export function beamGradient(colour: string): string {
   // Bright at the venue tip (bottom), dissipating upward toward the glyph.
   return [
     `linear-gradient(to top,`,

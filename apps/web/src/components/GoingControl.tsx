@@ -128,7 +128,7 @@ export function GoingControl({ nodeId, hasTonight, seedCount, startsAt, onSignIn
    * fallback: a consumer whose browser cannot subscribe still gets told inside
    * the app. What changes is what we tell them, and we do not overstate it. Some
    * browsers, iOS Safari outside an installed PWA in particular, cannot show a
-   * notification while Area Code is closed; the note says so rather than
+   * notification while the app is closed; the note says so rather than
    * implying a push that will never arrive.
    */
   async function handleRemind() {
@@ -145,7 +145,7 @@ export function GoingControl({ nodeId, hasTonight, seedCount, startsAt, onSignIn
           ? t('going.remindOn', 'We will tell you when it starts.')
           : t(
               'going.remindInAppOnly',
-              'We will tell you when it starts, inside Area Code. This browser cannot show notifications while the app is closed.',
+              'We will tell you when it starts, inside {{appName}}. This browser cannot show notifications while the app is closed.',
             ),
       )
     } catch {

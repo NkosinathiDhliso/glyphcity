@@ -2,6 +2,7 @@ import { Avatar } from '@area-code/shared/components/Avatar'
 import { Skeleton } from '@area-code/shared/components/Skeleton'
 import { TierBadge } from '@area-code/shared/components/TierBadge'
 import { TierProgressNudge } from '@area-code/shared/components/TierProgressNudge'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { useMapStore } from '@area-code/shared/stores/mapStore'
 import { useUserStore } from '@area-code/shared/stores/userStore'
@@ -85,7 +86,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
       style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
       data-scroll-container
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] mb-1">{title}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-1">{title}</h1>
       <p className="text-[var(--text-muted)] text-xs mb-3">{t('leaderboard.thisWeek')}</p>
 
       {/* Segment toggle */}
@@ -97,7 +98,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
           disabled={!userArchetypeId}
           className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all ${
             viewMode === 'archetype'
-              ? 'bg-[var(--accent-cta)] text-white'
+              ? 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
               : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
           } ${!userArchetypeId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
@@ -114,7 +115,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
           onClick={() => setViewMode('city-wide')}
           className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all ${
             viewMode === 'city-wide'
-              ? 'bg-[var(--accent-cta)] text-white'
+              ? 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
               : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
           }`}
         >
@@ -212,9 +213,9 @@ function YourRankCard({ user, rank, checkInCount, topVenueName, t }: YourRankCar
       const blob = await generateShareCard(cardData)
       const text = t('leaderboard.shareText', {
         rank,
-        defaultValue: `I'm #{{rank}} this week on Area Code`,
+        defaultValue: `I'm #{{rank}} this week on {{appName}}`,
       })
-      await shareOrCopy(blob, typeof text === 'string' ? text : `I'm #${rank} this week on Area Code`)
+      await shareOrCopy(blob, typeof text === 'string' ? text : `I'm #${rank} this week on ${APP_NAME}`)
     } catch {
       // Best-effort: a failed render or dismissed share sheet is a no-op.
     } finally {

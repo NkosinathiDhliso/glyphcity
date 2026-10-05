@@ -88,7 +88,7 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
             </p>
             <button
               onClick={onClose}
-              className="text-sm text-white gradient-accent rounded-xl px-4 py-2 transition-all active:scale-95"
+              className="text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 transition-all active:scale-95"
             >
               {t('common.done', 'Done')}
             </button>
@@ -101,7 +101,7 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
               <Avatar url={data.avatarUrl} displayName={name} size="lg" tier={data.tier} />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-row items-center gap-2">
-                  <p className="text-[var(--text-primary)] text-lg font-bold font-[Syne] truncate">{name}</p>
+                  <p className="text-[var(--text-primary)] text-lg font-bold font-display truncate">{name}</p>
                   <TierBadge tier={data.tier} />
                 </div>
                 {data.username && <p className="text-[var(--text-muted)] text-sm truncate">@{data.username}</p>}
@@ -139,7 +139,7 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
               <button
                 onClick={() => followMutation.mutate()}
                 disabled={followMutation.isPending}
-                className="w-full text-sm text-white gradient-accent rounded-xl px-4 py-3 transition-all active:scale-95"
+                className="w-full text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-3 transition-all active:scale-95"
               >
                 {data.isFollowedBy ? t('friends.followBack') : t('friends.follow')}
               </button>

@@ -7,6 +7,7 @@ import { useConsumerAuthStore } from '@area-code/shared/stores/consumerAuthStore
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { clearAcquisitionSource, readAcquisitionSource } from '../lib/acquisition'
 import { cleanFirstGetToken, redeemFirstGetToken } from '../lib/firstGetToken'
 import { OAUTH_STORAGE_UNAVAILABLE, startConsumerGoogleOAuthWeb } from '../lib/startConsumerGoogleOAuth'
 import type { AppRoute } from '../types'
@@ -110,7 +111,11 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
     trackEvent('signup_started')
     let created: AuthTokens
     try {
-      created = await api.post<AuthTokens>('/v1/auth/consumer/email-signup', { email, password })
+      created = await api.post<AuthTokens>('/v1/auth/consumer/email-signup', {
+        email,
+        password,
+        acquisitionSource: readAcquisitionSource(),
+      })
     } catch (signupErr) {
       const signupStatus = (signupErr as { statusCode?: number } | null)?.statusCode
       if (signupStatus === 409) {
@@ -124,6 +129,7 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
     }
 
     setAuth(created.accessToken, created.refreshToken, created.user.id)
+    clearAcquisitionSource()
     // Signup funnel completion for the email/password path (R4.1).
     trackEvent('signup_completed', { method: 'email' })
 
@@ -166,7 +172,7 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
         paddingBottom: 'max(2rem, env(safe-area-inset-bottom))',
       }}
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-2 font-[Syne]">{t('auth.login.title')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-2 font-display">{t('auth.login.title')}</h1>
       <p className="text-[var(--text-secondary)] text-sm mb-8 text-center max-w-xs">
         {t('auth.login.subtitle', "New here? Just sign in and we'll set up your account.")}
       </p>
@@ -229,10 +235,10 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
           type="button"
           onClick={() => void handleEmailAuth()}
           disabled={loading || googleLoading || !canSubmit}
-          className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('auth.login.submitEmail', 'Sign in')
           )}

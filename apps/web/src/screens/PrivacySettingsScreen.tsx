@@ -60,7 +60,9 @@ export function PrivacySettingsScreen({ onNavigate }: PrivacySettingsScreenProps
         </button>
       </div>
 
-      <h1 className="text-[var(--text-primary)] font-bold text-xl font-[Syne] mb-6">{t('privacy.settings.heading')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-6">
+        {t('privacy.settings.heading')}
+      </h1>
 
       {/* Privacy level picker */}
       <div className="mb-6">

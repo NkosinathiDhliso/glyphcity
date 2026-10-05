@@ -181,7 +181,7 @@ export function NotificationPrimingSheet({ isOpen, onClose, lat, lng, userId }: 
 
         {installOnly && (
           <p className="text-[var(--text-secondary)] text-sm leading-relaxed" data-priming-install>
-            {t('notif.priming.installIos', 'Add Area Code to your Home Screen to get notifications')}
+            {t('notif.priming.installIos', 'Add {{appName}} to your Home Screen to get notifications')}
             {'. '}
             {t('notif.priming.installIosHow', 'Tap the share control in Safari, then Add to Home Screen.')}
           </p>
@@ -204,7 +204,7 @@ export function NotificationPrimingSheet({ isOpen, onClose, lat, lng, userId }: 
             onClick={() => void handleEnable()}
             disabled={busy}
             data-priming-enable
-            className={`w-full min-h-11 bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-4 text-base transition-transform duration-150 active:scale-95 ${
+            className={`w-full min-h-11 bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-4 text-base transition-transform duration-150 active:scale-95 ${
               busy ? 'opacity-60 cursor-not-allowed' : ''
             }`}
           >

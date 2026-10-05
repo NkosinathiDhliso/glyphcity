@@ -55,7 +55,7 @@ export function FirstGetPrompt({ onNavigate }: FirstGetPromptProps) {
       }}
     >
       <div className="w-full max-w-sm flex flex-col gap-4">
-        <h1 className="text-[var(--text-primary)] font-bold text-xl text-center font-[Syne]">
+        <h1 className="text-[var(--text-primary)] font-bold text-xl text-center font-display">
           {t('auth.firstGet.title', 'Got a code from a venue?')}
         </h1>
         <p className="text-[var(--text-secondary)] text-sm text-center">
@@ -79,10 +79,10 @@ export function FirstGetPrompt({ onNavigate }: FirstGetPromptProps) {
         <button
           onClick={() => void handleSubmit()}
           disabled={loading || token.length !== 8}
-          className="bg-[var(--accent-cta)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-[var(--accent-cta)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('auth.firstGet.submit', 'Apply code')
           )}

@@ -1,6 +1,7 @@
 import { useMapStore } from '@area-code/shared/stores'
 import type mapboxgl from 'mapbox-gl'
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { DRAG_AXIS_THRESHOLD, MIN_MARKER_ZOOM } from '../lib/carouselConstants'
 import { classifyDrag } from '../lib/gestureClassifier'
@@ -19,6 +20,7 @@ export function useConstellationSweep(mapRef: RefObject<mapboxgl.Map | null>, ma
   const [whisperText, setWhisperText] = useState<string | null>(null)
   const dragStartRef = useRef<{ x: number; y: number } | null>(null)
   const lastVibratedRef = useRef<string | null>(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const map = mapRef.current
@@ -71,7 +73,7 @@ export function useConstellationSweep(mapRef: RefObject<mapboxgl.Map | null>, ma
 
       if (nearestId) {
         const node = mapState.nodes[nearestId]
-        const text = computeWhisperText(nearestId, node, mapState)
+        const text = computeWhisperText(nearestId, node, mapState, (key) => t(key))
         setWhisperText(text)
       } else {
         setWhisperText(null)
@@ -106,7 +108,7 @@ export function useConstellationSweep(mapRef: RefObject<mapboxgl.Map | null>, ma
       canvas.removeEventListener('pointerup', onUp)
       canvas.removeEventListener('pointercancel', onUp)
     }
-  }, [mapRef, mapReady])
+  }, [mapRef, mapReady, t])
 
   return { brushedNodeId, whisperText }
 }

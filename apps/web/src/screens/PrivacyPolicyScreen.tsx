@@ -1,3 +1,5 @@
+import { APP_DOMAIN, APP_NAME, APP_URL, COMPANY_NAME, PRIVACY_EMAIL } from '@area-code/shared/constants/brand'
+import { OPERATOR_STATEMENT } from '@area-code/shared/constants/legal-content'
 import { ChevronLeft } from 'lucide-react'
 
 import type { AppRoute } from '../types'
@@ -12,7 +14,7 @@ interface PrivacyPolicyScreenProps {
  * publicly accessible without login - Google's OAuth verification team
  * fetches this URL.
  *
- * Contact: privacy@areacode.co.za
+ * Contact: PRIVACY_EMAIL (brand.ts)
  *
  * Note: This is a working draft based on what the platform actually does
  * (see SALES_PITCH.md "Privacy by Design" and the POPIA references in
@@ -31,16 +33,16 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
           <ChevronLeft size={16} strokeWidth={2} /> Back
         </button>
 
-        <h1 className="font-[Syne] text-3xl font-extrabold tracking-tight mb-2">Privacy Policy</h1>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight mb-2">Privacy Policy</h1>
         <p className="text-sm text-[var(--text-muted)] mb-8">Last updated: 16 May 2026</p>
 
         <section className="space-y-6 text-sm leading-relaxed text-[var(--text-secondary)]">
           <p>
-            Area Code (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is a venue-discovery platform operated from
-            South Africa. This policy explains what personal information we collect from you when you use the Area Code
-            consumer app at{' '}
-            <a href="https://www.areacode.co.za" className="text-[var(--accent)] underline">
-              www.areacode.co.za
+            {OPERATOR_STATEMENT} {APP_NAME} is a venue-discovery platform operated from South Africa. In this policy
+            &quot;we&quot;, &quot;us&quot; and &quot;our&quot; mean {COMPANY_NAME}. This policy explains what personal
+            information we collect from you when you use the {APP_NAME} consumer app at{' '}
+            <a href={APP_URL} className="text-[var(--accent)] underline">
+              {APP_DOMAIN}
             </a>
             , why we collect it, how we use it, and the rights you have over it.
           </p>
@@ -49,18 +51,18 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             Personal Information Act (POPIA, Act No. 4 of 2013).
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">1. Who we are</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">1. Who we are</h2>
           <p>
-            <strong>Responsible party:</strong> Area Code, Johannesburg, South Africa.
+            <strong>Responsible party:</strong> {COMPANY_NAME}, Johannesburg, South Africa, the operator of {APP_NAME}.
             <br />
             <strong>Information officer:</strong> contactable at{' '}
-            <a href="mailto:privacy@areacode.co.za" className="text-[var(--accent)] underline">
-              privacy@areacode.co.za
+            <a href={`mailto:${PRIVACY_EMAIL}`} className="text-[var(--accent)] underline">
+              {PRIVACY_EMAIL}
             </a>
             .
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">2. What we collect</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">2. What we collect</h2>
           <p>When you sign up and use the app, we collect:</p>
           <ul className="list-disc pl-6 space-y-1.5">
             <li>
@@ -95,10 +97,10 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             charge consumers), persistent location history, or biometric data.
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">3. Why we collect it</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">3. Why we collect it</h2>
           <p>We process your personal information only for the following purposes:</p>
           <ul className="list-disc pl-6 space-y-1.5">
-            <li>To create and operate your Area Code account.</li>
+            <li>To create and operate your {APP_NAME} account.</li>
             <li>To verify that check-ins are genuine (proximity check at the moment of check-in only).</li>
             <li>To award rewards, tiers, and leaderboard positions.</li>
             <li>To produce the live venue pulse score and to power features such as the music taste profile.</li>
@@ -111,7 +113,7 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             <li>To respond to your support questions.</li>
           </ul>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">4. How long we keep it</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">4. How long we keep it</h2>
           <ul className="list-disc pl-6 space-y-1.5">
             <li>
               <strong>Account data:</strong> kept while your account is active. When you delete your account, we
@@ -131,7 +133,7 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             </li>
           </ul>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">5. Who we share it with</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">5. Who we share it with</h2>
           <p>
             We do not sell your personal information. We share it only with the following categories of recipients, and
             only to the extent necessary:
@@ -165,20 +167,20 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             </li>
           </ul>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">6. International transfers</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">6. International transfers</h2>
           <p>
             Your data is stored on AWS infrastructure in the United States. AWS is bound by industry-standard data
             processing terms and adequate safeguards as required by POPIA Section 72.
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">7. Your rights</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">7. Your rights</h2>
           <p>Under POPIA, you have the right to:</p>
           <ul className="list-disc pl-6 space-y-1.5">
             <li>
               <strong>Access</strong> the personal information we hold about you. Use the &quot;Export my data&quot;
               button in your profile, or email{' '}
-              <a href="mailto:privacy@areacode.co.za" className="text-[var(--accent)] underline">
-                privacy@areacode.co.za
+              <a href={`mailto:${PRIVACY_EMAIL}`} className="text-[var(--accent)] underline">
+                {PRIVACY_EMAIL}
               </a>
               .
             </li>
@@ -203,30 +205,30 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
             </li>
           </ul>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">8. Children</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">8. Children</h2>
           <p>
-            Area Code is not intended for users under 18. We do not knowingly collect personal information from
+            {APP_NAME} is not intended for users under 18. We do not knowingly collect personal information from
             children. If you become aware that a child has registered an account, contact us and we will delete it.
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">9. Cookies and storage</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">9. Cookies and storage</h2>
           <p>
             We use browser local storage to keep you signed in and to remember your settings. We do not use third-party
             advertising cookies or analytics cookies. For crash and performance monitoring we use Amazon CloudWatch RUM,
             configured to operate without cookies.
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">10. Changes</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">10. Changes</h2>
           <p>
             We may update this policy as the platform evolves. The &quot;Last updated&quot; date at the top reflects the
             most recent change. Material changes will be notified in-app.
           </p>
 
-          <h2 className="font-[Syne] text-xl font-bold text-[var(--text-primary)] pt-4">11. Contact</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] pt-4">11. Contact</h2>
           <p>
             For any privacy question, request, or complaint:{' '}
-            <a href="mailto:privacy@areacode.co.za" className="text-[var(--accent)] underline">
-              privacy@areacode.co.za
+            <a href={`mailto:${PRIVACY_EMAIL}`} className="text-[var(--accent)] underline">
+              {PRIVACY_EMAIL}
             </a>
             .
           </p>
