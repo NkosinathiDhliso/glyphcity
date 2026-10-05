@@ -347,7 +347,7 @@ export function MusicSchedulePanel() {
   if (!venueNode) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-3" data-testid="music-schedule-no-venue">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne] text-center">
+        <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.musicSchedule.noVenue.title', 'No venue yet')}
         </span>
         <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
@@ -364,7 +364,7 @@ export function MusicSchedulePanel() {
   if (!accessAllowed) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-3" data-testid="music-schedule-denied">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne] text-center">
+        <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.musicSchedule.denied.title')}
         </span>
         <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
@@ -411,7 +411,7 @@ export function MusicSchedulePanel() {
   if (slots.length === 0) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-4" data-testid="music-schedule-empty">
-        <span className="text-[var(--text-primary)] font-bold text-xl font-[Syne] text-center">
+        <span className="text-[var(--text-primary)] font-bold text-xl font-display text-center">
           {t('biz.musicSchedule.empty.title')}
         </span>
         <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
@@ -421,7 +421,7 @@ export function MusicSchedulePanel() {
         <button
           type="button"
           onClick={openEditorForNewSlot}
-          className="bg-[var(--accent)] text-white rounded-xl px-5 py-2.5 text-sm font-medium"
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-5 py-2.5 text-sm font-medium active:scale-95"
           data-testid="music-schedule-add-first-slot"
         >
           {t('biz.musicSchedule.empty.cta')}
@@ -454,13 +454,13 @@ export function MusicSchedulePanel() {
     <div className="p-5 flex flex-col gap-4" data-testid="music-schedule-panel">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col">
-          <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.musicSchedule.title')}</h2>
+          <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.musicSchedule.title')}</h2>
           <span className="text-[var(--text-muted)] text-xs">{t('biz.musicSchedule.subtitle')}</span>
         </div>
         <button
           type="button"
           onClick={openEditorForNewSlot}
-          className="bg-[var(--accent)] text-white rounded-xl px-4 py-2 text-xs font-medium"
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 text-xs font-medium active:scale-95"
           data-testid="music-schedule-add-slot"
         >
           {t('biz.musicSchedule.addSlot')}
@@ -1206,7 +1206,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
     >
       <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-lg w-full max-h-[92vh] overflow-y-auto flex flex-col gap-4 shadow-2xl">
         <div className="flex flex-row items-center justify-between">
-          <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+          <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
             {isEditing ? 'Edit slot' : 'New slot'}
           </h3>
           <button type="button" onClick={onClose} className="text-[var(--text-muted)] text-sm" aria-label="Close">
@@ -1297,7 +1297,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
               onClick={() => handleModeChange('blanket')}
               className={`px-4 py-2 text-sm ${
                 draft.mode === 'blanket'
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                   : 'bg-[var(--bg-raised)] text-[var(--text-secondary)]'
               }`}
               data-testid="slot-editor-mode-blanket"
@@ -1311,7 +1311,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
               onClick={() => handleModeChange('lineup')}
               className={`px-4 py-2 text-sm ${
                 draft.mode === 'lineup'
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                   : 'bg-[var(--bg-raised)] text-[var(--text-secondary)]'
               }`}
               data-testid="slot-editor-mode-lineup"
@@ -1338,7 +1338,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
                     aria-pressed={selected}
                     className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
                       selected
-                        ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                        ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]'
                         : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border-[var(--border)]'
                     } ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
                     data-testid={`slot-editor-genre-${g}`}
@@ -1418,7 +1418,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
               type="button"
               onClick={() => void handleSave()}
               disabled={hasErrors || saving}
-              className="bg-[var(--accent)] text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
               data-testid="slot-editor-save"
             >
               {saving ? 'Saving…' : 'Save'}
@@ -1434,7 +1434,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
           data-testid="slot-editor-delete-confirm"
         >
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full flex flex-col gap-3 shadow-2xl">
-            <h4 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">Delete this slot?</h4>
+            <h4 className="text-[var(--text-primary)] font-bold text-lg font-display">Delete this slot?</h4>
             <p className="text-[var(--text-secondary)] text-sm">
               This removes the slot from your weekly schedule. You can add it back later.
             </p>
@@ -1536,7 +1536,7 @@ function LineupEntryRow({ index, entry, errors, onPatch, onToggleGenre, onRemove
               aria-pressed={selected}
               className={`px-2 py-1 rounded-full text-[11px] border ${
                 selected
-                  ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]'
                   : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border-[var(--border)]'
               } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
               data-testid={`slot-editor-lineup-${index}-genre-${g}`}

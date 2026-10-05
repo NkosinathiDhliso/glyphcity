@@ -16,6 +16,7 @@
  *   3. empty   — honest empty state when the history has no items.
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
@@ -101,8 +102,8 @@ describe('DigestHistory - list (R4.1)', () => {
     // API returns newest first (2026-07-06 then 2026-06-29).
     mocks.apiGet.mockResolvedValue({
       items: [
-        digest('2026-07-06', 23, ['23 visits recorded through Area Code this week.']),
-        digest('2026-06-29', 15, ['15 visits recorded through Area Code this week.']),
+        digest('2026-07-06', 23, [`23 visits recorded through ${APP_NAME} this week.`]),
+        digest('2026-06-29', 15, [`15 visits recorded through ${APP_NAME} this week.`]),
       ],
       nextCursor: null,
     })
@@ -116,8 +117,8 @@ describe('DigestHistory - list (R4.1)', () => {
 
     const rows = screen.getAllByTestId('digest-history-row')
     // The first rendered row is the newest week (verbatim API copy).
-    expect(rows[0]?.textContent).toContain('23 visits recorded through Area Code this week.')
-    expect(rows[1]?.textContent).toContain('15 visits recorded through Area Code this week.')
+    expect(rows[0]?.textContent).toContain(`23 visits recorded through ${APP_NAME} this week.`)
+    expect(rows[1]?.textContent).toContain(`15 visits recorded through ${APP_NAME} this week.`)
   })
 })
 

@@ -132,7 +132,7 @@ export function TonightSlotFields(props: TonightSlotFieldsProps) {
                 onClick={() => onToggleGenre(genre)}
                 className={`${CHIP_CLASS} ${
                   on
-                    ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
+                    ? 'bg-[var(--accent)] text-[var(--on-accent)] border-[var(--accent)]'
                     : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border-[var(--border)]'
                 }`}
               >

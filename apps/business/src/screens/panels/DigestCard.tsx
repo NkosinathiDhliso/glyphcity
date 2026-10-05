@@ -87,7 +87,7 @@ function MetricFigure({
       className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1"
     >
       <div className="flex flex-row items-baseline gap-1.5">
-        <span className="text-[var(--text-primary)] text-2xl font-bold font-[Syne]">{value}</span>
+        <span className="text-[var(--text-primary)] text-2xl font-bold font-display">{value}</span>
         {chip && (
           <span
             className="text-xs font-medium"
@@ -149,11 +149,11 @@ export function DigestCard() {
         data-testid="digest-card-empty"
         className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5 flex flex-col gap-1.5"
       >
-        <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('biz.digest.empty.title', 'No digest yet')}
         </h3>
         <p className="text-[var(--text-secondary)] text-sm">
-          {t('biz.digest.empty.body', 'Your first weekly digest arrives after your next full week on Area Code.')}
+          {t('biz.digest.empty.body', 'Your first weekly digest arrives after your next full week on {{appName}}.')}
         </p>
       </div>
     )
@@ -175,7 +175,7 @@ export function DigestCard() {
     >
       {/* Header */}
       <div className="flex flex-row items-center justify-between">
-        <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('biz.digest.title', 'Weekly digest')}
         </h3>
         <span className="text-[var(--text-muted)] text-xs">

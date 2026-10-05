@@ -1,11 +1,16 @@
 {
+  "state.quiet": "Quiet",
+  "state.aLittleBusy": "A little busy",
+  "state.busy": "Busy",
+  "state.veryBusy": "Very busy",
+  "state.firstIn": "Be the first in",
   "biz.login.title": "Business Login",
   "biz.login.phone": "Phone number",
   "biz.login.sendOtp": "Send OTP",
   "biz.login.verifyOtp": "Verify OTP",
   "biz.login.noAccount": "Don't have an account? Register here",
   "biz.signup.title": "Register Your Business",
-  "biz.signup.subtitle": "Join Area Code and connect with customers in your neighbourhood",
+  "biz.signup.subtitle": "Join {{appName}} and connect with customers in your neighbourhood",
   "biz.signup.businessName": "Business name",
   "biz.signup.email": "Email address",
   "biz.signup.phone": "Phone number",
@@ -101,7 +106,7 @@
   "biz.tonight.denied.title": "You don't have access to this venue's schedule",
   "biz.tonight.error.forbidden": "You don't have access to this venue's schedule.",
   "biz.tonight.error.rateLimited": "Too many changes just now. Wait a moment and publish again.",
-  "biz.tonight.error.network": "Couldn't reach Area Code. Check your connection and publish again.",
+  "biz.tonight.error.network": "Couldn't reach {{appName}}. Check your connection and publish again.",
   "biz.tonight.error.server": "Couldn't publish tonight. Please try again.",
   "biz.musicSchedule.title": "Music Schedule",
   "biz.musicSchedule.subtitle": "Plan the week. Slots drive your live archetype on the map.",
@@ -134,7 +139,7 @@
   "biz.digest.loading": "Loading your digest…",
   "biz.digest.error": "Couldn't load your digest. Please try again.",
   "biz.digest.empty.title": "No digest yet",
-  "biz.digest.empty.body": "Your first weekly digest arrives after your next full week on Area Code.",
+  "biz.digest.empty.body": "Your first weekly digest arrives after your next full week on {{appName}}.",
   "biz.digest.quietWeek": "Quiet week",
   "biz.digest.metric.visits": "Visits recorded",
   "biz.digest.metric.uniqueVisitors": "Unique visitors",
@@ -159,10 +164,10 @@
   "biz.onboarding.row.qr": "Turn on QR check-in and put the code where customers order",
 
   "biz.marketing.reach.title": "How people find you",
-  "biz.marketing.reach.intro": "Four ways someone who has never been in sees your venue on Area Code. Each one is recorded, so your check-in numbers show what it did.",
+  "biz.marketing.reach.intro": "Four ways someone who has never been in sees your venue on {{appName}}. Each one is recorded, so your check-in numbers show what it did.",
   "biz.marketing.reach.map": "On the map. Your venue is ranked by how alive it is right now and how well its crowd matches the person looking, not by how near it is.",
   "biz.marketing.reach.tonight": "Tonight on your card. What is on and when it starts reads as one line on your venue card, so someone deciding where to go sees it.",
   "biz.marketing.reach.shares": "WhatsApp shares. Your venue link previews the room as it is right now, so a customer who forwards it shows friends a live snapshot.",
   "biz.marketing.reach.friends": "Friends. A check-in is visible to that customer's friends, which puts your venue in front of their circle.",
-  "biz.marketing.reach.measured": "Every check-in is recorded as found you on Area Code or already in the room. You read both counts, and we claim nothing we have not measured."
+  "biz.marketing.reach.measured": "Every check-in is recorded as found you on {{appName}} or already in the room. You read both counts, and we claim nothing we have not measured."
 }

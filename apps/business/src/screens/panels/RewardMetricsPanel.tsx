@@ -65,7 +65,7 @@ export function RewardMetricsPanel() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
         {t('biz.panel.rewardMetrics', 'Reward Metrics')}
       </h2>
 
@@ -170,7 +170,7 @@ export function RewardMetricsPanel() {
 function MetricCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div className="flex flex-col items-center gap-1 p-3 rounded-xl bg-[var(--bg-raised)]">
-      <span className="text-2xl font-bold font-[Syne]" style={{ color }}>
+      <span className="text-2xl font-bold font-display" style={{ color }}>
         {value}
       </span>
       <span className="text-[var(--text-muted)] text-xs text-center">{label}</span>

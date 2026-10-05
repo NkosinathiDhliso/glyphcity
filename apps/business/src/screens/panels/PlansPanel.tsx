@@ -201,7 +201,7 @@ export function PlansPanel() {
         }`}
       >
         <div className="flex flex-row items-center justify-between">
-          <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">{plan.name}</span>
+          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{plan.name}</span>
           {isCurrent && <span className="text-[var(--accent)] text-xs font-medium">{t('biz.plans.current')}</span>}
           {canStartTrial && !isCurrent && (
             <span className="text-[var(--success)] text-xs font-medium">
@@ -235,7 +235,7 @@ export function PlansPanel() {
             disabled={loading !== null || isPolling}
             className={`font-semibold rounded-xl py-3 text-sm transition-all duration-150 active:scale-95 disabled:opacity-50 mt-1 ${
               key === 'growth'
-                ? 'bg-[var(--accent)] text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                 : 'border border-[var(--border-strong)] text-[var(--text-primary)] bg-transparent'
             }`}
           >
@@ -287,7 +287,7 @@ export function PlansPanel() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.plans.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.plans.title')}</h2>
       <p className="text-[var(--text-secondary)] text-sm">{t('biz.plans.subtitle')}</p>
 
       <CheckoutReturnBanner state={returnState} onDismiss={dismiss} />
@@ -352,7 +352,7 @@ export function PlansPanel() {
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
               {t('biz.plans.cancelTitle')}
             </h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">{t('biz.plans.cancelBody')}</p>

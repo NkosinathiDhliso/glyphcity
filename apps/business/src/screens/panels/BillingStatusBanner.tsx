@@ -39,7 +39,7 @@ function RenewButton({ onRenew, renewing }: { onRenew: () => void; renewing: boo
     <button
       onClick={onRenew}
       disabled={renewing}
-      className="mt-2 self-start bg-[var(--accent)] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 active:scale-95 disabled:opacity-50"
+      className="mt-2 self-start bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-4 py-2 text-sm transition-all duration-150 active:scale-95 disabled:opacity-50"
     >
       {renewing ? '...' : 'Renew plan'}
     </button>

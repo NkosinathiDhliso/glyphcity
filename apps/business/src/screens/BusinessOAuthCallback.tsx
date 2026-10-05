@@ -244,7 +244,7 @@ export function BusinessOAuthCallback() {
   if (needsProfile && tokens) {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh bg-[var(--bg-base)] px-5 py-10">
-        <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne] text-center">
+        <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display text-center">
           {t('biz.oauth.completeProfile', 'Complete your business profile')}
         </h1>
         <div className="flex flex-col gap-4 w-full max-w-xs">
@@ -266,10 +266,10 @@ export function BusinessOAuthCallback() {
             type="button"
             onClick={() => void submitProfile()}
             disabled={profileSubmitting || !businessName.trim()}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {profileSubmitting ? (
-              <Spinner size="sm" className="border-white border-t-transparent" />
+              <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
             ) : (
               t('biz.oauth.continue', 'Continue')
             )}
@@ -298,7 +298,7 @@ export function BusinessOAuthCallback() {
 
   return (
     <div className="flex flex-col items-center justify-center h-dvh bg-[var(--bg-base)] px-5">
-      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne]">
+      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display">
         {t('auth.oauth.finishing', 'Finishing sign-in…')}
       </h1>
       {!error ? (

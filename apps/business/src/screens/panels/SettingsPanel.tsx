@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { classifyApiError, describeApiError } from '@area-code/shared/lib/apiError'
 import { formatSastDate } from '@area-code/shared/lib/sast'
@@ -105,7 +106,7 @@ export function SettingsPanel() {
     const url = getInviteUrl(token)
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Staff Invite', text: 'Join our team on Area Code', url })
+        await navigator.share({ title: 'Staff Invite', text: `Join our team on ${APP_NAME}`, url })
       } catch {
         /* user cancelled */
       }
@@ -182,7 +183,7 @@ export function SettingsPanel() {
 
   return (
     <div className="p-5 flex flex-col gap-6">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.settings.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.settings.title')}</h2>
 
       {/* Venue Management */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl">
@@ -267,7 +268,7 @@ export function SettingsPanel() {
             <button
               onClick={handleInviteStaff}
               disabled={inviteLoading || !inviteEmail.trim()}
-              className="bg-[var(--accent)] text-white font-medium rounded-xl px-4 min-h-11 text-sm transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap"
+              className="bg-[var(--accent)] text-[var(--on-accent)] font-medium rounded-xl px-4 min-h-11 text-sm transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
               {inviteLoading ? '...' : 'Invite'}
             </button>
@@ -278,7 +279,7 @@ export function SettingsPanel() {
               onClick={() => setInviteRole('staff')}
               className={`flex-1 min-h-11 rounded-xl text-xs font-medium transition-all active:scale-95 ${
                 inviteRole === 'staff'
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                   : 'bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-secondary)]'
               }`}
             >
@@ -288,7 +289,7 @@ export function SettingsPanel() {
               onClick={() => setInviteRole('manager')}
               className={`flex-1 min-h-11 rounded-xl text-xs font-medium transition-all active:scale-95 ${
                 inviteRole === 'manager'
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                   : 'bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-secondary)]'
               }`}
             >
@@ -428,7 +429,7 @@ export function SettingsPanel() {
       {confirmRemoveStaffId && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Remove staff member?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Remove staff member?</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               They will no longer be able to validate redemptions. You can re-invite them later.
             </p>

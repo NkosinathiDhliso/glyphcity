@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import type { BoostScoreboardPeriodView, BoostScoreboardView } from '@area-code/shared/types'
 import { useQuery } from '@tanstack/react-query'
@@ -98,8 +99,8 @@ export function BoostScoreboardCard({ boostId }: BoostScoreboardCardProps) {
       {/* Found_You is the highlighted line: the one reading the owner bought. */}
       <p data-testid={`boost-scoreboard-foundyou-${boostId}`} className="text-[var(--accent)] text-sm font-medium">
         {data.window.foundYou > 0
-          ? `${data.window.foundYou} found you on Area Code and checked in during the window.`
-          : t('biz.boost.scoreboard.noFoundYou', 'No one found you on Area Code during this window.')}
+          ? `${data.window.foundYou} found you on ${APP_NAME} and checked in during the window.`
+          : t('biz.boost.scoreboard.noFoundYou', 'No one found you on {{appName}} during this window.')}
       </p>
 
       <p data-testid={`boost-scoreboard-window-${boostId}`} className="text-[var(--text-secondary)] text-xs">

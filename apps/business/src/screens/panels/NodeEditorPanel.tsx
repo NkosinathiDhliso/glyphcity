@@ -16,6 +16,7 @@ import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import type { Node } from '@area-code/shared/types'
 import { useEffect, useRef, useState } from 'react'
 
+import { EntrancePinEditor } from '../../components/EntrancePinEditor'
 import { MapboxAddressInput } from '../../components/MapboxAddressInput'
 
 export function NodeEditorPanel() {
@@ -172,6 +173,14 @@ export function NodeEditorPanel() {
     }
   }
 
+  async function reloadNodes(selectedId: string) {
+    const nodesRes = await api.get<{ items: Node[] }>('/v1/business/me/nodes')
+    const items = nodesRes.items ?? []
+    setNodes(items)
+    const updated = items.find((n) => n.id === selectedId) ?? null
+    if (updated) setSelected(updated)
+  }
+
   async function handleSave() {
     if (!selected) return
     setSaving(true)
@@ -189,11 +198,7 @@ export function NodeEditorPanel() {
       }
       await api.put(`/v1/nodes/${selected.id}`, payload)
       // Refresh nodes to pick up any lat/lng changes
-      const nodesRes = await api.get<{ items: Node[] }>('/v1/business/me/nodes')
-      const items = nodesRes.items ?? []
-      setNodes(items)
-      const updated = items.find((n) => n.id === selected.id) ?? null
-      if (updated) setSelected(updated)
+      await reloadNodes(selected.id)
       setEditAddress('')
       setEditLat(undefined)
       setEditLng(undefined)
@@ -314,11 +319,11 @@ export function NodeEditorPanel() {
   return (
     <div className="p-5 flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">Your Venue</h2>
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">Your Venue</h2>
         {nodes.length === 0 && (
           <button
             onClick={() => setAddVenueOpen(true)}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl px-4 py-2 text-sm"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-4 py-2 text-sm active:scale-95"
           >
             + Create Your Venue
           </button>
@@ -401,6 +406,13 @@ export function NodeEditorPanel() {
                   )}
                 </span>
               </div>
+
+              <EntrancePinEditor
+                nodeId={selected.id}
+                venue={{ lat: selected.lat, lng: selected.lng }}
+                entrance={selected.entrance}
+                onSaved={() => void reloadNodes(selected.id)}
+              />
 
               <div className="flex flex-col gap-2">
                 <label className="text-[var(--text-secondary)] text-xs font-medium">Business Photo</label>
@@ -510,7 +522,7 @@ export function NodeEditorPanel() {
               <button
                 onClick={() => void handleSave()}
                 disabled={saving || !name.trim()}
-                className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3 text-sm disabled:opacity-50"
+                className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm disabled:opacity-50 active:scale-95"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -525,7 +537,7 @@ export function NodeEditorPanel() {
       {addVenueOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full max-h-[85dvh] overflow-y-auto shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-[Syne]">Add Your Venue</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-display">Add Your Venue</h3>
             {addVenueError && <p className="text-[var(--danger)] text-sm mb-4">{addVenueError}</p>}
             <div className="flex flex-col gap-3 mb-4">
               <label className="text-[var(--text-primary)] text-xs font-medium">Venue Name</label>
@@ -583,7 +595,7 @@ export function NodeEditorPanel() {
               <button
                 onClick={() => void handleAddVenue()}
                 disabled={addVenueLoading || !addVenueName.trim()}
-                className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 active:scale-95"
               >
                 {addVenueLoading ? 'Adding...' : 'Add Venue'}
               </button>

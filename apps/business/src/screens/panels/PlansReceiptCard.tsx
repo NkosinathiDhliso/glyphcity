@@ -63,7 +63,7 @@ export function PlansReceiptCard({ receiptWindow }: PlansReceiptCardProps) {
           data-testid="plans-receipt-retry"
           onClick={() => void refetch()}
           disabled={isFetching}
-          className="self-start min-h-11 px-5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
+          className="self-start min-h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--on-accent)] text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
         >
           {t('common.retry', 'Retry')}
         </button>

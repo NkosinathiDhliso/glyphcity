@@ -8,6 +8,7 @@
  * **Validates: Requirements 3.5, 3.7, 3.8, 3.9**
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import {
   MAX_HEADER_IMAGE_BYTES,
   MAX_HEADER_IMAGE_LABEL,
@@ -36,7 +37,7 @@ vi.mock('@tanstack/react-query', () => ({
       foundYouToday: 1,
       walkInsToday: 4,
       receiptToday: {
-        headline: '1 person found you on Area Code and checked in today.',
+        headline: `1 person found you on ${APP_NAME} and checked in today.`,
         walkIn: '4 people who were already in the room also checked in.',
       },
     },

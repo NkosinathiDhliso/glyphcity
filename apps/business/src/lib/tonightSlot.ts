@@ -240,7 +240,7 @@ export function describeTonightPublishError(err: ApiError, t: (key: string, fall
     return t('biz.tonight.error.rateLimited', 'Too many changes just now. Wait a moment and publish again.')
   }
   if (err.statusCode === 0) {
-    return t('biz.tonight.error.network', "Couldn't reach Area Code. Check your connection and publish again.")
+    return t('biz.tonight.error.network', "Couldn't reach {{appName}}. Check your connection and publish again.")
   }
   return t('biz.tonight.error.server', "Couldn't publish tonight. Please try again.")
 }

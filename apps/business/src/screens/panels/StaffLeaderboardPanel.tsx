@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { formatSastTime } from '@area-code/shared/lib/sast'
 import { useEffect, useState } from 'react'
@@ -64,7 +65,7 @@ export function StaffLeaderboardPanel() {
   return (
     <div className="p-5 flex flex-col gap-4">
       <div>
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('biz.staffLeaderboard.title', 'Staff leaderboard')}
         </h2>
         <p className="text-[var(--text-muted)] text-xs mt-1">
@@ -80,7 +81,7 @@ export function StaffLeaderboardPanel() {
             onClick={() => setPeriod(p)}
             className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 ${
               p === period
-                ? 'bg-[var(--accent)] text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                 : 'bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-secondary)]'
             }`}
           >
@@ -120,7 +121,7 @@ export function StaffLeaderboardPanel() {
             <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 text-center text-[var(--text-muted)] text-sm">
               No redemptions in this period yet. Encourage your staff to ask:
               <span className="block mt-2 text-[var(--text-primary)] font-medium">
-                "Are you on Area Code? Show me your code for your get."
+                "Are you on {APP_NAME}? Show me your code for your get."
               </span>
             </div>
           )}
@@ -151,7 +152,7 @@ export function StaffLeaderboardPanel() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">{e.redemptions}</div>
+                    <div className="text-[var(--text-primary)] font-bold text-lg font-display">{e.redemptions}</div>
                     <DeltaBadge delta={e.delta} />
                   </div>
                 </li>
@@ -172,7 +173,7 @@ function SummaryTile({ label, value, hint }: { label: string; value: string; hin
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
       <span className="text-[var(--text-muted)] text-xs">{label}</span>
-      <span className="text-2xl font-bold font-[Syne] text-[var(--text-primary)]">{value}</span>
+      <span className="text-2xl font-bold font-display text-[var(--text-primary)]">{value}</span>
       {hint && <span className="text-[var(--text-muted)] text-[10px]">{hint}</span>}
     </div>
   )

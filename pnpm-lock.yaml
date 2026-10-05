@@ -108,6 +108,9 @@ importers:
       i18next:
         specifier: ^24.0.0
         version: 24.2.3(typescript@5.9.3)
+      mapbox-gl:
+        specifier: ^3.20.0
+        version: 3.20.0
       react:
         specifier: ^18.3.0
         version: 18.3.1

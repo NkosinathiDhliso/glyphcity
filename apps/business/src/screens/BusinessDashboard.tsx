@@ -1,6 +1,7 @@
 import { MediaImage } from '@area-code/shared/components/MediaImage'
 import { PhotoUnavailable } from '@area-code/shared/components/PhotoUnavailable'
 import { Spinner } from '@area-code/shared/components/Spinner'
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { mediaUrl } from '@area-code/shared/lib/mediaUrl'
 import { useBusinessAuthStore } from '@area-code/shared/stores/businessAuthStore'
@@ -146,14 +147,14 @@ export function BusinessDashboard() {
           className="flex flex-row items-center justify-between px-5 py-3 border-b border-[var(--border)]"
           style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top, 0px))' }}
         >
-          <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">Area Code</span>
+          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME}</span>
           <button onClick={logout} className="text-[var(--text-muted)] text-sm">
             {t('biz.logout')}
           </button>
         </header>
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-sm">
-            <h2 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+            <h2 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
               {t('biz.dashboard.permsTitle', "Couldn't load your dashboard")}
             </h2>
             <p className="text-[var(--text-secondary)] text-sm mb-5">
@@ -164,7 +165,7 @@ export function BusinessDashboard() {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-[var(--accent)] text-white font-semibold rounded-xl px-6 py-3 text-sm"
+              className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-6 py-3 text-sm active:scale-95"
             >
               {t('common.retry', 'Retry')}
             </button>
@@ -253,7 +254,7 @@ export function BusinessDashboard() {
           ) : hasHeaderKey ? (
             <PhotoUnavailable variant="compact" className="w-9 h-9" />
           ) : null}
-          <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">Area Code</span>
+          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME}</span>
           {role && role !== 'owner' && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium capitalize">
               {role}
@@ -276,7 +277,7 @@ export function BusinessDashboard() {
             onClick={() => setPanel(panel)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-150 whitespace-nowrap ${
               panel === activePanel
-                ? 'bg-[var(--accent)] text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
             aria-label={t(PANEL_LABELS[panel])}

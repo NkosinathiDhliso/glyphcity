@@ -13,6 +13,7 @@
  *   3. A window that recorded nothing is an honest zero state: no failure
  *      wording, no claim, and never a causal verb anywhere on the card.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import type { BoostScoreboardView } from '@area-code/shared/types'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
@@ -21,8 +22,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // ─── Mocks ─────────────────────────────────────────────────────────────────
 
-vi.mock('react-i18next', () => {
-  const t = (key: string, fallback?: string) => fallback ?? key
+vi.mock('react-i18next', async () => {
+  const brand = await import('@area-code/shared/constants/brand')
+  const t = (key: string, fallback?: string) => (fallback ?? key).replace('{{appName}}', brand.APP_NAME)
   return { useTranslation: () => ({ t }) }
 })
 
@@ -201,7 +203,7 @@ describe('BoostScoreboardCard — an empty window is neither a failure nor a cla
 
     await waitFor(() => expect(screen.getByTestId(`boost-scoreboard-zero-${BOOST_ID}`)).toBeTruthy())
     expect(screen.getByTestId(`boost-scoreboard-foundyou-${BOOST_ID}`).textContent).toBe(
-      'No one found you on Area Code during this window.',
+      `No one found you on ${APP_NAME} during this window.`,
     )
     // Not an error, and not the loading state either.
     expect(screen.queryByTestId(`boost-scoreboard-error-${BOOST_ID}`)).toBeNull()

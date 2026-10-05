@@ -110,7 +110,7 @@ export function SubscriptionHistoryPanel() {
 
   return (
     <div className="flex flex-col gap-3 mt-4">
-      <h3 className="text-[var(--text-primary)] font-bold text-base font-[Syne]">
+      <h3 className="text-[var(--text-primary)] font-bold text-base font-display">
         {t('biz.subscription.payments.title', 'Subscription payments')}
       </h3>
 

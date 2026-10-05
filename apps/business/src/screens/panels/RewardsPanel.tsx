@@ -59,7 +59,7 @@ function BoostPromptBanner() {
       <button
         type="button"
         onClick={() => setPanel('boost')}
-        className="flex-shrink-0 bg-[var(--accent)] text-white text-xs font-semibold rounded-lg px-3 py-1.5"
+        className="flex-shrink-0 bg-[var(--accent)] text-[var(--on-accent)] text-xs font-semibold rounded-lg px-3 py-1.5 active:scale-95"
       >
         Boost
       </button>
@@ -112,10 +112,10 @@ export function RewardsPanel() {
   return (
     <div className="p-5 flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.panel.rewards')}</h2>
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.panel.rewards')}</h2>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-[var(--accent)] text-white rounded-full w-10 h-10 flex items-center justify-center text-xl"
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-full w-10 h-10 flex items-center justify-center text-xl active:scale-95"
           aria-label={t('biz.rewards.create')}
         >
           +
@@ -332,7 +332,7 @@ function RewardEditForm({ reward, onSaved, onCancel }: { reward: Reward; onSaved
         <button
           onClick={() => void handleSave()}
           disabled={loading || !title.trim()}
-          className="flex-1 bg-[var(--accent)] text-white font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 active:scale-95"
+          className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 active:scale-95"
         >
           {loading ? '...' : 'Save'}
         </button>
@@ -365,7 +365,7 @@ function RewardEditForm({ reward, onSaved, onCancel }: { reward: Reward; onSaved
                   void persist()
                 }}
                 disabled={loading}
-                className="flex-1 bg-[var(--accent)] text-white font-semibold rounded-xl py-3 text-sm disabled:opacity-50 active:scale-95"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm disabled:opacity-50 active:scale-95"
               >
                 Save
               </button>
@@ -585,7 +585,7 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
       <button
         onClick={() => void handleSubmit()}
         disabled={loading || !title.trim() || !nodeId}
-        className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3 text-sm disabled:opacity-50"
+        className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm disabled:opacity-50 active:scale-95"
       >
         {loading ? '...' : 'Create Reward'}
       </button>

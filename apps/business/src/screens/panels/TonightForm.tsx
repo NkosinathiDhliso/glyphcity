@@ -163,7 +163,7 @@ export function TonightForm() {
   if (!businessId) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-3" data-testid="tonight-denied">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne] text-center">
+        <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.tonight.denied.title', "You don't have access to this venue's schedule")}
         </span>
       </div>
@@ -173,7 +173,7 @@ export function TonightForm() {
   if (!hasVenue) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-3" data-testid="tonight-no-venue">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne] text-center">
+        <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.tonight.noVenue.title', 'No venue yet')}
         </span>
         <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
@@ -201,7 +201,7 @@ export function TonightForm() {
           type="button"
           data-testid="tonight-retry"
           onClick={() => setReloadTick((n) => n + 1)}
-          className="min-h-11 px-5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold active:scale-95 transition-transform duration-150"
+          className="min-h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--on-accent)] text-sm font-semibold active:scale-95 transition-transform duration-150"
         >
           {t('common.retry', 'Retry')}
         </button>
@@ -212,7 +212,7 @@ export function TonightForm() {
   return (
     <div className="p-5 flex flex-col gap-4" data-testid="tonight-panel">
       <div className="flex flex-col">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('biz.tonight.title', 'Tonight')}
         </h2>
         <span className="text-[var(--text-muted)] text-xs">
@@ -249,7 +249,7 @@ export function TonightForm() {
           data-testid="tonight-submit"
           disabled={submitting || !submission?.ok}
           onClick={() => void handleSubmit()}
-          className="min-h-11 px-5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
+          className="min-h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--on-accent)] text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
         >
           {submitting ? t('biz.tonight.publishing', 'Publishing…') : t('biz.tonight.publish', 'Publish tonight')}
         </button>

@@ -54,7 +54,7 @@ export function AudiencePanel() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.audience.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.audience.title')}</h2>
 
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4">
         <h3 className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-3">Tier Distribution</h3>

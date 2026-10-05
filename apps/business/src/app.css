@@ -18,30 +18,13 @@
        backing. This is what removes the standalone-PWA bottom gap. */
     background-color: var(--bg-base);
   }
+  /* Flat ground. The grain overlay lives once in packages/shared/tokens.css. */
   body {
-    background: var(--bg-gradient);
-    background-attachment: fixed;
-    background-size: 140% 140%;
-    animation: gradientDrift 8s ease-in-out infinite;
+    background-color: var(--bg-base);
     color: var(--text-primary);
-    font-family:
-      'DM Sans',
-      system-ui,
-      -apple-system,
-      sans-serif;
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: var(--noise-opacity);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 128px 128px;
   }
   *:focus-visible {
     outline: 2px solid var(--accent);
@@ -56,9 +39,6 @@
     color: inherit;
   }
   @media (prefers-reduced-motion: reduce) {
-    body {
-      animation: none;
-    }
     *,
     *::before,
     *::after {

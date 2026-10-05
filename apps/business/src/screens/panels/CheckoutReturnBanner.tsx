@@ -1,8 +1,7 @@
+import { SUPPORT_EMAIL } from '@area-code/shared/constants/brand'
 import type { ReactNode } from 'react'
 
 import type { ReturnState } from './checkoutReturnState'
-
-const SUPPORT_EMAIL = 'support@areacode.co.za'
 
 interface CheckoutReturnBannerProps {
   state: ReturnState

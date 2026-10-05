@@ -30,7 +30,7 @@ export function ReachCard() {
       data-testid="reach-card"
       className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5 flex flex-col gap-2"
     >
-      <h3 className="text-[var(--text-primary)] font-bold text-sm font-[Syne]">{t('biz.marketing.reach.title')}</h3>
+      <h3 className="text-[var(--text-primary)] font-bold text-sm font-display">{t('biz.marketing.reach.title')}</h3>
       <p className="text-[var(--text-secondary)] text-sm">{t('biz.marketing.reach.intro')}</p>
       <ul className="flex flex-col gap-2 mt-1">
         {REACH_KEYS.map((key) => (

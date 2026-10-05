@@ -151,7 +151,7 @@ export function OnboardingChecklistCard() {
           data-testid="onboarding-checklist-retry"
           onClick={() => void refetch()}
           disabled={isFetching}
-          className="self-start min-h-11 px-5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
+          className="self-start min-h-11 px-5 rounded-xl bg-[var(--accent)] text-[var(--on-accent)] text-sm font-semibold active:scale-95 transition-transform duration-150 disabled:opacity-60"
         >
           {t('common.retry', 'Retry')}
         </button>
@@ -171,7 +171,7 @@ export function OnboardingChecklistCard() {
       className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5 flex flex-col gap-4"
     >
       <div className="flex flex-row items-center justify-between gap-2">
-        <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+        <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('biz.onboarding.title', 'Finish your setup')}
         </h3>
         <span data-testid="onboarding-checklist-progress" className="text-[var(--text-muted)] text-xs">

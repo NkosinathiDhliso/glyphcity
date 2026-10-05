@@ -7,6 +7,7 @@
  * Validates: Requirements 1.3, 1.4, 1.5, 1.6
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { render, act, waitFor as _waitFor, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
@@ -29,7 +30,7 @@ vi.mock('@tanstack/react-query', () => ({
       foundYouToday: 2,
       walkInsToday: 3,
       receiptToday: {
-        headline: '2 people found you on Area Code and checked in today.',
+        headline: `2 people found you on ${APP_NAME} and checked in today.`,
         walkIn: '3 people who were already in the room also checked in.',
       },
     },

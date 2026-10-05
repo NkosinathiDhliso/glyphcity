@@ -91,7 +91,7 @@ export function BusinessLogin({ onSwitchToSignup }: BusinessLoginProps) {
         paddingBottom: 'max(2rem, env(safe-area-inset-bottom))',
       }}
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-[Syne]">
+      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-display">
         {mode === 'manager' ? t('biz.login.managerTitle', 'Manager sign in') : t('biz.login.title')}
       </h1>
 
@@ -129,10 +129,10 @@ export function BusinessLogin({ onSwitchToSignup }: BusinessLoginProps) {
           type="button"
           onClick={() => void handleEmailLogin()}
           disabled={loading || googleLoading || !email || !password}
-          className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('biz.login.submitEmail', 'Sign in')
           )}

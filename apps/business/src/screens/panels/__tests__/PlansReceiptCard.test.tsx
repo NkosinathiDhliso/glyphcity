@@ -18,6 +18,7 @@
  * Every sentence is asserted to come from the API verbatim: the Found_You fact
  * has one wording (`buildReceiptCopy`) and the portal never re-derives it.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import type { BusinessReceipt } from '@area-code/shared/types'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -83,7 +84,7 @@ function receipt(overrides: Partial<BusinessReceipt> = {}): BusinessReceipt {
     windowEndUtc: new Date().toISOString(),
     foundYouVisitors: 9,
     walkInVisitors: 13,
-    headline: '9 people found you on Area Code and checked in during your trial.',
+    headline: `9 people found you on ${APP_NAME} and checked in during your trial.`,
     walkIn: '13 people who were already in the room also checked in.',
     firstTimers: '6 of them had never been in before.',
     bySource: 'Recorded sources: 6 from the map, 2 from a shared link.',
@@ -192,7 +193,7 @@ describe('PlansPanel receipt, zero Found_You (R6.3)', () => {
   const zero = receipt({
     foundYouVisitors: 0,
     walkInVisitors: 0,
-    headline: 'No one has found you on Area Code and checked in during your trial yet.',
+    headline: `No one has found you on ${APP_NAME} and checked in during your trial yet.`,
     walkIn: 'No check-ins were recorded from people already in the room.',
     firstTimers: null,
     bySource: null,
@@ -231,7 +232,7 @@ describe('PlansPanel receipt, zero Found_You (R6.3)', () => {
       Promise.resolve(
         receipt({
           foundYouVisitors: 0,
-          headline: 'No one has found you on Area Code and checked in during your trial yet.',
+          headline: `No one has found you on ${APP_NAME} and checked in during your trial yet.`,
           firstTimers: null,
           bySource: null,
           nextStep: { step: null, text: 'Share your venue link with your regulars, and publish what is on tonight.' },

@@ -75,7 +75,7 @@ export function BoostPanel() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.boost.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.boost.title')}</h2>
 
       <CheckoutReturnBanner state={returnState} onDismiss={dismiss} />
 

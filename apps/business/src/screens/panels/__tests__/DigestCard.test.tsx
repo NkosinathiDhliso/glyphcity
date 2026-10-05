@@ -19,6 +19,7 @@
  *                 straight from the API copy array (last line).
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
@@ -118,7 +119,7 @@ afterEach(() => {
 
 describe('DigestCard - normal state (R4.1)', () => {
   it('renders the headline visit count and the API copy sentences verbatim', async () => {
-    const sentence = '23 visits recorded through Area Code this week.'
+    const sentence = `23 visits recorded through ${APP_NAME} this week.`
     const secondLine = '7 first-time visitors recorded.'
     mocks.apiGet.mockResolvedValue(digestResponse({ copy: [sentence, secondLine, FULL_REPORT_CLOSE] }))
 
@@ -141,7 +142,7 @@ describe('DigestCard - deltas present (R4.1)', () => {
     mocks.apiGet.mockResolvedValue(
       digestResponse({
         deltas: { visits: 5, uniqueVisitors: -2 },
-        copy: ['23 visits recorded through Area Code this week, up 5 from the previous week.', FULL_REPORT_CLOSE],
+        copy: [`23 visits recorded through ${APP_NAME} this week, up 5 from the previous week.`, FULL_REPORT_CLOSE],
       }),
     )
 
@@ -158,8 +159,7 @@ describe('DigestCard - deltas present (R4.1)', () => {
 
 describe('DigestCard - quiet week (R4.1)', () => {
   it('shows an honest zero headline and the quiet-week copy, no fabricated numbers', async () => {
-    const quietSentence =
-      'No visits were recorded through Area Code this week. Ask your staff to mention Area Code at the till.'
+    const quietSentence = `No visits were recorded through ${APP_NAME} this week. Ask your staff to mention ${APP_NAME} at the till.`
     mocks.apiGet.mockResolvedValue(
       digestResponse({
         metrics: {
@@ -196,7 +196,7 @@ describe('DigestCard - tier close (R4.1)', () => {
     mocks.apiGet.mockResolvedValue(
       digestResponse({
         tierAtBuild: 'starter',
-        copy: ['23 visits recorded through Area Code this week.', STARTER_UPGRADE_CLOSE],
+        copy: [`23 visits recorded through ${APP_NAME} this week.`, STARTER_UPGRADE_CLOSE],
       }),
     )
 
@@ -212,7 +212,7 @@ describe('DigestCard - tier close (R4.1)', () => {
     mocks.apiGet.mockResolvedValue(
       digestResponse({
         tierAtBuild: 'growth',
-        copy: ['23 visits recorded through Area Code this week.', FULL_REPORT_CLOSE],
+        copy: [`23 visits recorded through ${APP_NAME} this week.`, FULL_REPORT_CLOSE],
       }),
     )
 

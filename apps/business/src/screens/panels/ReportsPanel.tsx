@@ -1,3 +1,4 @@
+import { PLAIN_SCALE_EN, stateLabelKey, toNodeState } from '@area-code/shared/constants/state-labels'
 import { getTierLabel } from '@area-code/shared/constants/tier-levels'
 import { api } from '@area-code/shared/lib/api'
 import { formatSastDate } from '@area-code/shared/lib/sast'
@@ -408,7 +409,7 @@ export function ReportsPanel() {
   if (reports.length === 0) {
     return (
       <div className="p-5 flex flex-col gap-4">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.panel.reports')}</h2>
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.panel.reports')}</h2>
         <PeriodToggle
           value={periodFilter}
           onChange={(v) => {
@@ -423,7 +424,7 @@ export function ReportsPanel() {
           <button
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3 px-6 text-sm disabled:opacity-50"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 px-6 text-sm disabled:opacity-50 active:scale-95"
           >
             {generateMutation.isPending ? 'Generating…' : `Generate ${periodFilter} report now`}
           </button>
@@ -442,7 +443,7 @@ export function ReportsPanel() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.panel.reports')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.panel.reports')}</h2>
 
       {/* Period toggle + on-demand generate */}
       <div className="flex flex-row items-center justify-between gap-2">
@@ -520,7 +521,7 @@ function PeriodToggle({
           onClick={() => onChange(p)}
           className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
             p === value
-              ? 'bg-[var(--accent)] text-white'
+              ? 'bg-[var(--accent)] text-[var(--on-accent)]'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
@@ -655,14 +656,18 @@ function FullReportView({ report }: { report: FullReport }) {
 /* ------------------------------------------------------------------ */
 
 function SummaryCards({ summary }: { summary: ReportSummary }) {
+  const { t } = useTranslation()
+  const pulseLabelKey = stateLabelKey(toNodeState(summary.pulseState))
   return (
     <div className="grid grid-cols-3 gap-3">
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">
-        <span className="text-[var(--text-primary)] text-2xl font-bold font-[Syne]">{summary.totalCheckIns}</span>
+        <span className="text-[var(--text-primary)] text-2xl font-bold font-display">{summary.totalCheckIns}</span>
         <span className="text-[var(--text-muted)] text-xs">Check-ins</span>
       </div>
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">
-        <span className="text-[var(--text-primary)] text-lg font-semibold capitalize">{summary.pulseState}</span>
+        <span className="text-[var(--text-primary)] text-lg font-semibold">
+          {t(pulseLabelKey, PLAIN_SCALE_EN[pulseLabelKey])}
+        </span>
         <span className="text-[var(--text-muted)] text-xs">Pulse</span>
       </div>
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">

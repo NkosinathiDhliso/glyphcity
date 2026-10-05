@@ -10,6 +10,7 @@
  * server rather than doing client arithmetic, and a walk-in is never badged.
  */
 // @vitest-environment jsdom
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useBusinessAuthStore } from '@area-code/shared/stores/businessAuthStore'
 import type { LiveStats } from '@area-code/shared/types'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -50,9 +51,9 @@ import { LivePanel } from '../LivePanel'
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
 // The exact sentences the backend copy builder produces for the `today` window.
-const FOUND_YOU_LINE = '4 people found you on Area Code and checked in today.'
+const FOUND_YOU_LINE = `4 people found you on ${APP_NAME} and checked in today.`
 const WALK_IN_LINE = '2 people who were already in the room also checked in.'
-const FOUND_YOU_LINE_AFTER = '5 people found you on Area Code and checked in today.'
+const FOUND_YOU_LINE_AFTER = `5 people found you on ${APP_NAME} and checked in today.`
 
 function liveStats(overrides: Partial<LiveStats> = {}): LiveStats {
   return {
@@ -130,7 +131,7 @@ describe('LivePanel Receipt (R4.3)', () => {
   })
 
   it('shows the honest zero headline when no one has found the venue today', async () => {
-    const zeroHeadline = 'No one has found you on Area Code and checked in today yet.'
+    const zeroHeadline = `No one has found you on ${APP_NAME} and checked in today yet.`
     mocks.apiGet.mockResolvedValue(
       liveStats({
         foundYouToday: 0,

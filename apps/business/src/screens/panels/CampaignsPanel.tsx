@@ -114,11 +114,11 @@ export function CampaignsPanel() {
   return (
     <div className="p-5 flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between gap-2">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('biz.panel.campaigns')}</h2>
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.panel.campaigns')}</h2>
         {!composing && (
           <button
             onClick={() => setComposing(true)}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl px-4 py-2 text-sm transition-all active:scale-95"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-4 py-2 text-sm transition-all active:scale-95"
           >
             New campaign
           </button>
@@ -209,7 +209,7 @@ function CampaignRow({ campaign }: { campaign: CampaignSummary }) {
 function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center bg-[var(--bg-raised)] rounded-xl py-2">
-      <span className="text-[var(--text-primary)] text-base font-bold font-[Syne]">{value}</span>
+      <span className="text-[var(--text-primary)] text-base font-bold font-display">{value}</span>
       <span className="text-[var(--text-muted)] text-[10px]">{label}</span>
     </div>
   )
@@ -360,7 +360,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
           <button
             onClick={handleSend}
             disabled={busy || !canSend || estimate.estimatedRecipients === 0}
-            className="flex-1 bg-[var(--accent)] text-white font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 transition-all active:scale-95"
+            className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 transition-all active:scale-95"
           >
             {busy ? 'Sending…' : canSend ? 'Send now' : 'Upgrade to send'}
           </button>
@@ -496,7 +496,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
       <button
         onClick={handleReview}
         disabled={!canReview || busy}
-        className="bg-[var(--accent)] text-white font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 transition-all active:scale-95"
+        className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-2.5 text-sm disabled:opacity-50 transition-all active:scale-95"
       >
         {busy ? 'Preparing…' : 'Review reach'}
       </button>
