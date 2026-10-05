@@ -24,7 +24,10 @@
     "sync:rules": "node scripts/sync-ai-rules.mjs",
     "guard:rules": "node scripts/sync-ai-rules.mjs --check",
     "guard:brand": "node scripts/check-brand-strings.mjs",
-    "guard:all": "pnpm guard:serverless && pnpm guard:no-sms && pnpm guard:no-dashes && pnpm guard:rules && pnpm guard:brand",
+    "guard:contrast": "node scripts/check-contrast.mjs",
+    "guard:muted": "node scripts/check-muted-labels.mjs",
+    "brand:assets": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/generate-brand-assets.mjs",
+    "guard:all": "pnpm guard:serverless && pnpm guard:no-sms && pnpm guard:no-dashes && pnpm guard:rules && pnpm guard:brand && pnpm guard:contrast && pnpm guard:muted",
     "prepare": "husky"
   },
   "pnpm": {
@@ -35,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@resvg/resvg-js": "2.6.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/jsdom": "^28.0.1",

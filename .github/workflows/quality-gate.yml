@@ -51,6 +51,16 @@ jobs:
       - name: Brand strings lock
         run: node scripts/check-brand-strings.mjs
 
+      # GlyphCity R5.3: text and control token pairs meet WCAG 2.2 AA in both
+      # themes (4.5:1 text, 3:1 muted labels and non-text UI).
+      - name: Token contrast lock
+        run: node scripts/check-contrast.mjs
+
+      # GlyphCity R5.3: the muted tone colours text only on labels (uppercase,
+      # mono, 11px or larger). Baseline ratchet for staff and admin.
+      - name: Muted labels lock
+        run: node scripts/check-muted-labels.mjs
+
       - name: TypeScript check (monorepo)
         run: pnpm exec tsc --noEmit
 

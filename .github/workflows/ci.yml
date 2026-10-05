@@ -25,6 +25,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec prettier --check .
+      # GlyphCity R5.3, paired with the token contrast lock in closure-locks.
+      # Lives here because it parses TSX with the typescript package, and the
+      # closure-locks job has no install.
+      - name: Muted labels lock
+        run: node scripts/check-muted-labels.mjs
       # Warning_Ratchet: same cap as quality-gate.yml (post-cleanup count) so
       # master cannot drift above what PRs are held to. Only ever lower this
       # number as the count drops; never raise it.
@@ -122,7 +127,7 @@ jobs:
   # Table_Closure and Amplify_Env_Closure. quality-gate.yml runs them on PRs;
   # this job mirrors them on push to master (same rationale as the lint cap) so
   # master cannot drift a new table or VITE key past closure. The brand strings
-  # lock (GlyphCity R1.6) rides the same job. Static parsers
+  # lock (GlyphCity R1.6) and token contrast lock (R5.3) ride the same job. Static parsers
   # that only read repo files (node builtins, zero deps), so no pnpm install.
   # build-lambdas depends on this job, so an unclosed gap blocks deploy.
   closure-locks:
@@ -139,6 +144,8 @@ jobs:
         run: node scripts/check-amplify-env-closure.mjs
       - name: Brand strings lock
         run: node scripts/check-brand-strings.mjs
+      - name: Token contrast lock
+        run: node scripts/check-contrast.mjs
 
   build-lambdas:
     name: Build Lambda Functions

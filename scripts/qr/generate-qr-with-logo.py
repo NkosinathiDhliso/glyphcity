@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate a QR code for the Area Code website with the company logo in the centre.
+Generate a QR code for the app with the Logo_Mark icon in the centre.
 
-Usage:
+Usage (the icon is rendered by `pnpm brand:assets`):
     python generate-qr-with-logo.py \
         --url https://glyphcity.com/ \
-        --logo ../../brand/areacode-logo.png \
+        --logo ../../apps/web/public/icon-512.png \
         --out ../../brand/areacode-qr.png
 
 Notes:
