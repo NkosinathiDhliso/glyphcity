@@ -27,7 +27,7 @@ export function MomentumBadge({ momentum, size = 'sm' }: MomentumBadgeProps) {
   const isRising = momentum === 'filling_up'
   const Icon = isRising ? TrendingUp : TrendingDown
   const label = isRising ? t('momentum.fillingUp', 'Filling up') : t('momentum.windingDown', 'Winding down')
-  const colour = isRising ? 'var(--success)' : 'var(--text-muted)'
+  const colour = isRising ? 'var(--success)' : 'var(--text-secondary)'
   const iconPx = size === 'md' ? 16 : 13
   const textClass = size === 'md' ? 'text-sm' : 'text-xs'
 

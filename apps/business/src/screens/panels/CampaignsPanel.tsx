@@ -70,7 +70,7 @@ function statusColor(status: CampaignStatus): string {
   if (status === 'sent') return 'var(--success, #22c55e)'
   if (status === 'sending') return 'var(--accent)'
   if (status === 'failed') return 'var(--danger, #ef4444)'
-  return 'var(--text-muted)'
+  return 'var(--text-secondary)'
 }
 
 /* ------------------------------------------------------------------ */
@@ -153,11 +153,11 @@ export function CampaignsPanel() {
       )}
 
       {/* History */}
-      {isLoading && <p className="text-[var(--text-muted)] text-sm">Loading campaigns…</p>}
+      {isLoading && <p className="text-[var(--text-secondary)] text-sm">Loading campaigns…</p>}
       {error && <p className="text-[var(--danger)] text-sm">Couldn&apos;t load campaigns. Please try again.</p>}
       {list && list.items.length === 0 && !composing && (
         <div className="flex flex-col items-center justify-center py-10 gap-2">
-          <p className="text-[var(--text-muted)] text-sm text-center max-w-[280px]">
+          <p className="text-[var(--text-secondary)] text-sm text-center max-w-[280px]">
             No campaigns yet. Reach lapsed visitors with a reason to come back.
           </p>
         </div>
@@ -184,7 +184,7 @@ function CampaignRow({ campaign }: { campaign: CampaignSummary }) {
       <div className="flex flex-row items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[var(--text-primary)] text-sm font-medium truncate">{campaign.title}</p>
-          <p className="text-[var(--text-muted)] text-xs mt-0.5">
+          <p className="text-[var(--text-secondary)] text-xs mt-0.5">
             {segmentLabel} · {campaign.channels.join(' + ')}
           </p>
         </div>
@@ -210,7 +210,7 @@ function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center bg-[var(--bg-raised)] rounded-xl py-2">
       <span className="text-[var(--text-primary)] text-base font-bold font-display">{value}</span>
-      <span className="text-[var(--text-muted)] text-[10px]">{label}</span>
+      <span className="text-[var(--text-secondary)] text-[10px]">{label}</span>
     </div>
   )
 }
@@ -339,7 +339,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
           <Metric label="Will receive" value={estimate.estimatedRecipients} />
         </div>
         {estimate.truncated && (
-          <p className="text-[var(--text-muted)] text-xs">
+          <p className="text-[var(--text-secondary)] text-xs">
             Large audience: the estimate is based on a recent sample of check-ins.
           </p>
         )}
@@ -374,7 +374,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
         <h3 className="text-[var(--text-primary)] font-semibold text-sm">New win-back campaign</h3>
-        <button onClick={onClose} className="text-[var(--text-muted)] text-xs">
+        <button onClick={onClose} className="text-[var(--text-secondary)] text-xs">
           Cancel
         </button>
       </div>
@@ -394,7 +394,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
               }`}
             >
               <p className="text-[var(--text-primary)] text-sm font-medium">{s.label}</p>
-              <p className="text-[var(--text-muted)] text-[10px] mt-0.5">{s.hint}</p>
+              <p className="text-[var(--text-secondary)] text-[10px] mt-0.5">{s.hint}</p>
             </button>
           ))}
         </div>
@@ -443,7 +443,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
               className={`flex-1 rounded-xl py-2 text-sm capitalize border transition-all ${
                 channels.includes(ch)
                   ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]'
-                  : 'border-[var(--border)] bg-[var(--bg-base)] text-[var(--text-muted)]'
+                  : 'border-[var(--border)] bg-[var(--bg-base)] text-[var(--text-secondary)]'
               }`}
             >
               {ch}
@@ -464,7 +464,7 @@ function CampaignComposer({ nodes, canSend, prefill, onConsumePrefill, onClose, 
                 className={`rounded-full px-3 py-1 text-xs border transition-all ${
                   selectedNodes.includes(n.id)
                     ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]'
-                    : 'border-[var(--border)] bg-[var(--bg-base)] text-[var(--text-muted)]'
+                    : 'border-[var(--border)] bg-[var(--bg-base)] text-[var(--text-secondary)]'
                 }`}
               >
                 {n.name}

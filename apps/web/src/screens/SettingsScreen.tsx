@@ -101,7 +101,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
       <div className="flex flex-row items-center gap-3 mb-6">
         <button
           onClick={() => onNavigate('profile')}
-          className="text-[var(--text-muted)] text-sm transition-all active:scale-95"
+          className="text-[var(--text-secondary)] text-sm transition-all active:scale-95"
           aria-label={t('common.back', 'Back')}
         >
           <ChevronLeft size={16} strokeWidth={2} className="inline" /> {t('common.back', 'Back')}
@@ -161,6 +161,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
             <Spinner size="sm" />
           ) : (
             <svg
+              aria-hidden="true"
               width="18"
               height="18"
               viewBox="0 0 24 24"
@@ -175,7 +176,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
             </svg>
           )}
         </button>
-        <p className="text-[var(--text-muted)] text-xs mt-2">
+        <p className="text-[var(--text-secondary)] text-xs mt-2">
           {t('profile.updateHint', 'Reloads the app with the latest version.')}
         </p>
       </div>
@@ -184,7 +185,7 @@ export function SettingsScreen({ onNavigate }: SettingsScreenProps) {
         className="w-full flex flex-row items-center justify-between bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl px-4 py-3 mb-3 min-h-11 transition-all active:scale-[0.98]"
       >
         <span className="text-[var(--text-primary)] text-sm font-medium">{t('profile.version', 'Version')}</span>
-        <span className="text-[var(--text-muted)] text-sm tabular-nums">{__APP_VERSION__}</span>
+        <span className="text-[var(--text-secondary)] text-sm tabular-nums">{__APP_VERSION__}</span>
       </button>
       {showDiagnostics && <DiagnosticsCard />}
 
@@ -285,7 +286,7 @@ function DiagnosticsCard() {
 function DiagnosticsRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-row items-center justify-between py-1">
-      <span className="text-[var(--text-muted)] text-xs">{label}</span>
+      <span className="text-[var(--text-secondary)] text-xs">{label}</span>
       <span className="text-[var(--text-secondary)] text-xs tabular-nums">{value}</span>
     </div>
   )
@@ -293,7 +294,9 @@ function DiagnosticsRow({ label, value }: { label: string; value: string }) {
 
 function SectionHeading({ label, className = '' }: { label: string; className?: string }) {
   return (
-    <h2 className={`text-[var(--text-muted)] text-xs font-medium uppercase tracking-wider mb-2 px-1 ${className}`}>
+    <h2
+      className={`text-[var(--text-muted)] text-xs font-mono font-medium uppercase tracking-wider mb-2 px-1 ${className}`}
+    >
       {label}
     </h2>
   )
@@ -310,6 +313,7 @@ function NavRow({ label, onClick, trailing }: { label: string; onClick: () => vo
         {trailing}
       </div>
       <svg
+        aria-hidden="true"
         width="16"
         height="16"
         viewBox="0 0 24 24"

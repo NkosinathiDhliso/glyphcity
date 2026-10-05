@@ -100,7 +100,7 @@ function ChecklistRowButton({ row }: { row: ChecklistRow }) {
     >
       <StepMarker done={row.done} />
       <span
-        className={`flex-1 text-sm ${row.done ? 'text-[var(--text-muted)] line-through' : 'text-[var(--text-primary)]'}`}
+        className={`flex-1 text-sm ${row.done ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}`}
       >
         {label}
       </span>
@@ -128,7 +128,7 @@ export function OnboardingChecklistCard() {
         data-testid="onboarding-checklist-loading"
         className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5"
       >
-        <span className="text-[var(--text-muted)] text-sm">
+        <span className="text-[var(--text-secondary)] text-sm">
           {t('biz.onboarding.loading', 'Loading your setup steps…')}
         </span>
       </div>
@@ -174,7 +174,7 @@ export function OnboardingChecklistCard() {
         <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('biz.onboarding.title', 'Finish your setup')}
         </h3>
-        <span data-testid="onboarding-checklist-progress" className="text-[var(--text-muted)] text-xs">
+        <span data-testid="onboarding-checklist-progress" className="text-[var(--text-secondary)] text-xs">
           {rows.length - remaining} {t('biz.onboarding.progressOf', 'of')} {rows.length}{' '}
           {t('biz.onboarding.progressDone', 'done')}
         </span>

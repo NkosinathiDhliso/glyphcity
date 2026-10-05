@@ -18,18 +18,18 @@
 // @vitest-environment jsdom
 import { APP_NAME } from '@area-code/shared/constants/brand'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuthLanding } from '../AuthLanding'
 // Raw source of the component under test, imported cwd-independently via Vite's
 // ?raw so the "no fabricated data" assertion reads the real file.
 import authLandingSource from '../AuthLanding.tsx?raw'
 
-const apiGet = vi.fn()
+// vi.mock is hoisted above the imports, so these apply to AuthLanding.
+const { apiGet } = vi.hoisted(() => ({ apiGet: vi.fn() }))
 vi.mock('@area-code/shared/lib/api', () => ({ api: { get: (url: string) => apiGet(url) } }))
 vi.mock('@area-code/shared/lib/rum', () => ({ recordEvent: vi.fn() }))
-
-import { AuthLanding } from '../AuthLanding'
 
 // The invented venues that the removed FALLBACK_TRENDING used to render. None
 // of these may ever appear on the public landing again.
@@ -61,8 +61,8 @@ describe('AuthLanding honest trending empty state', () => {
 
     // The page still renders its static sections without crashing (R1.4).
     expect(screen.getByText(`About ${APP_NAME}`)).toBeTruthy()
-    // Hero/logo still present.
-    expect(screen.getByText(APP_NAME)).toBeTruthy()
+    // Wordmark still present, announced as the Brand_Name (R5.7).
+    expect(screen.getByRole('img', { name: APP_NAME })).toBeTruthy()
 
     // Let the query (with retry: 1) settle into its failed state.
     await waitFor(() => expect(apiGet).toHaveBeenCalledWith('/v1/nodes/trending'))
@@ -111,8 +111,9 @@ describe('AuthLanding honest trending empty state', () => {
     const header = screen.getByTestId('sky-header')
     expect(header.querySelector('[data-layer="beam-cone"]')).not.toBeNull()
     expect(screen.getByTestId('cone-node-mount').getAttribute('aria-hidden')).toBe('true')
-    // The wordmark rides the sky header.
-    expect(header.textContent).toContain(APP_NAME)
+    // The wordmark rides the sky header: lowercase, labelled with the Brand_Name (R5.7).
+    const wordmark = within(header).getByRole('img', { name: APP_NAME })
+    expect(wordmark.textContent).toBe(APP_NAME.toLowerCase())
     await waitFor(() => expect(apiGet).toHaveBeenCalledWith('/v1/nodes/trending'))
   })
 

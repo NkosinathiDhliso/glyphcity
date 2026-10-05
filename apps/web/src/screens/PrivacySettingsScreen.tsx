@@ -53,7 +53,7 @@ export function PrivacySettingsScreen({ onNavigate }: PrivacySettingsScreenProps
       <div className="flex flex-row items-center gap-3 mb-6">
         <button
           onClick={() => onNavigate('settings')}
-          className="text-[var(--text-muted)] text-sm transition-all active:scale-95"
+          className="text-[var(--text-secondary)] text-sm transition-all active:scale-95"
           aria-label={t('privacy.back')}
         >
           <ChevronLeft size={16} strokeWidth={2} className="inline" /> {t('privacy.back')}
@@ -84,7 +84,7 @@ export function PrivacySettingsScreen({ onNavigate }: PrivacySettingsScreenProps
         )}
 
         {!isLoading && (!data?.blocked || data.blocked.length === 0) && (
-          <p className="text-[var(--text-muted)] text-sm text-center py-6">{t('privacy.blockedUsers.empty')}</p>
+          <p className="text-[var(--text-secondary)] text-sm text-center py-6">{t('privacy.blockedUsers.empty')}</p>
         )}
 
         {!isLoading && data?.blocked && data.blocked.length > 0 && (
@@ -97,7 +97,7 @@ export function PrivacySettingsScreen({ onNavigate }: PrivacySettingsScreenProps
                 <Avatar url={user.avatarUrl} displayName={user.displayName} size="sm" tier={user.tier} />
                 <div className="flex-1">
                   <p className="text-[var(--text-primary)] text-sm font-medium">{user.displayName}</p>
-                  <p className="text-[var(--text-muted)] text-xs">@{user.username}</p>
+                  <p className="text-[var(--text-secondary)] text-xs">@{user.username}</p>
                 </div>
                 <BlockUserButton
                   targetUserId={user.userId}

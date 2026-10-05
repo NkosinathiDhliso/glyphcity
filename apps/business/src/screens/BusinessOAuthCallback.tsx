@@ -253,14 +253,14 @@ export function BusinessOAuthCallback() {
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder={t('biz.signup.businessName', 'Business name')}
-            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
           />
           <input
             type="text"
             value={registrationNumber}
             onChange={(e) => setRegistrationNumber(e.target.value)}
             placeholder={t('biz.signup.registrationOptional', 'Registration number (optional)')}
-            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
           />
           <button
             type="button"

@@ -2,6 +2,7 @@ import { buildGlyphShareContent, resolveOwnGlyphId } from '@area-code/shared/lib
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { buildGlyphCardData, generateGlyphShareCard } from '../lib/glyphShareCard'
 import { shareOrCopy } from '../lib/shareCard'
 
 import { GlyphNameplate } from './GlyphNameplate'
@@ -14,6 +15,8 @@ const INK = 'var(--text-primary)'
 
 interface YourGlyphCardProps {
   archetypeId: string | null | undefined
+  /** The user's own chosen display name, drawn on the share card when set. */
+  displayName?: string | null
 }
 
 /**
@@ -21,7 +24,7 @@ interface YourGlyphCardProps {
  * the glyph in ink, the Glyph_Name and "Share my glyph". Names the glyph,
  * never explains it: no description, no taste bars.
  */
-export function YourGlyphCard({ archetypeId }: YourGlyphCardProps) {
+export function YourGlyphCard({ archetypeId, displayName }: YourGlyphCardProps) {
   const { t } = useTranslation()
   const [sharing, setSharing] = useState(false)
   const glyphId = resolveOwnGlyphId(archetypeId)
@@ -30,8 +33,9 @@ export function YourGlyphCard({ archetypeId }: YourGlyphCardProps) {
     setSharing(true)
     try {
       const { text, url } = buildGlyphShareContent(glyphId)
-      // TODO(glyphcity-rebrand 12.1): attach the glyphShareCard.ts image card.
-      await shareOrCopy(null, text, url)
+      const card = await generateGlyphShareCard(buildGlyphCardData(glyphId, displayName))
+      // Attaches the card when the platform can share files, else shares text and url.
+      await shareOrCopy(card, text, url)
     } finally {
       setSharing(false)
     }

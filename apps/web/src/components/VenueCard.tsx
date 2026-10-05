@@ -158,7 +158,7 @@ export const VenueCard = memo(function VenueCard({ vm, category, isActive = fals
       )}
 
       {goingLine && (
-        <span data-venue-card-going={vm.id} className="text-[var(--text-muted)] text-xs truncate w-full">
+        <span data-venue-card-going={vm.id} className="text-[var(--text-secondary)] text-xs truncate w-full">
           {goingLine}
         </span>
       )}

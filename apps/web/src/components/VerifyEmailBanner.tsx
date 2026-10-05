@@ -62,7 +62,7 @@ export function VerifyEmailBanner() {
         type="button"
         onClick={() => setDismissed(true)}
         aria-label={t('common.dismiss', 'Dismiss')}
-        className="shrink-0 text-[var(--text-muted)] px-1"
+        className="shrink-0 text-[var(--text-secondary)] px-1"
       >
         ✕
       </button>

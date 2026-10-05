@@ -45,7 +45,7 @@ function MilestoneRow({ title, body }: { title: string; body: string }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[var(--text-primary)] text-sm font-semibold">{title}</p>
-        <p className="text-[var(--text-muted)] text-xs mt-0.5">{body}</p>
+        <p className="text-[var(--text-secondary)] text-xs mt-0.5">{body}</p>
       </div>
       <button
         type="button"
@@ -135,11 +135,11 @@ export function FeedItemRow({ item, onFocusVenue }: FeedItemRowProps) {
             </span>
           )}
           {item.venueCheckInCount > 0 && (
-            <span className="text-[var(--text-muted)] text-xs">
+            <span className="text-[var(--text-secondary)] text-xs">
               {t('feed.hereNow', { count: item.venueCheckInCount, defaultValue: '{{count}} here' })}
             </span>
           )}
-          <span className="text-[var(--text-muted)] text-xs">{formatRelativeTime(item.checkedInAt)}</span>
+          <span className="text-[var(--text-secondary)] text-xs">{formatRelativeTime(item.checkedInAt)}</span>
         </div>
       </div>
 

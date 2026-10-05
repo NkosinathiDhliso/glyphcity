@@ -88,7 +88,7 @@ export function CheckInHistoryScreen({ onNavigate }: CheckInHistoryScreenProps) 
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => onNavigate('profile')}
-          className="text-[var(--text-muted)] text-sm flex items-center gap-1"
+          className="text-[var(--text-secondary)] text-sm flex items-center gap-1"
           aria-label={t('common.back', 'Back')}
         >
           <ChevronLeft size={16} strokeWidth={2} />
@@ -151,11 +151,11 @@ export function CheckInHistoryScreen({ onNavigate }: CheckInHistoryScreenProps) 
               })()}
               <div className="flex-1 min-w-0">
                 <p className="text-[var(--text-primary)] text-sm font-medium truncate">{item.node.name}</p>
-                <p className="text-[var(--text-muted)] text-xs capitalize">{item.node.category}</p>
+                <p className="text-[var(--text-secondary)] text-xs capitalize">{item.node.category}</p>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-[var(--text-secondary)] text-xs">{formatDate(item.checkedInAt)}</p>
-                <p className="text-[var(--text-muted)] text-xs">{formatTime(item.checkedInAt)}</p>
+                <p className="text-[var(--text-secondary)] text-xs">{formatTime(item.checkedInAt)}</p>
               </div>
             </div>
           ))}

@@ -85,35 +85,35 @@ export function BusinessSignup({ onSwitchToLogin }: BusinessSignupProps) {
           )}
         </button>
 
-        <p className="text-center text-[var(--text-muted)] text-xs">or create an email account</p>
+        <p className="text-center text-[var(--text-secondary)] text-xs">or create an email account</p>
 
         <input
           type="text"
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder={t('biz.signup.businessName')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t('biz.signup.email')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t('biz.signup.password', 'Password')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <input
           type="text"
           value={registrationNumber}
           onChange={(e) => setRegistrationNumber(e.target.value)}
           placeholder={`${t('biz.signup.regNumber')} (${t('common.optional', 'optional')})`}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <button
           type="button"
@@ -133,7 +133,7 @@ export function BusinessSignup({ onSwitchToLogin }: BusinessSignupProps) {
         <div className="mt-4 max-w-xs text-center">
           <p className="text-xs text-[var(--danger)]">{error}</p>
           {showEnvHint && (
-            <p className="text-[var(--text-muted)] text-[11px] mt-2 leading-snug">
+            <p className="text-[var(--text-secondary)] text-[11px] mt-2 leading-snug">
               {t(
                 'biz.oauth.envHint',
                 'Set VITE_COGNITO_HOSTED_UI_DOMAIN_BUSINESS and VITE_COGNITO_CLIENT_ID_BUSINESS for Google auth.',

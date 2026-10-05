@@ -1,4 +1,5 @@
-import { APP_NAME, APP_URL, BUSINESS_URL, SUPPORT_EMAIL } from '@area-code/shared/constants/brand'
+import { Wordmark } from '@area-code/shared/components/Wordmark'
+import { APP_NAME, APP_URL, BRAND_LINE, BUSINESS_URL, SUPPORT_EMAIL } from '@area-code/shared/constants/brand'
 import { PLAIN_SCALE_EN, stateLabelKey, toNodeState } from '@area-code/shared/constants/state-labels'
 import { api } from '@area-code/shared/lib/api'
 import { recordEvent } from '@area-code/shared/lib/rum'
@@ -110,7 +111,9 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
           height={160}
           className="mb-8"
         >
-          <span className="px-4 pt-3 font-display text-xl font-extrabold tracking-tight">{APP_NAME}</span>
+          <Wordmark size="md" className="px-4 pt-3" />
+          {/* Brand_Line: landing, share cards and OG image only (R5.9). */}
+          <p className="px-4 pt-1 font-sans text-sm text-[var(--text-secondary)]">{BRAND_LINE}</p>
         </SkyHeader>
 
         {/* Hero */}
@@ -194,7 +197,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
         {trending.length > 0 && (
           <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-medium tracking-widest text-[var(--text-muted)] uppercase">
+              <span className="text-[11px] font-mono font-medium tracking-widest text-[var(--text-muted)] uppercase">
                 {t('landing.trendingNow', 'Trending Now')}
               </span>
               {hasLiveData && (
@@ -220,18 +223,18 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
                     <CategoryIcon
                       size={16}
                       strokeWidth={1.5}
-                      className="text-[var(--text-muted)] shrink-0"
+                      className="text-[var(--text-secondary)] shrink-0"
                       aria-hidden="true"
                     />
                     <div>
                       <p className="text-sm font-semibold group-hover:text-[var(--accent)]">{spot.name}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{spot.area}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">{spot.area}</p>
                     </div>
                   </div>
                   <div className="text-right flex items-center gap-1.5">
                     <div>
                       <p className="text-xs font-medium">{t(labelKey, PLAIN_SCALE_EN[labelKey])}</p>
-                      <p className="text-[11px] text-[var(--text-muted)]">
+                      <p className="text-[11px] text-[var(--text-secondary)]">
                         {t('landing.checkIns', { count: spot.checkIns, defaultValue: `${spot.checkIns} check-ins` })}
                       </p>
                     </div>
@@ -244,7 +247,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
 
         {/* Bottom links */}
         <div className="mt-auto pt-8 flex flex-col items-center gap-2">
-          <p className="text-[11px] text-[var(--text-muted)]">Cape Town · Johannesburg · Durban</p>
+          <p className="text-[11px] text-[var(--text-secondary)]">Cape Town · Johannesburg · Durban</p>
           {/*
             Legal footer.
             Required by the OAuth brand-verification policy: "You must add the
@@ -253,7 +256,7 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
             The Privacy Policy URL configured in Google Cloud → Branding is
             https://glyphcity.com/legal/privacy (APP_URL). Keep these in sync.
           */}
-          <nav aria-label="Legal" className="mt-3 flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
+          <nav aria-label="Legal" className="mt-3 flex items-center gap-3 text-[11px] text-[var(--text-secondary)]">
             <a
               href={`${APP_URL}/legal/privacy`}
               onClick={(e) => {

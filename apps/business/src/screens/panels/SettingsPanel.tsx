@@ -223,7 +223,7 @@ export function SettingsPanel() {
               <span className="text-[var(--text-primary)] text-sm font-medium">
                 {t('biz.settings.digestEmailLabel')}
               </span>
-              <span className="text-[var(--text-muted)] text-xs mt-1">
+              <span className="text-[var(--text-secondary)] text-xs mt-1">
                 {biz.digestEmailOptOut ? t('biz.settings.digestOff') : t('biz.settings.digestOn')}
               </span>
             </div>
@@ -247,7 +247,7 @@ export function SettingsPanel() {
               />
             </button>
           </div>
-          <p className="text-[var(--text-muted)] text-xs mt-3">{t('biz.settings.digestEmailExplainer')}</p>
+          <p className="text-[var(--text-secondary)] text-xs mt-3">{t('biz.settings.digestEmailExplainer')}</p>
         </div>
       )}
 
@@ -263,7 +263,7 @@ export function SettingsPanel() {
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="Email address"
-              className="flex-1 bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+              className="flex-1 bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
             />
             <button
               onClick={handleInviteStaff}
@@ -327,7 +327,7 @@ export function SettingsPanel() {
         {/* Pending invites */}
         {pendingInvites.length > 0 && (
           <div className="mb-4">
-            <p className="text-[var(--text-muted)] text-xs mb-2">Pending invites</p>
+            <p className="text-[var(--text-secondary)] text-xs mb-2">Pending invites</p>
             <div className="flex flex-col gap-2">
               {pendingInvites.map((inv) => (
                 <div
@@ -338,7 +338,9 @@ export function SettingsPanel() {
                     <span className="text-[var(--text-primary)] text-sm truncate" title={inv.invitedEmail ?? undefined}>
                       {inv.invitedEmail ?? 'No email'}
                     </span>
-                    <span className="text-[var(--text-muted)] text-xs">Expires {formatSastDate(inv.expiresAt)}</span>
+                    <span className="text-[var(--text-secondary)] text-xs">
+                      Expires {formatSastDate(inv.expiresAt)}
+                    </span>
                   </div>
                   <div className="flex flex-row items-center gap-1 shrink-0">
                     <button
@@ -362,7 +364,7 @@ export function SettingsPanel() {
 
         {/* Active staff */}
         {staff.length === 0 ? (
-          <p className="text-[var(--text-muted)] text-sm">No staff members yet</p>
+          <p className="text-[var(--text-secondary)] text-sm">No staff members yet</p>
         ) : (
           <div className="flex flex-col gap-2">
             {staff.map((s) => (
@@ -375,7 +377,7 @@ export function SettingsPanel() {
                     {s.name?.trim() || s.email || 'Pending invite'}
                   </span>
                   {s.email && s.name?.trim() && (
-                    <span className="text-[var(--text-muted)] text-xs truncate" title={s.email}>
+                    <span className="text-[var(--text-secondary)] text-xs truncate" title={s.email}>
                       {s.email}
                     </span>
                   )}
@@ -410,7 +412,7 @@ export function SettingsPanel() {
               alt="QR Code for check-in"
               className="w-48 h-48 rounded-xl bg-white p-2"
             />
-            <p className="text-[var(--text-muted)] text-xs text-center">
+            <p className="text-[var(--text-secondary)] text-xs text-center">
               Print or screenshot this QR code for your venue
             </p>
             <button

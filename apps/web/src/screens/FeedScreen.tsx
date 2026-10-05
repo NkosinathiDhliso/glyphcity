@@ -202,7 +202,7 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
         </div>
       ) : isError ? (
         <div className="flex flex-col items-center gap-3 py-8">
-          <p className="text-[var(--text-muted)] text-sm text-center">
+          <p className="text-[var(--text-secondary)] text-sm text-center">
             {t('feed.loadError', "Couldn't load your feed. Check your connection.")}
           </p>
           <button onClick={() => void refetch()} className="text-[var(--accent)] text-sm font-medium">
@@ -239,7 +239,7 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
       ) : (
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <Users size={32} strokeWidth={1.5} className="text-[var(--text-muted)] opacity-40" />
-          <p className="text-[var(--text-muted)] text-sm text-center max-w-xs">
+          <p className="text-[var(--text-secondary)] text-sm text-center max-w-xs">
             {t('feed.emptyState', 'No activity yet | follow friends to fill this up.')}
           </p>
           <button

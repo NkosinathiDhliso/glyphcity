@@ -45,7 +45,7 @@ export function AudiencePanel() {
   if (!data || data.totalUniqueVisitors < 20) {
     return (
       <div className="p-5 flex flex-col items-center justify-center h-full gap-4">
-        <span className="text-[var(--text-muted)] text-sm text-center">{t('biz.audience.minUsers')}</span>
+        <span className="text-[var(--text-secondary)] text-sm text-center">{t('biz.audience.minUsers')}</span>
       </div>
     )
   }
@@ -62,11 +62,11 @@ export function AudiencePanel() {
           Object.entries(data.tierDistribution).map(([tier, count]) => (
             <div key={tier} className="flex flex-row items-center justify-between py-1">
               <span className="text-[var(--text-primary)] text-sm">{getTierLabel(tier as Tier)}</span>
-              <span className="text-[var(--text-muted)] text-sm">{count}</span>
+              <span className="text-[var(--text-secondary)] text-sm">{count}</span>
             </div>
           ))
         ) : (
-          <p className="text-[var(--text-muted)] text-sm text-center">{notEnoughData}</p>
+          <p className="text-[var(--text-secondary)] text-sm text-center">{notEnoughData}</p>
         )}
       </div>
 
@@ -76,15 +76,15 @@ export function AudiencePanel() {
           <div className="flex flex-row gap-4">
             <div className="flex-1 text-center">
               <span className="text-[var(--text-primary)] text-2xl font-bold">{data.repeatVsNew.repeat}</span>
-              <p className="text-[var(--text-muted)] text-xs">Repeat</p>
+              <p className="text-[var(--text-secondary)] text-xs">Repeat</p>
             </div>
             <div className="flex-1 text-center">
               <span className="text-[var(--text-primary)] text-2xl font-bold">{data.repeatVsNew.new}</span>
-              <p className="text-[var(--text-muted)] text-xs">New</p>
+              <p className="text-[var(--text-secondary)] text-xs">New</p>
             </div>
           </div>
         ) : (
-          <p className="text-[var(--text-muted)] text-sm text-center">{notEnoughData}</p>
+          <p className="text-[var(--text-secondary)] text-sm text-center">{notEnoughData}</p>
         )}
       </div>
 
@@ -102,7 +102,7 @@ export function AudiencePanel() {
             ))}
           </div>
         ) : (
-          <p className="text-[var(--text-muted)] text-sm text-center">{notEnoughData}</p>
+          <p className="text-[var(--text-secondary)] text-sm text-center">{notEnoughData}</p>
         )}
       </div>
 

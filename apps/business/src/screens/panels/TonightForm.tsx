@@ -176,7 +176,7 @@ export function TonightForm() {
         <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.tonight.noVenue.title', 'No venue yet')}
         </span>
-        <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
+        <span className="text-[var(--text-secondary)] text-sm text-center max-w-sm">
           {t('biz.tonight.noVenue.body', 'Add a venue in Settings first, then you can publish what is on tonight.')}
         </span>
       </div>
@@ -215,7 +215,7 @@ export function TonightForm() {
         <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('biz.tonight.title', 'Tonight')}
         </h2>
-        <span className="text-[var(--text-muted)] text-xs">
+        <span className="text-[var(--text-secondary)] text-xs">
           {t('biz.tonight.subtitle', 'What is on, when it starts, and one get. This is what the map shows.')}
         </span>
       </div>
@@ -253,7 +253,7 @@ export function TonightForm() {
         >
           {submitting ? t('biz.tonight.publishing', 'Publishing…') : t('biz.tonight.publish', 'Publish tonight')}
         </button>
-        <span className="text-[var(--text-muted)] text-xs">
+        <span className="text-[var(--text-secondary)] text-xs">
           {t('biz.tonight.timezoneNote', 'Times are venue-local')} ({editingSchedule.timezone})
         </span>
       </div>

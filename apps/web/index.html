@@ -27,7 +27,7 @@
     <!-- iOS launch (splash) screens. Safari ignores the manifest for these and
          only uses an apple-touch-startup-image whose media query exactly matches
          the device. Portrait-only because the app is portrait-locked. Regenerate
-         with: node scripts/generate-pwa-assets.mjs -->
+         with: pnpm brand:assets -->
     <link
       rel="apple-touch-startup-image"
       href="/splash/splash-1290x2796.png"
@@ -159,21 +159,21 @@
     <meta name="google-site-verification" content="YhaNBzoevvHFnN--LIzb8SZ3HyUvBGtCD9zBv16HaJU" />
 
     <!-- Theme color for browser chrome / mobile status bar -->
-    <meta name="theme-color" content="#0c1018" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f0ece6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="%APP_THEME_DARK%" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="%APP_THEME_LIGHT%" media="(prefers-color-scheme: light)" />
     <!-- Default (before JS hydrates) -->
-    <meta name="theme-color" content="#0c1018" />
+    <meta name="theme-color" content="%APP_THEME_DARK%" />
 
     <!-- Pre-hydration background. Matches the app's --bg-base per colour scheme
          so the first paint (and any home-indicator safe-area strip before the
          stylesheet loads) is the right theme colour instead of a black flash. -->
     <style>
       html {
-        background: #0c1018;
+        background: %APP_THEME_DARK%;
       }
       @media (prefers-color-scheme: light) {
         html {
-          background: #f0ece6;
+          background: %APP_THEME_LIGHT%;
         }
       }
     </style>

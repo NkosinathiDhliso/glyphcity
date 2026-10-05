@@ -58,13 +58,13 @@ export function RepeatPolicyControl({
               }`}
             >
               <span className="text-[var(--text-primary)] text-sm font-medium">{option.label}</span>
-              <span className="text-[var(--text-muted)] text-[11px]">{option.hint}</span>
+              <span className="text-[var(--text-secondary)] text-[11px]">{option.hint}</span>
             </button>
           )
         })}
       </div>
       {value === 'per_visit' && slotsSet && (
-        <p className="text-[var(--text-muted)] text-[11px]">
+        <p className="text-[var(--text-secondary)] text-[11px]">
           Slots count total redemptions including repeats, not distinct customers.
         </p>
       )}

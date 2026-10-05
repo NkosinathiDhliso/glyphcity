@@ -10,9 +10,27 @@
  * a PNG Blob suitable for the Web Share API.
  */
 
-import { APP_NAME, getArchetypeDisplayName, getTierLabel } from '@area-code/shared/constants'
-import { APP_URL } from '@area-code/shared/constants/brand'
+import { getTierLabel } from '@area-code/shared/constants'
+import { getGlyphName } from '@area-code/shared/constants/archetype-catalog'
+import { APP_DOMAIN, APP_NAME, APP_URL, BRAND_LINE } from '@area-code/shared/constants/brand'
+import { resolveOwnGlyphId } from '@area-code/shared/lib/glyphShare'
 import type { Tier } from '@area-code/shared/types'
+
+import { buildGlyphSvg } from './glyphShareCard'
+import {
+  CARD_PALETTE,
+  canvasToPngBlob,
+  createCardCanvas,
+  drawGrain,
+  fillGround,
+  loadCardFonts,
+  loadSvgImage,
+  roundRect,
+  truncateText,
+  type CardFonts,
+} from './shareCardPrimitives'
+
+const { ground: GROUND, ink: INK, inkSecondary: INK_SECONDARY } = CARD_PALETTE
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -37,45 +55,15 @@ export interface ConsumerStats {
 export interface ShareCardData {
   rank: number
   archetypeId: string | null
+  /** The glyph drawn in ink: the user's own, or The Uncharted. */
+  glyphId: string
+  /** The Glyph_Name, never a description. */
   archetypeName: string
-  archetypeGlyph: string
   tier: Tier
   tierLabel: string
   weeklyCheckInCount: number
   topVenueName: string | null
   displayName: string | null
-}
-
-// ─── Archetype glyph mapping (Unicode stand-ins for canvas rendering) ────────
-
-/** Unicode glyphs used on the canvas card to represent each archetype visually. */
-const ARCHETYPE_GLYPHS: Record<string, string> = {
-  'archetype-festival-spirit': '🔥',
-  'archetype-conscious-creative': '✨',
-  'archetype-township-royal': '👑',
-  'archetype-sacred-rebel': '🙏',
-  'archetype-firecracker': '⚡',
-  'archetype-heritage-groover': '🎵',
-  'archetype-midnight-philosopher': '🌙',
-  'archetype-street-poet': '🎤',
-  'archetype-soul-wanderer': '🌀',
-  'archetype-vibe-architect': '🎛️',
-  'archetype-smooth-operator': '🎶',
-  'archetype-groove-seeker': '👟',
-  'archetype-culture-curator': '🌳',
-  'archetype-eclectic': '💿',
-  'archetype-uncharted': '🧭',
-}
-
-const DEFAULT_GLYPH = '💿'
-
-/** Tier colours (resolved hex values for canvas - cannot use CSS vars). */
-const TIER_COLOURS: Record<Tier, string> = {
-  local: '#94a3b8',
-  regular: '#60a5fa',
-  fixture: '#a78bfa',
-  institution: '#f59e0b',
-  legend: '#ef4444',
 }
 
 // ─── Pure data builder (Property 9 target) ───────────────────────────────────
@@ -88,15 +76,16 @@ const TIER_COLOURS: Record<Tier, string> = {
  * impossible for foreign PII to leak into the output.
  */
 export function buildShareCardData(stats: ConsumerStats): ShareCardData {
-  const archetypeName = stats.archetypeId ? getArchetypeDisplayName(stats.archetypeId) : 'Explorer'
-
-  const archetypeGlyph = stats.archetypeId ? (ARCHETYPE_GLYPHS[stats.archetypeId] ?? DEFAULT_GLYPH) : DEFAULT_GLYPH
+  // Same resolution as the "my glyph" card: an unknown archetype is The Uncharted.
+  const glyphId = resolveOwnGlyphId(stats.archetypeId)
+  const archetypeName = getGlyphName(glyphId)
+  if (!archetypeName) throw new Error('[shareCard] archetype catalog is missing The Uncharted')
 
   return {
     rank: stats.rank,
     archetypeId: stats.archetypeId,
+    glyphId,
     archetypeName,
-    archetypeGlyph,
     tier: stats.tier,
     tierLabel: getTierLabel(stats.tier),
     weeklyCheckInCount: stats.weeklyCheckInCount,
@@ -110,209 +99,100 @@ export function buildShareCardData(stats: ConsumerStats): ShareCardData {
 /** Card dimensions optimised for Instagram/WhatsApp stories (9:16 portrait). */
 const CARD_WIDTH = 540
 const CARD_HEIGHT = 960
-
-interface CardFonts {
-  display: string
-  body: string
-  mono: string
-}
+const CENTRE_X = CARD_WIDTH / 2
+const TEXT_WIDTH = CARD_WIDTH - 80
+const GLYPH_SIZE = 120
 
 /**
- * Font stacks read from the type tokens in packages/shared/tokens.css, since
- * canvas cannot resolve CSS vars. Waits for the web fonts so text drawn on the
- * canvas does not silently render in the system fallback.
+ * Outdoor_Palette ground, grain, the lowercase wordmark on top and the
+ * Brand_Line plus `APP_DOMAIN` at the foot. Shared by both cards so the frame
+ * has one home. Chrome is ink only (glyphcity-rebrand R5.2, R10.2).
  */
-async function loadCardFonts(): Promise<CardFonts> {
-  const style = getComputedStyle(document.documentElement)
-  const read = (token: string): string => {
-    const value = style.getPropertyValue(token).trim()
-    if (!value) throw new Error(`Share card: missing ${token} token`)
-    return value
-  }
-  const fonts = { display: read('--font-display'), body: read('--font-body'), mono: read('--font-mono') }
-  await Promise.all([
-    document.fonts.load(`700 48px ${fonts.display}`),
-    document.fonts.load(`400 20px ${fonts.body}`),
-    document.fonts.load(`600 20px ${fonts.body}`),
-    document.fonts.load(`500 16px ${fonts.mono}`),
-  ])
-  return fonts
+function drawCardFrame(ctx: CanvasRenderingContext2D, f: CardFonts): void {
+  fillGround(ctx, CARD_WIDTH, CARD_HEIGHT, GROUND)
+  drawGrain(ctx, CARD_WIDTH, CARD_HEIGHT, INK)
+
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillStyle = INK
+  ctx.font = `800 32px ${f.display}`
+  ctx.fillText(APP_NAME.toLowerCase(), CENTRE_X, 70)
+
+  ctx.font = `600 22px ${f.body}`
+  ctx.fillText(BRAND_LINE, CENTRE_X, CARD_HEIGHT - 80)
+  ctx.fillStyle = INK_SECONDARY
+  ctx.font = `500 16px ${f.mono}`
+  ctx.fillText(APP_DOMAIN, CENTRE_X, CARD_HEIGHT - 45)
+}
+
+/** Draw `text` centred at `y` in the given font and colour, truncated to the card. */
+function centredText(ctx: CanvasRenderingContext2D, text: string, y: number, font: string, colour: string): void {
+  ctx.font = font
+  ctx.fillStyle = colour
+  ctx.fillText(truncateText(ctx, text, TEXT_WIDTH), CENTRE_X, y)
+}
+
+/** Tier badge: an ink outline pill with the tier word in ink. */
+function drawTierBadge(ctx: CanvasRenderingContext2D, f: CardFonts, label: string, y: number): void {
+  ctx.font = `600 22px ${f.body}`
+  const w = ctx.measureText(label).width + 40
+  const h = 52
+  ctx.strokeStyle = INK
+  ctx.lineWidth = 2
+  roundRect(ctx, (CARD_WIDTH - w) / 2, y - h / 2 - 8, w, h, 18)
+  ctx.stroke()
+  ctx.fillStyle = INK
+  ctx.fillText(label, CENTRE_X, y + 8)
 }
 
 /**
- * Renders a share card from `ShareCardData` using HTML5 Canvas.
- * Returns a PNG Blob suitable for the Web Share API.
- *
- * Design: dark gradient background, branded layout with rank prominently
- * displayed, archetype glyph + name, tier badge, weekly count, and top venue.
+ * Renders the rank share card from `ShareCardData`: the user's glyph in ink with
+ * its Glyph_Name, rank, tier, weekly count and top venue. Returns a PNG Blob for
+ * the Web Share API. Draws no live-state word.
  */
 export async function generateShareCard(data: ShareCardData): Promise<Blob> {
   const f = await loadCardFonts()
-  const canvas = document.createElement('canvas')
-  canvas.width = CARD_WIDTH
-  canvas.height = CARD_HEIGHT
-  const ctx = canvas.getContext('2d')!
+  const { canvas, ctx } = createCardCanvas(CARD_WIDTH, CARD_HEIGHT)
+  drawCardFrame(ctx, f)
 
-  // ─── Background gradient ──────────────────────────────────────────────
-  const gradient = ctx.createLinearGradient(0, 0, 0, CARD_HEIGHT)
-  gradient.addColorStop(0, '#0f172a') // slate-900
-  gradient.addColorStop(0.5, '#1e1b4b') // indigo-950
-  gradient.addColorStop(1, '#0f172a') // slate-900
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT)
+  const glyph = await loadSvgImage(buildGlyphSvg(data.glyphId, GLYPH_SIZE, INK, GROUND))
+  ctx.drawImage(glyph, CENTRE_X - GLYPH_SIZE / 2, 100, GLYPH_SIZE, GLYPH_SIZE)
 
-  // ─── Decorative accent arc ────────────────────────────────────────────
-  ctx.beginPath()
-  ctx.arc(CARD_WIDTH / 2, 180, 200, 0, Math.PI * 2)
-  ctx.fillStyle = 'rgba(99, 102, 241, 0.08)' // indigo glow
-  ctx.fill()
+  centredText(ctx, data.archetypeName, 260, `700 28px ${f.display}`, INK)
+  centredText(ctx, `#${data.rank}`, 370, `700 96px ${f.display}`, INK)
+  centredText(ctx, 'This Week', 405, `400 20px ${f.body}`, INK_SECONDARY)
 
-  // ─── Brand header ─────────────────────────────────────────────────────
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = `500 16px ${f.mono}`
-  ctx.textAlign = 'center'
-  ctx.fillText(APP_NAME.toUpperCase(), CARD_WIDTH / 2, 60)
+  drawTierBadge(ctx, f, data.tierLabel, 470)
 
-  // ─── Archetype glyph (large) ──────────────────────────────────────────
-  ctx.font = `72px ${f.body}`
-  ctx.textAlign = 'center'
-  ctx.fillText(data.archetypeGlyph, CARD_WIDTH / 2, 180)
+  centredText(ctx, `${data.weeklyCheckInCount}`, 580, `700 48px ${f.display}`, INK)
+  centredText(ctx, 'check-ins this week', 610, `400 18px ${f.body}`, INK_SECONDARY)
 
-  // ─── Archetype name ───────────────────────────────────────────────────
-  ctx.fillStyle = '#e2e8f0'
-  ctx.font = `700 28px ${f.display}`
-  ctx.fillText(data.archetypeName, CARD_WIDTH / 2, 230)
-
-  // ─── Rank (hero element) ──────────────────────────────────────────────
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `bold 96px ${f.display}`
-  ctx.textAlign = 'center'
-  ctx.fillText(`#${data.rank}`, CARD_WIDTH / 2, 370)
-
-  // Rank subtitle
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = `400 20px ${f.body}`
-  ctx.fillText('This Week', CARD_WIDTH / 2, 405)
-
-  // ─── Tier badge ───────────────────────────────────────────────────────
-  const tierColour = TIER_COLOURS[data.tier]
-  const tierText = data.tierLabel
-  const tierY = 470
-
-  // Badge background (rounded rect)
-  const tierMetrics = ctx.measureText(tierText)
-  const badgePadX = 20
-  const badgePadY = 8
-  const badgeW = tierMetrics.width + badgePadX * 2
-  const badgeH = 36
-  const badgeX = (CARD_WIDTH - badgeW) / 2
-
-  ctx.fillStyle = tierColour
-  ctx.globalAlpha = 0.2
-  roundRect(ctx, badgeX, tierY - badgeH / 2 - badgePadY, badgeW, badgeH + badgePadY * 2, 18)
-  ctx.fill()
-  ctx.globalAlpha = 1
-
-  // Badge border
-  ctx.strokeStyle = tierColour
-  ctx.lineWidth = 2
-  roundRect(ctx, badgeX, tierY - badgeH / 2 - badgePadY, badgeW, badgeH + badgePadY * 2, 18)
-  ctx.stroke()
-
-  // Badge text
-  ctx.fillStyle = tierColour
-  ctx.font = `600 22px ${f.body}`
-  ctx.textAlign = 'center'
-  ctx.fillText(tierText, CARD_WIDTH / 2, tierY + 8)
-
-  // ─── Stats section ────────────────────────────────────────────────────
-  const statsY = 580
-
-  // Weekly check-in count
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `bold 48px ${f.display}`
-  ctx.textAlign = 'center'
-  ctx.fillText(`${data.weeklyCheckInCount}`, CARD_WIDTH / 2, statsY)
-
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = `400 18px ${f.body}`
-  ctx.fillText('check-ins this week', CARD_WIDTH / 2, statsY + 30)
-
-  // ─── Top venue ────────────────────────────────────────────────────────
   if (data.topVenueName) {
-    const venueY = 680
-    ctx.fillStyle = '#64748b'
-    ctx.font = `400 16px ${f.body}`
-    ctx.textAlign = 'center'
-    ctx.fillText('Powered by', CARD_WIDTH / 2, venueY)
-
-    ctx.fillStyle = '#e2e8f0'
-    ctx.font = `600 24px ${f.body}`
-    ctx.fillText(truncateText(ctx, data.topVenueName, CARD_WIDTH - 80), CARD_WIDTH / 2, venueY + 35)
+    centredText(ctx, 'Powered by', 680, `400 16px ${f.body}`, INK_SECONDARY)
+    centredText(ctx, data.topVenueName, 715, `600 24px ${f.body}`, INK)
   }
 
-  // ─── Display name (if present) ────────────────────────────────────────
   if (data.displayName) {
-    ctx.fillStyle = '#cbd5e1'
-    ctx.font = `500 20px ${f.body}`
-    ctx.textAlign = 'center'
-    ctx.fillText(data.displayName, CARD_WIDTH / 2, 800)
+    centredText(ctx, data.displayName, 790, `500 20px ${f.body}`, INK_SECONDARY)
   }
 
-  // ─── Footer / CTA ────────────────────────────────────────────────────
-  ctx.fillStyle = '#475569'
-  ctx.font = `400 14px ${f.body}`
-  ctx.textAlign = 'center'
-  ctx.fillText('See where the city comes alive', CARD_WIDTH / 2, CARD_HEIGHT - 50)
-
-  // ─── Export as PNG Blob ───────────────────────────────────────────────
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob)
-      else reject(new Error('Canvas toBlob returned null'))
-    }, 'image/png')
-  })
+  return canvasToPngBlob(canvas)
 }
 
 /**
- * Render a milestone share card (e.g. "7-day streak", "Moved up to Patron").
- * Reuses the branded canvas layout. Contains only the milestone text, so it
- * exposes no other user's data (R11.5.3).
+ * Render a milestone share card (e.g. "7-day streak", "Moved up to Patron")
+ * in the same frame. Contains only the milestone text, so it exposes no other
+ * user's data (R11.5.3).
  */
 export async function generateMilestoneCard(title: string, body: string): Promise<Blob> {
   const f = await loadCardFonts()
-  const canvas = document.createElement('canvas')
-  canvas.width = CARD_WIDTH
-  canvas.height = CARD_HEIGHT
-  const ctx = canvas.getContext('2d')!
+  const { canvas, ctx } = createCardCanvas(CARD_WIDTH, CARD_HEIGHT)
+  drawCardFrame(ctx, f)
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, CARD_HEIGHT)
-  gradient.addColorStop(0, '#0f172a')
-  gradient.addColorStop(0.5, '#1e1b4b')
-  gradient.addColorStop(1, '#0f172a')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT)
+  centredText(ctx, title, CARD_HEIGHT / 2 - 20, `700 52px ${f.display}`, INK)
+  centredText(ctx, body, CARD_HEIGHT / 2 + 30, `400 24px ${f.body}`, INK_SECONDARY)
 
-  ctx.textAlign = 'center'
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = `500 16px ${f.mono}`
-  ctx.fillText(APP_NAME.toUpperCase(), CARD_WIDTH / 2, 80)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `bold 52px ${f.display}`
-  ctx.fillText(truncateText(ctx, title, CARD_WIDTH - 80), CARD_WIDTH / 2, CARD_HEIGHT / 2 - 20)
-
-  ctx.fillStyle = '#cbd5e1'
-  ctx.font = `400 24px ${f.body}`
-  ctx.fillText(truncateText(ctx, body, CARD_WIDTH - 80), CARD_WIDTH / 2, CARD_HEIGHT / 2 + 30)
-
-  ctx.fillStyle = '#475569'
-  ctx.font = `400 14px ${f.body}`
-  ctx.fillText('See where the city comes alive', CARD_WIDTH / 2, CARD_HEIGHT - 50)
-
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Canvas toBlob returned null'))), 'image/png')
-  })
+  return canvasToPngBlob(canvas)
 }
 
 // ─── Share / copy (Web Share API with clipboard fallback) ───────────────────
@@ -335,9 +215,14 @@ export const APP_SHARE_URL = (import.meta.env?.['VITE_APP_SHARE_URL'] as string 
  *
  * Requirements: 10.3.3, 10.3.4, 11.5.4, 12.3
  */
-export async function shareOrCopy(blob: Blob | null, text: string, url: string = APP_SHARE_URL): Promise<void> {
-  // A null blob shares text and url only (e.g. "Share my glyph" until its card lands).
-  const file = blob ? new File([blob], 'area-code.png', { type: 'image/png' }) : null
+export async function shareOrCopy(
+  blob: Blob | null,
+  text: string,
+  url: string = APP_SHARE_URL,
+  fileName = `${APP_NAME.toLowerCase()}.png`,
+): Promise<void> {
+  // A null blob shares text and url only.
+  const file = blob ? new File([blob], fileName, { type: 'image/png' }) : null
   const nav = typeof navigator !== 'undefined' ? navigator : undefined
 
   if (nav?.share) {
@@ -355,31 +240,4 @@ export async function shareOrCopy(blob: Blob | null, text: string, url: string =
   if (nav?.clipboard?.writeText) {
     await nav.clipboard.writeText(`${text}\n${url}`)
   }
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Draw a rounded rectangle path (does not fill/stroke - caller does that). */
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.lineTo(x + w - r, y)
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-  ctx.lineTo(x + w, y + h - r)
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-  ctx.lineTo(x + r, y + h)
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-  ctx.lineTo(x, y + r)
-  ctx.quadraticCurveTo(x, y, x + r, y)
-  ctx.closePath()
-}
-
-/** Truncate text with ellipsis if it exceeds maxWidth. */
-function truncateText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
-  if (ctx.measureText(text).width <= maxWidth) return text
-  let truncated = text
-  while (truncated.length > 0 && ctx.measureText(truncated + '…').width > maxWidth) {
-    truncated = truncated.slice(0, -1)
-  }
-  return truncated + '…'
 }

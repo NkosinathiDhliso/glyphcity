@@ -23,6 +23,12 @@ vi.mock('@area-code/shared/lib/api', () => ({
 }))
 vi.mock('../../components/RankTrophyOverlay', () => ({ RankTrophyOverlay: () => null }))
 vi.mock('../../components/ParkedCheckinsSection', () => ({ ParkedCheckinsSection: () => null }))
+// Canvas rendering is covered in lib/__tests__/glyphShareCard.test.ts; jsdom has no 2D canvas.
+const cardMock = vi.hoisted(() => ({ generate: vi.fn(async () => new Blob(['png'], { type: 'image/png' })) }))
+vi.mock('../../lib/glyphShareCard', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/glyphShareCard')>()),
+  generateGlyphShareCard: cardMock.generate,
+}))
 
 import { ProfileScreen } from '../ProfileScreen'
 
@@ -84,23 +90,45 @@ describe('ProfileScreen Your glyph', () => {
     expect(container.textContent).not.toMatch(/cultural_rootedness|sophistication|spirituality/i)
   })
 
-  it('shares the Glyph_Name with brand and domain, disabling the button while sharing', async () => {
+  it('shares the card file with Glyph_Name, brand and domain, disabling the button while sharing', async () => {
     let resolveShare: () => void = () => {}
     const share = vi.fn(() => new Promise<void>((r) => (resolveShare = r)))
-    vi.stubGlobal('navigator', { ...navigator, share })
+    const canShare = vi.fn(() => true)
+    vi.stubGlobal('navigator', { ...navigator, share, canShare })
     renderProfile('archetype-firecracker')
     const button = screen.getByRole('button', { name: 'profile.shareMyGlyph' }) as HTMLButtonElement
 
-    fireEvent.click(button)
+    await act(async () => {
+      fireEvent.click(button)
+    })
     expect(button.disabled).toBe(true)
-    const payload = (share.mock.calls[0] as unknown as [{ text: string; url: string }])[0]
+    expect(cardMock.generate).toHaveBeenCalledWith({
+      glyphId: 'archetype-firecracker',
+      glyphName: 'The Firecracker',
+      displayName: 'Nomvula',
+    })
+    const payload = (share.mock.calls[0] as unknown as [{ text: string; url: string; files?: File[] }])[0]
     expect(payload.text).toContain('The Firecracker')
     expect(payload.text).toContain(APP_NAME)
     expect(payload.url).toBe(`https://${APP_DOMAIN}`)
+    expect(payload.files?.[0]?.type).toBe('image/png')
 
     await act(async () => {
       resolveShare()
     })
     expect(button.disabled).toBe(false)
+  })
+
+  it('falls back to the text share when the platform cannot share files', async () => {
+    const share = vi.fn(async () => {})
+    vi.stubGlobal('navigator', { ...navigator, share, canShare: () => false })
+    renderProfile('archetype-firecracker')
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'profile.shareMyGlyph' }))
+    })
+    const payload = (share.mock.calls[0] as unknown as [Record<string, unknown>])[0]
+    expect(payload).not.toHaveProperty('files')
+    expect(payload['text']).toContain('The Firecracker')
   })
 })

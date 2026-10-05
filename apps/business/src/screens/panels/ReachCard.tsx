@@ -39,7 +39,7 @@ export function ReachCard() {
           </li>
         ))}
       </ul>
-      <p className="text-[var(--text-muted)] text-xs mt-1">{t('biz.marketing.reach.measured')}</p>
+      <p className="text-[var(--text-secondary)] text-xs mt-1">{t('biz.marketing.reach.measured')}</p>
     </section>
   )
 }

@@ -350,7 +350,7 @@ export function MusicSchedulePanel() {
         <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.musicSchedule.noVenue.title', 'No venue yet')}
         </span>
-        <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
+        <span className="text-[var(--text-secondary)] text-sm text-center max-w-sm">
           {t(
             'biz.musicSchedule.noVenue.body',
             'Add a venue in Settings first, then you can set its weekly music schedule here.',
@@ -367,7 +367,7 @@ export function MusicSchedulePanel() {
         <span className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
           {t('biz.musicSchedule.denied.title')}
         </span>
-        <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
+        <span className="text-[var(--text-secondary)] text-sm text-center max-w-sm">
           {t('biz.musicSchedule.denied.body')}
         </span>
       </div>
@@ -414,7 +414,7 @@ export function MusicSchedulePanel() {
         <span className="text-[var(--text-primary)] font-bold text-xl font-display text-center">
           {t('biz.musicSchedule.empty.title')}
         </span>
-        <span className="text-[var(--text-muted)] text-sm text-center max-w-sm">
+        <span className="text-[var(--text-secondary)] text-sm text-center max-w-sm">
           {t('biz.musicSchedule.empty.body')}
         </span>
         <VibeStatusLine branch={liveBranch} liveArchetypeId={liveArchetypeId} t={t} />
@@ -455,7 +455,7 @@ export function MusicSchedulePanel() {
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col">
           <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('biz.musicSchedule.title')}</h2>
-          <span className="text-[var(--text-muted)] text-xs">{t('biz.musicSchedule.subtitle')}</span>
+          <span className="text-[var(--text-secondary)] text-xs">{t('biz.musicSchedule.subtitle')}</span>
         </div>
         <button
           type="button"
@@ -511,7 +511,7 @@ function WeekTimeline({ slotsByDay, pairBaseById, onSlotClick, dayLabel }: WeekT
           {[0, 6, 12, 18, 24].map((hour) => (
             <span
               key={hour}
-              className="absolute top-0 text-[10px] text-[var(--text-muted)] tabular-nums -translate-x-1/2"
+              className="absolute top-0 text-[10px] text-[var(--text-secondary)] tabular-nums -translate-x-1/2"
               style={{ left: `${(hour / 24) * 100}%` }}
             >
               {hour.toString().padStart(2, '0')}:00
@@ -1209,7 +1209,7 @@ function SlotEditorSheet({ schedule, slot, onSaved, onClose }: SlotEditorSheetPr
           <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
             {isEditing ? 'Edit slot' : 'New slot'}
           </h3>
-          <button type="button" onClick={onClose} className="text-[var(--text-muted)] text-sm" aria-label="Close">
+          <button type="button" onClick={onClose} className="text-[var(--text-secondary)] text-sm" aria-label="Close">
             ✕
           </button>
         </div>
@@ -1492,7 +1492,7 @@ function LineupEntryRow({ index, entry, errors, onPatch, onToggleGenre, onRemove
       data-testid={`slot-editor-lineup-entry-${index}`}
     >
       <div className="flex flex-row items-center gap-2">
-        <span className="text-[var(--text-muted)] text-xs">#{index + 1}</span>
+        <span className="text-[var(--text-secondary)] text-xs">#{index + 1}</span>
         <input
           type="time"
           value={entry.startTime}

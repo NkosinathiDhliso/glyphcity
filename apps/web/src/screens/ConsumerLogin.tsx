@@ -190,14 +190,14 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
             t('auth.login.continueGoogle', 'Continue with Google')
           )}
         </button>
-        <p className="text-center text-[var(--text-muted)] text-xs">or use email and password</p>
+        <p className="text-center text-[var(--text-secondary)] text-xs">or use email and password</p>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !loading && !googleLoading && canSubmit && void handleEmailAuth()}
           placeholder={t('auth.login.email', 'Email')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <input
           type="password"
@@ -205,7 +205,7 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !loading && !googleLoading && canSubmit && void handleEmailAuth()}
           placeholder={t('auth.login.password', 'Password')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         {password.length > 0 && password.length < 8 && (
           <p className="text-[var(--warning)] text-xs -mt-2">
@@ -216,7 +216,7 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
           <button
             type="button"
             onClick={() => setShowTokenField(true)}
-            className="text-[var(--text-muted)] text-xs underline self-center"
+            className="text-[var(--text-secondary)] text-xs underline self-center"
           >
             {t('auth.signup.haveToken', 'Got a code from a venue?')}
           </button>
@@ -228,7 +228,7 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
             onChange={(e) => setFirstGetToken(cleanFirstGetToken(e.target.value))}
             maxLength={8}
             placeholder={t('auth.signup.tokenPlaceholder', 'First-Get code (8 chars)')}
-            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none uppercase tracking-[0.3em]"
+            className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none uppercase tracking-[0.3em]"
           />
         )}
         <button
@@ -250,11 +250,11 @@ export function ConsumerLogin({ onNavigate }: ConsumerLoginProps) {
       <button
         type="button"
         onClick={() => onNavigate('forgot-password')}
-        className="mt-4 text-[var(--text-muted)] text-sm"
+        className="mt-4 text-[var(--text-secondary)] text-sm"
       >
         {t('auth.login.forgotPassword', 'Forgot password?')}
       </button>
-      <button type="button" onClick={() => onNavigate('map')} className="mt-3 text-[var(--text-muted)] text-xs">
+      <button type="button" onClick={() => onNavigate('map')} className="mt-3 text-[var(--text-secondary)] text-xs">
         {t('auth.login.browseOnly')}
       </button>
     </div>

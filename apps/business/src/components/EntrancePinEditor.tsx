@@ -153,7 +153,7 @@ export function EntrancePinEditor({ nodeId, venue, entrance, onSaved }: Entrance
   return (
     <div className="flex flex-col gap-2">
       <label className="text-[var(--text-secondary)] text-xs font-medium">Front door</label>
-      <span className="text-[var(--text-muted)] text-xs">
+      <span className="text-[var(--text-secondary)] text-xs">
         Drag the pin onto your entrance, inside the circle. People pointing their camera at the street see your beam
         there.
       </span>
@@ -168,7 +168,7 @@ export function EntrancePinEditor({ nodeId, venue, entrance, onSaved }: Entrance
           aria-label="Map for placing your entrance pin"
         />
       )}
-      <span className={`text-xs ${withinBound ? 'text-[var(--text-muted)]' : 'text-[var(--danger)]'}`}>
+      <span className={`text-xs ${withinBound ? 'text-[var(--text-secondary)]' : 'text-[var(--danger)]'}`}>
         {withinBound
           ? `${metres} m from your venue pin`
           : `${metres} m away. Keep the pin within ${ENTRANCE_MAX_DISTANCE_METRES} m of your venue.`}

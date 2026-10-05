@@ -68,7 +68,7 @@ export function StaffLeaderboardPanel() {
         <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('biz.staffLeaderboard.title', 'Staff leaderboard')}
         </h2>
-        <p className="text-[var(--text-muted)] text-xs mt-1">
+        <p className="text-[var(--text-secondary)] text-xs mt-1">
           {t('biz.staffLeaderboard.subtitle', 'Who is bringing customers back. Share the screen at shift start.')}
         </p>
       </div>
@@ -91,12 +91,12 @@ export function StaffLeaderboardPanel() {
       </div>
 
       {loading && !data && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">Loading leaderboard…</div>
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">Loading leaderboard…</div>
       )}
 
       {loadError && !data && (
         <div className="flex flex-col items-center gap-3 py-8">
-          <p className="text-[var(--text-muted)] text-sm">Failed to load leaderboard</p>
+          <p className="text-[var(--text-secondary)] text-sm">Failed to load leaderboard</p>
           <button onClick={() => void fetchLeaderboard(period)} className="text-[var(--accent)] text-sm">
             Retry
           </button>
@@ -118,7 +118,7 @@ export function StaffLeaderboardPanel() {
           </div>
 
           {data.entries.length === 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 text-center text-[var(--text-muted)] text-sm">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 text-center text-[var(--text-secondary)] text-sm">
               No redemptions in this period yet. Encourage your staff to ask:
               <span className="block mt-2 text-[var(--text-primary)] font-medium">
                 "Are you on {APP_NAME}? Show me your code for your get."
@@ -147,7 +147,7 @@ export function StaffLeaderboardPanel() {
                         </span>
                       )}
                     </div>
-                    <div className="text-[var(--text-muted)] text-xs mt-0.5">
+                    <div className="text-[var(--text-secondary)] text-xs mt-0.5">
                       {e.uniqueConsumersServed} unique customers · {e.attributedReturnVisits} came back
                     </div>
                   </div>
@@ -160,7 +160,7 @@ export function StaffLeaderboardPanel() {
             </ul>
           )}
 
-          <p className="text-[var(--text-muted)] text-xs text-center">
+          <p className="text-[var(--text-secondary)] text-xs text-center">
             Updated {formatSastTime(data.generatedAt)} · Refreshes every 5 min
           </p>
         </>
@@ -172,16 +172,16 @@ export function StaffLeaderboardPanel() {
 function SummaryTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-1">
-      <span className="text-[var(--text-muted)] text-xs">{label}</span>
+      <span className="text-[var(--text-secondary)] text-xs">{label}</span>
       <span className="text-2xl font-bold font-display text-[var(--text-primary)]">{value}</span>
-      {hint && <span className="text-[var(--text-muted)] text-[10px]">{hint}</span>}
+      {hint && <span className="text-[var(--text-secondary)] text-[10px]">{hint}</span>}
     </div>
   )
 }
 
 function DeltaBadge({ delta }: { delta: number }) {
   if (delta === 0) {
-    return <span className="text-[var(--text-muted)] text-xs">-</span>
+    return <span className="text-[var(--text-secondary)] text-xs">-</span>
   }
   const positive = delta > 0
   return (

@@ -1,8 +1,10 @@
+import { LogoMark } from '@area-code/shared/components/LogoMark'
 import { haptic, prefersReducedMotion } from '@area-code/shared/lib/haptics'
 import { useNavigationStore } from '@area-code/shared/stores/navigationStore'
-import { Map, Trophy, Activity, User } from 'lucide-react'
+import { Trophy, Activity, User } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useRef } from 'react'
+import type { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { AppRoute } from '../types'
@@ -27,11 +29,29 @@ interface BottomNavProps {
   onLongPress?: (route: NavRoute) => boolean
 }
 
-const NAV_ITEMS: ReadonlyArray<{ route: NavRoute; labelKey: string; Icon: LucideIcon }> = [
-  { route: 'map', labelKey: 'nav.map', Icon: Map },
-  { route: 'ranks', labelKey: 'nav.leaderboard', Icon: Trophy },
-  { route: 'feed', labelKey: 'nav.feed', Icon: Activity },
-  { route: 'profile', labelKey: 'nav.profile', Icon: User },
+type TabIcon = (props: { isActive: boolean }) => ReactElement
+
+function lucideTab(Icon: LucideIcon): TabIcon {
+  return function LucideTabIcon({ isActive }) {
+    return <Icon size={24} strokeWidth={isActive ? 2.5 : 1.5} />
+  }
+}
+
+// Map tab carries the Logo_Mark at 13px in currentColor (glyphcity-rebrand
+// R5.8). The 24px box keeps the label baseline level with the other tabs.
+function MapTabIcon() {
+  return (
+    <span className="flex items-center justify-center w-6 h-6">
+      <LogoMark size={13} />
+    </span>
+  )
+}
+
+const NAV_ITEMS: ReadonlyArray<{ route: NavRoute; labelKey: string; Icon: TabIcon }> = [
+  { route: 'map', labelKey: 'nav.map', Icon: MapTabIcon },
+  { route: 'ranks', labelKey: 'nav.leaderboard', Icon: lucideTab(Trophy) },
+  { route: 'feed', labelKey: 'nav.feed', Icon: lucideTab(Activity) },
+  { route: 'profile', labelKey: 'nav.profile', Icon: lucideTab(User) },
 ]
 
 const LONG_PRESS_MS = 500
@@ -128,13 +148,13 @@ export function BottomNav({ active, onNavigate, onReselect, onLongPress }: Botto
             onContextMenu={(e) => e.preventDefault()}
             onClick={() => handleTap(item.route)}
             className={`relative z-10 flex flex-col items-center justify-center flex-1 select-none transition-transform duration-150 active:scale-90 ${
-              isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'
+              isActive ? 'text-[var(--accent)]' : 'text-[var(--text-secondary)]'
             }`}
             style={{ touchAction: 'manipulation' }}
             aria-current={isActive ? 'page' : undefined}
             aria-label={t(item.labelKey)}
           >
-            <item.Icon size={24} strokeWidth={isActive ? 2.5 : 1.5} />
+            <item.Icon isActive={isActive} />
             <span className="text-[10px] mt-0.5 leading-none">{t(item.labelKey)}</span>
           </button>
         )

@@ -309,7 +309,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
         <div className="relative">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-[var(--text-muted)] p-2"
+            className="text-[var(--text-secondary)] p-2"
             aria-label="More options"
           >
             ⋯
@@ -412,7 +412,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                           {slotsLeft !== null && (
                             <span
                               className={`text-xs font-medium ${
-                                isLow ? 'text-[var(--danger)]' : 'text-[var(--text-muted)]'
+                                isLow ? 'text-[var(--danger)]' : 'text-[var(--text-secondary)]'
                               }`}
                             >
                               {slotsLeft} {t('node.left')}
@@ -442,11 +442,11 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                             <p className="text-[var(--text-secondary)] text-xs leading-relaxed">{reward.description}</p>
                           )}
                           {expiresLabel && (
-                            <p className="text-[var(--text-muted)] text-xs">
+                            <p className="text-[var(--text-secondary)] text-xs">
                               {t('node.rewardExpires', 'Expires')} {expiresLabel}
                             </p>
                           )}
-                          <p className="text-[var(--text-muted)] text-xs">
+                          <p className="text-[var(--text-secondary)] text-xs">
                             {t(
                               'node.rewardHowTo',
                               'Tap Check In below when you’re at the venue. Show the redemption code to staff to claim.',
@@ -523,7 +523,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
           disabled={ctaInfo.disabled}
           className={`w-full font-semibold rounded-xl py-4 text-base transition-all duration-150 active:scale-95 ${
             ctaInfo.disabled
-              ? 'bg-[var(--bg-raised)] text-[var(--text-muted)] cursor-not-allowed'
+              ? 'bg-[var(--bg-raised)] text-[var(--text-secondary)] cursor-not-allowed'
               : 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
           }`}
         >
@@ -572,7 +572,7 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                     placeholder={t('node.reportDetailPlaceholder', 'Tell us more')}
                     rows={3}
                     maxLength={200}
-                    className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none resize-none"
+                    className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none resize-none"
                   />
                 </div>
                 <div className="flex flex-row gap-3">
@@ -616,9 +616,9 @@ export const NodeDetailContent = memo(function NodeDetailContent({
                     value={registrationNumber}
                     onChange={(e) => setRegistrationNumber(e.target.value)}
                     placeholder="YYYY/NNNNNN/NN"
-                    className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                    className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
                   />
-                  <p className="text-[var(--text-muted)] text-xs">{t('node.cipcFormat')}</p>
+                  <p className="text-[var(--text-secondary)] text-xs">{t('node.cipcFormat')}</p>
                 </div>
                 <div className="flex flex-row gap-3">
                   <button

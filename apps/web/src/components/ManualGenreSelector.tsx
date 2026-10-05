@@ -71,7 +71,7 @@ export function ManualGenreSelector() {
           </button>
         ))}
       </div>
-      <p className="text-[var(--text-muted)] text-xs mb-2">{t('profile.genres.max')}</p>
+      <p className="text-[var(--text-secondary)] text-xs mb-2">{t('profile.genres.max')}</p>
       <button
         onClick={handleSave}
         disabled={saving || selected.length < 1}

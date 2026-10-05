@@ -27,14 +27,14 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
       <div className="mx-auto max-w-2xl px-5 py-8">
         <button
           onClick={() => onNavigate('landing')}
-          className="mb-6 inline-flex items-center gap-1 text-sm text-[var(--text-muted)] transition-all active:scale-95"
+          className="mb-6 inline-flex items-center gap-1 text-sm text-[var(--text-secondary)] transition-all active:scale-95"
           aria-label="Back"
         >
           <ChevronLeft size={16} strokeWidth={2} /> Back
         </button>
 
         <h1 className="font-display text-3xl font-extrabold tracking-tight mb-2">Privacy Policy</h1>
-        <p className="text-sm text-[var(--text-muted)] mb-8">Last updated: 16 May 2026</p>
+        <p className="text-sm text-[var(--text-secondary)] mb-8">Last updated: 16 May 2026</p>
 
         <section className="space-y-6 text-sm leading-relaxed text-[var(--text-secondary)]">
           <p>
@@ -234,7 +234,7 @@ export function PrivacyPolicyScreen({ onNavigate }: PrivacyPolicyScreenProps) {
           </p>
         </section>
 
-        <div className="mt-12 pt-6 border-t border-[var(--border)] text-xs text-[var(--text-muted)]">
+        <div className="mt-12 pt-6 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
           <a href="/legal/terms" className="text-[var(--accent)] underline">
             Terms of Service
           </a>

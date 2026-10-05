@@ -163,7 +163,7 @@ export function QrScannerSheet({ isOpen, onClose, onScanned }: QrScannerSheetPro
           )}
         </div>
 
-        <button onClick={onClose} className="text-[var(--text-muted)] text-sm mt-1">
+        <button onClick={onClose} className="text-[var(--text-secondary)] text-sm mt-1">
           {t('common.cancel', 'Cancel')}
         </button>
       </div>

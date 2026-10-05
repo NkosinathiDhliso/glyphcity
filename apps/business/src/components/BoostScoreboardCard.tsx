@@ -119,19 +119,19 @@ export function BoostScoreboardCard({ boostId }: BoostScoreboardCardProps) {
       )}
 
       {!data.comparable && (
-        <p data-testid={`boost-scoreboard-nocompare-${boostId}`} className="text-[var(--text-muted)] text-xs">
+        <p data-testid={`boost-scoreboard-nocompare-${boostId}`} className="text-[var(--text-secondary)] text-xs">
           {t('biz.boost.scoreboard.notComparable', 'Too few check-ins in one of the two windows to compare them.')}
         </p>
       )}
 
       {data.window.checkIns === 0 && (
-        <p data-testid={`boost-scoreboard-zero-${boostId}`} className="text-[var(--text-muted)] text-xs">
+        <p data-testid={`boost-scoreboard-zero-${boostId}`} className="text-[var(--text-secondary)] text-xs">
           {t('biz.boost.scoreboard.zero', 'No check-ins were recorded in this window.')}
         </p>
       )}
 
       {!data.windowClosed && (
-        <p data-testid={`boost-scoreboard-open-${boostId}`} className="text-[var(--text-muted)] text-xs">
+        <p data-testid={`boost-scoreboard-open-${boostId}`} className="text-[var(--text-secondary)] text-xs">
           {t('biz.boost.scoreboard.open', 'This window is still open, so these counts can still change.')}
         </p>
       )}

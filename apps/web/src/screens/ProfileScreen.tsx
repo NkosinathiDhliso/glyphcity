@@ -156,7 +156,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         />
         <div className="flex-1">
           <h1 className="text-[var(--text-primary)] font-bold text-lg font-display">{displayUser?.displayName}</h1>
-          <p className="text-[var(--text-muted)] text-sm">@{displayUser?.username}</p>
+          <p className="text-[var(--text-secondary)] text-sm">@{displayUser?.username}</p>
         </div>
         <TierBadge tier={tier} />
         <button
@@ -168,7 +168,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         </button>
       </div>
 
-      <p className="text-[var(--text-muted)] text-xs mb-6">{TIER_PERMANENCE_SHORT}</p>
+      <p className="text-[var(--text-secondary)] text-xs mb-6">{TIER_PERMANENCE_SHORT}</p>
 
       <div className="flex flex-row gap-4 mb-6">
         <StatCard value={totalCheckIns} label={t('profile.totalCheckIns')} />
@@ -190,7 +190,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
       {earnedCodes.length > 0 && (
         <div className="mb-6">
           <h2 className="text-[var(--text-primary)] font-bold text-lg font-display mb-1">{t('rewards.yourCodes')}</h2>
-          <p className="text-[var(--text-muted)] text-xs mb-3">{t('rewards.yourCodesHint')}</p>
+          <p className="text-[var(--text-secondary)] text-xs mb-3">{t('rewards.yourCodesHint')}</p>
           <div className="flex flex-col gap-3">
             {earnedCodes.map((c) => (
               <RedemptionCodeCard
@@ -231,7 +231,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
         </div>
       )}
 
-      <YourGlyphCard archetypeId={displayUser?.archetypeId} />
+      <YourGlyphCard archetypeId={displayUser?.archetypeId} displayName={displayUser?.displayName} />
 
       <StreamingSection />
 
@@ -254,7 +254,7 @@ function StatCard({ value, label }: { value: string | number; label: string }) {
       <p className="text-[var(--text-primary)] font-bold text-xl font-display" style={{ letterSpacing: '-0.03em' }}>
         {value}
       </p>
-      <p className="text-[var(--text-muted)] text-xs mt-1">{label}</p>
+      <p className="text-[var(--text-secondary)] text-xs mt-1">{label}</p>
     </div>
   )
 }
@@ -270,6 +270,7 @@ function NavLink({ label, onClick, trailing }: { label: string; onClick: () => v
         {trailing}
       </div>
       <svg
+        aria-hidden="true"
         width="16"
         height="16"
         viewBox="0 0 24 24"

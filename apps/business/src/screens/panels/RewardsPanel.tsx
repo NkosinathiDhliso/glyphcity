@@ -19,7 +19,7 @@ function LifecycleBadge({ lifecycle }: { lifecycle: GetLifecycle }) {
   const styles: Record<GetLifecycle, string> = {
     upcoming: 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border border-[var(--border)]',
     live: 'bg-[var(--success)] text-white',
-    ended: 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]',
+    ended: 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border border-[var(--border)]',
   }
   const labels: Record<GetLifecycle, string> = {
     upcoming: 'Upcoming',
@@ -150,7 +150,7 @@ export function RewardsPanel() {
       )}
 
       {!fetchError && rewards.length === 0 && !showForm && (
-        <p className="text-[var(--text-muted)] text-sm text-center py-8">No rewards yet. Create your first Get.</p>
+        <p className="text-[var(--text-secondary)] text-sm text-center py-8">No rewards yet. Create your first Get.</p>
       )}
 
       <div className="flex flex-col gap-3">
@@ -192,7 +192,7 @@ export function RewardsPanel() {
                   {r.expiresAt && ` · Expires ${formatRelativeTime(r.expiresAt)}`}
                 </div>
                 <div className="mt-1">
-                  <span className={`text-xs ${r.isActive ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                  <span className={`text-xs ${r.isActive ? 'text-[var(--success)]' : 'text-[var(--text-secondary)]'}`}>
                     {r.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
@@ -286,7 +286,7 @@ function RewardEditForm({ reward, onSaved, onCancel }: { reward: Reward; onSaved
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Reward title"
-        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
       />
       {supportsThreshold && (
         <>
@@ -299,10 +299,10 @@ function RewardEditForm({ reward, onSaved, onCancel }: { reward: Reward; onSaved
               onChange={(e) => setThreshold(e.target.value)}
               placeholder="Visits required (e.g. 5)"
               aria-label="Visits required"
-              className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+              className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
             />
           </label>
-          <p className="text-[var(--text-muted)] text-[11px] -mt-1">
+          <p className="text-[var(--text-secondary)] text-[11px] -mt-1">
             Existing customers stay on their original visit count. Only new customers see the new threshold.
           </p>
         </>
@@ -320,7 +320,7 @@ function RewardEditForm({ reward, onSaved, onCancel }: { reward: Reward; onSaved
         value={slots}
         onChange={(e) => setSlots(e.target.value)}
         placeholder="Total slots (leave empty for unlimited)"
-        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
       />
       <div className="flex flex-row gap-2">
         <button
@@ -484,7 +484,7 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Reward title"
-        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
       />
       {!eventOrOffer && (
         <>
@@ -505,9 +505,9 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
                 value={triggerValue}
                 onChange={(e) => setTriggerValue(e.target.value)}
                 placeholder={type === 'nth_checkin' ? 'Every N check-ins (e.g. 5)' : 'Trigger count'}
-                className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
               />
-              <p className="text-[var(--text-muted)] text-[11px] -mt-1">
+              <p className="text-[var(--text-secondary)] text-[11px] -mt-1">
                 Existing customers stay on their original visit count. Only new customers see the new threshold.
               </p>
             </>
@@ -553,7 +553,7 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
             />
             <span className="flex-1">
               <span className="block text-[var(--text-primary)] text-sm font-medium">Require check-in to claim</span>
-              <span className="block text-[var(--text-muted)] text-[11px] mt-0.5">
+              <span className="block text-[var(--text-secondary)] text-[11px] mt-0.5">
                 Customers claim this by checking in at your venue while it's live, which builds your node's pulse.
               </span>
             </span>
@@ -565,7 +565,7 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
         value={slots}
         onChange={(e) => setSlots(e.target.value)}
         placeholder="Total slots (leave empty for unlimited)"
-        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+        className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
       />
       <label className="flex flex-row items-start gap-3 bg-[var(--bg-raised)] border border-[var(--border)] rounded-xl px-4 py-3 cursor-pointer">
         <input
@@ -576,7 +576,7 @@ function RewardForm({ nodes, onCreated }: { nodes: Node[]; onCreated: () => void
         />
         <span className="flex-1">
           <span className="block text-[var(--text-primary)] text-sm font-medium">Make this the venue's First-Get</span>
-          <span className="block text-[var(--text-muted)] text-[11px] mt-0.5">
+          <span className="block text-[var(--text-secondary)] text-[11px] mt-0.5">
             Walk-ins without an account get a one-time code to claim this. They enter it when they sign up. No phone
             number needed. Only one First-Get allowed per venue.
           </span>

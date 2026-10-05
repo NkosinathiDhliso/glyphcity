@@ -97,7 +97,7 @@ function MetricFigure({
           </span>
         )}
       </div>
-      <span className="text-[var(--text-muted)] text-xs text-center">{label}</span>
+      <span className="text-[var(--text-secondary)] text-xs text-center">{label}</span>
     </div>
   )
 }
@@ -121,7 +121,7 @@ export function DigestCard() {
         data-testid="digest-card-loading"
         className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5"
       >
-        <span className="text-[var(--text-muted)] text-sm">{t('biz.digest.loading', 'Loading your digest…')}</span>
+        <span className="text-[var(--text-secondary)] text-sm">{t('biz.digest.loading', 'Loading your digest…')}</span>
       </div>
     )
   }
@@ -178,7 +178,7 @@ export function DigestCard() {
         <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
           {t('biz.digest.title', 'Weekly digest')}
         </h3>
-        <span className="text-[var(--text-muted)] text-xs">
+        <span className="text-[var(--text-secondary)] text-xs">
           {t('biz.digest.weekOf', 'Week of')} {formatWeekStart(digest.weekStart)}
         </span>
       </div>

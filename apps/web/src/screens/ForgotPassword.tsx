@@ -75,7 +75,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
             />
             {error && <p className="text-[var(--danger)] text-xs">{error}</p>}
             <button
@@ -99,14 +99,14 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="6-digit code"
               inputMode="numeric"
-              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm text-center tracking-[0.3em] placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm text-center tracking-[0.3em] placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
             />
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="New password (min 8 characters)"
-              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
             />
             {error && <p className="text-[var(--danger)] text-xs">{error}</p>}
             <button
@@ -134,7 +134,7 @@ export function ForgotPassword({ onNavigate }: ForgotPasswordProps) {
         )}
 
         {phase !== 'success' && (
-          <button onClick={() => onNavigate('login')} className="text-[var(--text-muted)] text-sm text-center mt-2">
+          <button onClick={() => onNavigate('login')} className="text-[var(--text-secondary)] text-sm text-center mt-2">
             {t('auth.backToLogin', 'Back to sign in')}
           </button>
         )}

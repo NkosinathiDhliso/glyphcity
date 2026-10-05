@@ -1,4 +1,4 @@
-import { APP_NAME } from '@area-code/shared/constants/brand'
+import { Wordmark } from '@area-code/shared/components/Wordmark'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -105,7 +105,10 @@ export function AdminDashboard() {
     return (
       <div className="flex flex-col h-dvh bg-[var(--bg-base)]">
         <header className="flex flex-row items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME} Admin</span>
+          <span className="flex flex-row items-baseline gap-2">
+            <Wordmark size="sm" />
+            <span className="text-[var(--text-secondary)] font-bold text-lg font-display">Admin</span>
+          </span>
           <button onClick={logout} className="text-[var(--text-muted)] text-sm">
             {t('admin.logout')}
           </button>
@@ -125,7 +128,10 @@ export function AdminDashboard() {
   return (
     <div className="flex flex-col h-dvh bg-[var(--bg-base)]">
       <header className="flex flex-row items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME} Admin</span>
+        <span className="flex flex-row items-baseline gap-2">
+          <Wordmark size="sm" />
+          <span className="text-[var(--text-secondary)] font-bold text-lg font-display">Admin</span>
+        </span>
         <div className="flex flex-row items-center gap-4">
           <span className="text-[var(--text-muted)] text-xs capitalize">{role?.replace(/_/g, ' ')}</span>
           <button onClick={logout} className="text-[var(--text-muted)] text-sm">

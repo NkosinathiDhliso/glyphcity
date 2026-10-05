@@ -109,21 +109,21 @@ export function BusinessLogin({ onSwitchToSignup }: BusinessLoginProps) {
           )}
         </button>
 
-        <p className="text-center text-[var(--text-muted)] text-xs">or use email and password</p>
+        <p className="text-center text-[var(--text-secondary)] text-xs">or use email and password</p>
 
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t('biz.login.email', 'Email')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t('biz.login.password', 'Password')}
-          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         />
         <button
           type="button"
@@ -143,7 +143,7 @@ export function BusinessLogin({ onSwitchToSignup }: BusinessLoginProps) {
         <div className="mt-4 max-w-xs text-center">
           <p className="text-xs text-[var(--danger)]">{error}</p>
           {showEnvHint && (
-            <p className="text-[var(--text-muted)] text-[11px] mt-2 leading-snug">
+            <p className="text-[var(--text-secondary)] text-[11px] mt-2 leading-snug">
               {t(
                 'biz.oauth.envHint',
                 'Set VITE_COGNITO_HOSTED_UI_DOMAIN_BUSINESS and VITE_COGNITO_CLIENT_ID_BUSINESS for Google auth.',

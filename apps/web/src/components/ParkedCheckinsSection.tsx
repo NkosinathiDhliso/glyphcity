@@ -35,7 +35,7 @@ export function ParkedCheckinsSection() {
   return (
     <div className="mb-6" data-testid="parked-checkins">
       <h2 className="text-[var(--text-primary)] font-bold text-lg font-display mb-1">Check-ins that need attention</h2>
-      <p className="text-[var(--text-muted)] text-xs mb-3">
+      <p className="text-[var(--text-secondary)] text-xs mb-3">
         These check-ins could not be sent after a few tries. Retry them or clear them out.
       </p>
       <div className="flex flex-col gap-3">
@@ -46,7 +46,7 @@ export function ParkedCheckinsSection() {
           >
             <div className="min-w-0">
               <p className="text-[var(--text-primary)] text-sm font-medium">Check-in not sent</p>
-              <p className="text-[var(--text-muted)] text-xs mt-0.5">Tried at {formatCaptured(entry.capturedAt)}</p>
+              <p className="text-[var(--text-secondary)] text-xs mt-0.5">Tried at {formatCaptured(entry.capturedAt)}</p>
             </div>
             <div className="flex flex-row gap-2 flex-shrink-0">
               <button

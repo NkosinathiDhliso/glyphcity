@@ -641,7 +641,7 @@ export function MapScreen({ onNavigate, active }: MapScreenProps) {
             >
               {t('location.enable')}
             </button>
-            <button onClick={() => setLocationBannerDismissed(true)} className="text-[var(--text-muted)]">
+            <button onClick={() => setLocationBannerDismissed(true)} className="text-[var(--text-secondary)]">
               <svg
                 width="14"
                 height="14"

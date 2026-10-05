@@ -69,7 +69,7 @@ export function RewardMetricsPanel() {
         {t('biz.panel.rewardMetrics', 'Reward Metrics')}
       </h2>
 
-      {loading && <div className="text-[var(--text-muted)] text-sm text-center py-8">Loading...</div>}
+      {loading && <div className="text-[var(--text-secondary)] text-sm text-center py-8">Loading...</div>}
 
       {!loading && loadError && (
         <div className="text-[var(--danger)] text-sm text-center py-8">
@@ -78,7 +78,9 @@ export function RewardMetricsPanel() {
       )}
 
       {!loading && !loadError && summary.length === 0 && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">No active rewards to show metrics for</div>
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">
+          No active rewards to show metrics for
+        </div>
       )}
 
       {/* Summary comparison table.
@@ -94,7 +96,7 @@ export function RewardMetricsPanel() {
           data-testid="reward-metrics-scroll"
         >
           <div className="min-w-[30rem]">
-            <div className="grid grid-cols-4 gap-2 px-4 py-3 border-b border-[var(--border)] text-[var(--text-muted)] text-xs font-medium">
+            <div className="grid grid-cols-4 gap-2 px-4 py-3 border-b border-[var(--border)] text-[var(--text-secondary)] text-xs font-medium">
               <span>Reward</span>
               <span className="text-center">Claim Rate</span>
               <span className="text-center">Time to Claim</span>
@@ -173,7 +175,7 @@ function MetricCard({ label, value, color }: { label: string; value: string; col
       <span className="text-2xl font-bold font-display" style={{ color }}>
         {value}
       </span>
-      <span className="text-[var(--text-muted)] text-xs text-center">{label}</span>
+      <span className="text-[var(--text-secondary)] text-xs text-center">{label}</span>
     </div>
   )
 }

@@ -71,7 +71,7 @@ export function ProximityNudgeBanner({ onNavigate }: ProximityNudgeBannerProps) 
       <MapPin size={20} strokeWidth={1.5} className="text-[var(--accent)] shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-[var(--text-primary)] text-sm font-medium truncate">You're at {venueName}</p>
-        <p className="text-[var(--text-muted)] text-xs">Check in to keep your streak going.</p>
+        <p className="text-[var(--text-secondary)] text-xs">Check in to keep your streak going.</p>
       </div>
       <button
         onClick={() => {
@@ -85,7 +85,7 @@ export function ProximityNudgeBanner({ onNavigate }: ProximityNudgeBannerProps) 
       <button
         onClick={dismiss}
         aria-label="Dismiss"
-        className="w-11 h-11 -mr-1.5 rounded-xl text-[var(--text-muted)] shrink-0 flex items-center justify-center active:scale-95 transition-transform"
+        className="w-11 h-11 -mr-1.5 rounded-xl text-[var(--text-secondary)] shrink-0 flex items-center justify-center active:scale-95 transition-transform"
       >
         <X size={18} strokeWidth={1.5} />
       </button>

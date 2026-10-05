@@ -1,7 +1,7 @@
 import { MediaImage } from '@area-code/shared/components/MediaImage'
 import { PhotoUnavailable } from '@area-code/shared/components/PhotoUnavailable'
 import { Spinner } from '@area-code/shared/components/Spinner'
-import { APP_NAME } from '@area-code/shared/constants/brand'
+import { Wordmark } from '@area-code/shared/components/Wordmark'
 import { api } from '@area-code/shared/lib/api'
 import { mediaUrl } from '@area-code/shared/lib/mediaUrl'
 import { useBusinessAuthStore } from '@area-code/shared/stores/businessAuthStore'
@@ -147,8 +147,8 @@ export function BusinessDashboard() {
           className="flex flex-row items-center justify-between px-5 py-3 border-b border-[var(--border)]"
           style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top, 0px))' }}
         >
-          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME}</span>
-          <button onClick={logout} className="text-[var(--text-muted)] text-sm">
+          <Wordmark size="sm" />
+          <button onClick={logout} className="text-[var(--text-secondary)] text-sm">
             {t('biz.logout')}
           </button>
         </header>
@@ -254,14 +254,14 @@ export function BusinessDashboard() {
           ) : hasHeaderKey ? (
             <PhotoUnavailable variant="compact" className="w-9 h-9" />
           ) : null}
-          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME}</span>
+          <Wordmark size="sm" />
           {role && role !== 'owner' && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium capitalize">
               {role}
             </span>
           )}
         </div>
-        <button onClick={logout} className="text-[var(--text-muted)] text-sm">
+        <button onClick={logout} className="text-[var(--text-secondary)] text-sm">
           {t('biz.logout')}
         </button>
       </header>

@@ -42,7 +42,7 @@ function IdentityButton({
       <Avatar url={avatarUrl} displayName={displayName} size="sm" tier={tier} />
       <div className="flex-1 min-w-0">
         <p className="text-[var(--text-primary)] text-sm font-medium truncate">{displayName}</p>
-        <p className="text-[var(--text-muted)] text-xs truncate">@{username}</p>
+        <p className="text-[var(--text-secondary)] text-xs truncate">@{username}</p>
       </div>
     </button>
   )
@@ -135,7 +135,7 @@ function FriendsTab({ onFindPeople }: { onFindPeople: () => void }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[var(--text-muted)] text-xs mb-1">{t('friends.mutualCount', { count: data.count })}</p>
+      <p className="text-[var(--text-secondary)] text-xs mb-1">{t('friends.mutualCount', { count: data.count })}</p>
       {data.friends.map((f) => (
         <UserRow key={f.userId} user={f} badge={t('friends.mutual')} badgeColor="var(--success)" />
       ))}
@@ -323,7 +323,7 @@ function SearchTab({ search, setSearch }: { search: string; setSearch: (s: strin
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={t('friends.searchPlaceholder')}
-        className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+        className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
         autoFocus
       />
 
@@ -374,7 +374,7 @@ function SearchTab({ search, setSearch }: { search: string; setSearch: (s: strin
       {search.length >= 2 && !isLoading && data?.users?.length === 0 && <EmptyState message={t('friends.noResults')} />}
 
       {search.length < 2 && (
-        <p className="text-[var(--text-muted)] text-xs text-center py-4">{t('friends.searchHint')}</p>
+        <p className="text-[var(--text-secondary)] text-xs text-center py-4">{t('friends.searchHint')}</p>
       )}
     </div>
   )
@@ -425,7 +425,7 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 py-8">
-      <p className="text-[var(--text-muted)] text-sm text-center">{message}</p>
+      <p className="text-[var(--text-secondary)] text-sm text-center">{message}</p>
       {actionLabel && onAction && (
         <button
           onClick={onAction}
@@ -442,7 +442,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   const { t } = useTranslation()
   return (
     <div className="flex flex-col items-center gap-3 py-8">
-      <p className="text-[var(--text-muted)] text-sm text-center">{message}</p>
+      <p className="text-[var(--text-secondary)] text-sm text-center">{message}</p>
       <button onClick={onRetry} className="text-[var(--accent)] text-sm font-medium">
         {t('common.retry', 'Retry')}
       </button>

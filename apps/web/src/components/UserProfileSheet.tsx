@@ -83,7 +83,7 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
 
         {isError && !isLoading && (
           <div className="flex flex-col items-center gap-3 py-6">
-            <p className="text-[var(--text-muted)] text-sm text-center">
+            <p className="text-[var(--text-secondary)] text-sm text-center">
               {t('friends.profileUnavailable', 'This profile is unavailable.')}
             </p>
             <button
@@ -104,11 +104,13 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
                   <p className="text-[var(--text-primary)] text-lg font-bold font-display truncate">{name}</p>
                   <TierBadge tier={data.tier} />
                 </div>
-                {data.username && <p className="text-[var(--text-muted)] text-sm truncate">@{data.username}</p>}
+                {data.username && <p className="text-[var(--text-secondary)] text-sm truncate">@{data.username}</p>}
                 {data.isMutual ? (
                   <span className="text-[10px] text-[var(--success)]">{t('friends.mutual')}</span>
                 ) : data.isFollowedBy ? (
-                  <span className="text-[10px] text-[var(--text-muted)]">{t('friends.followsYou', 'Follows you')}</span>
+                  <span className="text-[10px] text-[var(--text-secondary)]">
+                    {t('friends.followsYou', 'Follows you')}
+                  </span>
                 ) : null}
               </div>
               <UserActionsMenu targetUserId={data.userId} targetName={name} onBlocked={onClose} />
@@ -116,13 +118,13 @@ export function UserProfileSheet({ userId, onClose }: { userId: string; onClose:
 
             {data.totalCheckIns !== null && (
               <div className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl px-4 py-3 mb-4">
-                <p className="text-[var(--text-muted)] text-xs">{t('profile.totalCheckIns', 'Total check-ins')}</p>
+                <p className="text-[var(--text-secondary)] text-xs">{t('profile.totalCheckIns', 'Total check-ins')}</p>
                 <p className="text-[var(--text-primary)] text-xl font-bold">{data.totalCheckIns}</p>
               </div>
             )}
 
             {data.visibility === 'anonymous' && (
-              <p className="text-[var(--text-muted)] text-xs mb-4">
+              <p className="text-[var(--text-secondary)] text-xs mb-4">
                 {t('friends.profilePrivate', 'This person shares their activity with friends only.')}
               </p>
             )}

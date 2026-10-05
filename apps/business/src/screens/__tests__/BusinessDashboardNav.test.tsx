@@ -8,6 +8,7 @@
  * inside it. Tapping the nav entry selects the panel in the one business store
  * and mounts the form.
  */
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
@@ -52,6 +53,14 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+})
+
+describe('BusinessDashboard - header wordmark (glyphcity-rebrand R5.7)', () => {
+  it('renders the lowercase wordmark labelled with the Brand_Name', async () => {
+    render(<BusinessDashboard />)
+    const wordmark = await waitFor(() => screen.getAllByRole('img', { name: APP_NAME })[0])
+    expect(wordmark?.textContent).toBe(APP_NAME.toLowerCase())
+  })
 })
 
 describe('BusinessDashboard - Tonight nav entry (R8.3)', () => {

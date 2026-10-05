@@ -79,10 +79,10 @@ export function SearchSheet({ isOpen, onClose, onSelectNode }: SearchSheetProps)
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={t('search.placeholder')}
-        className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none mb-4"
+        className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none mb-4"
       />
 
-      {loading && <p className="text-[var(--text-muted)] text-sm text-center py-4">{t('search.searching')}</p>}
+      {loading && <p className="text-[var(--text-secondary)] text-sm text-center py-4">{t('search.searching')}</p>}
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2 max-h-[50dvh] overflow-y-auto">
@@ -94,7 +94,7 @@ export function SearchSheet({ isOpen, onClose, onSelectNode }: SearchSheetProps)
             >
               <div className="flex-1">
                 <p className="text-[var(--text-primary)] text-sm font-medium">{r.name}</p>
-                <p className="text-[var(--text-muted)] text-xs">{r.category}</p>
+                <p className="text-[var(--text-secondary)] text-xs">{r.category}</p>
               </div>
             </button>
           ))}
@@ -108,7 +108,7 @@ export function SearchSheet({ isOpen, onClose, onSelectNode }: SearchSheetProps)
       )}
 
       {query.length >= 2 && !loading && !searchError && results.length === 0 && (
-        <p className="text-[var(--text-muted)] text-sm text-center py-4">{t('search.noResults')}</p>
+        <p className="text-[var(--text-secondary)] text-sm text-center py-4">{t('search.noResults')}</p>
       )}
     </BottomSheet>
   )

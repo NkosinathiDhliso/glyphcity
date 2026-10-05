@@ -81,16 +81,16 @@ export function StaffRedemptionPanel() {
 
       {loadError && <div className="text-[var(--danger)] text-sm text-center py-2">{loadError}</div>}
 
-      {loading && <div className="text-[var(--text-muted)] text-sm text-center py-8">Loading...</div>}
+      {loading && <div className="text-[var(--text-secondary)] text-sm text-center py-8">Loading...</div>}
 
       {!loading && selectedStaffId && redemptions.length === 0 && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">
           No redemptions found for this staff member
         </div>
       )}
 
       {!loading && !selectedStaffId && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">Pick a staff member</div>
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">Pick a staff member</div>
       )}
 
       <div className="flex flex-col gap-2">
@@ -103,7 +103,9 @@ export function StaffRedemptionPanel() {
               <span className="text-[var(--text-primary)] font-medium text-sm truncate">{rdm.staffName}</span>
               <span className="text-[var(--text-secondary)] text-xs truncate">{rdm.rewardTitle}</span>
             </div>
-            <span className="text-[var(--text-muted)] text-xs shrink-0 ml-3">{formatSastDateTime(rdm.redeemedAt)}</span>
+            <span className="text-[var(--text-secondary)] text-xs shrink-0 ml-3">
+              {formatSastDateTime(rdm.redeemedAt)}
+            </span>
           </div>
         ))}
       </div>

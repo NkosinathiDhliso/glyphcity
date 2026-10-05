@@ -159,7 +159,7 @@ function ReportDialog({
             <h2 className="text-[var(--text-primary)] font-bold text-base font-display mb-1">
               {t('friends.reportTitle', 'Report {{name}}', { name: targetName })}
             </h2>
-            <p className="text-[var(--text-muted)] text-xs mb-4">
+            <p className="text-[var(--text-secondary)] text-xs mb-4">
               {t('friends.reportSubtitle', 'Reports are confidential.')}
             </p>
 
@@ -184,7 +184,7 @@ function ReportDialog({
               maxLength={2000}
               rows={3}
               placeholder={t('friends.reportDetails', 'What happened?') ?? ''}
-              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-3 py-3 text-sm mb-4 placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none resize-none"
+              className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-3 py-3 text-sm mb-4 placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none resize-none"
             />
 
             <div className="flex flex-row gap-2">

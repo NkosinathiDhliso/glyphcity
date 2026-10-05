@@ -87,7 +87,7 @@ export function NotificationSettings() {
         <button
           onClick={() => window.history.back()}
           aria-label={t('common.back', 'Back')}
-          className="text-[var(--text-muted)] transition-all active:scale-95"
+          className="text-[var(--text-secondary)] transition-all active:scale-95"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="15 18 9 12 15 6" />
@@ -110,7 +110,7 @@ export function NotificationSettings() {
             >
               <div className="flex-1 min-w-0 pr-3">
                 <p className="text-[var(--text-primary)] text-sm font-medium">{t(`notif.settings.${key}`)}</p>
-                <p className="text-[var(--text-muted)] text-xs mt-0.5">{t(`notif.settings.${key}Desc`)}</p>
+                <p className="text-[var(--text-secondary)] text-xs mt-0.5">{t(`notif.settings.${key}Desc`)}</p>
               </div>
               <span
                 className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${
@@ -138,7 +138,7 @@ export function NotificationSettings() {
               <p className="text-[var(--text-primary)] text-sm font-medium">
                 {t('notif.settings.marketing', 'Win-back offers')}
               </p>
-              <p className="text-[var(--text-muted)] text-xs mt-0.5">
+              <p className="text-[var(--text-secondary)] text-xs mt-0.5">
                 {t(
                   'notif.settings.marketingDesc',
                   'Let venues you have visited send you occasional offers to come back.',

@@ -125,7 +125,7 @@ export function CheckInDetailPanel() {
       </div>
 
       {loading && entries.length === 0 && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">Loading...</div>
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">Loading...</div>
       )}
 
       {!loading && loadError && (
@@ -135,7 +135,7 @@ export function CheckInDetailPanel() {
       )}
 
       {!loading && !loadError && entries.length === 0 && (
-        <div className="text-[var(--text-muted)] text-sm text-center py-8">No check-ins for this date</div>
+        <div className="text-[var(--text-secondary)] text-sm text-center py-8">No check-ins for this date</div>
       )}
 
       <div className="flex flex-col gap-2">
@@ -147,7 +147,7 @@ export function CheckInDetailPanel() {
             <div className="flex flex-col gap-1">
               <span className="text-[var(--text-primary)] font-medium text-sm">{entry.displayName}</span>
               <div className="flex flex-row flex-wrap items-center gap-2">
-                <span className="text-[var(--text-muted)] text-xs">{getTierLabel(entry.tier)}</span>
+                <span className="text-[var(--text-secondary)] text-xs">{getTierLabel(entry.tier)}</span>
                 <span
                   className="text-xs font-medium px-2 py-0.5 rounded-full"
                   style={{
@@ -160,7 +160,7 @@ export function CheckInDetailPanel() {
                 <FoundViaBadge foundVia={entry.foundVia} />
               </div>
             </div>
-            <span className="text-[var(--text-muted)] text-xs">{formatSastTime(entry.timestamp)}</span>
+            <span className="text-[var(--text-secondary)] text-xs">{formatSastTime(entry.timestamp)}</span>
           </div>
         ))}
       </div>

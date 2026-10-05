@@ -113,7 +113,7 @@ export function CheckInCelebration({
           type="button"
           onClick={onDone}
           aria-label={t('common.dismiss', 'Dismiss')}
-          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-150 active:scale-95"
+          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all duration-150 active:scale-95"
         >
           <X size={18} strokeWidth={2} />
         </button>
@@ -152,7 +152,7 @@ export function CheckInCelebration({
 
         {/* Secondary progress cues (goal-gradient + streak). Shown only when
             they carry a real value. */}
-        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
           <span>{totalLabel}</span>
           {streakCount > 0 && (
             <>

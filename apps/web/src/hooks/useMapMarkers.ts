@@ -18,7 +18,6 @@ import { createLongPressHandlers } from '../lib/longPress'
 import { getMapboxGl } from '../lib/mapboxLoader'
 import { getNodeState, getCategoryColour } from '../lib/mapHelpers'
 import { applyMarkerAccessibleName, GLYPH_HIT_LAYER, wireKeyActivation } from '../lib/markerA11y'
-import { rankVenuesFromStores } from '../lib/rankVenues'
 import {
   beamContainerSize,
   ensureBeaconStack,
@@ -38,6 +37,7 @@ import {
   zoomSizeFactor,
   type MarkerPresentationTier,
 } from '../lib/markerPresentation'
+import { rankVenuesFromStores } from '../lib/rankVenues'
 
 export {
   BASE_PRESENTATION_ZOOM,

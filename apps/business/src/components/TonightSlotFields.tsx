@@ -110,7 +110,7 @@ export function TonightSlotFields(props: TonightSlotFieldsProps) {
           onChange={(e) => onPatch({ headline: e.target.value })}
           className={INPUT_CLASS}
         />
-        <span data-testid="tonight-headline-count" className="text-[var(--text-muted)] text-xs">
+        <span data-testid="tonight-headline-count" className="text-[var(--text-secondary)] text-xs">
           {headlineLeft} {t('biz.tonight.headlineLeft', 'characters left')}
         </span>
         <TonightFieldError field="headline" error={error} />

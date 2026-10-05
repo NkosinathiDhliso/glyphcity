@@ -311,7 +311,7 @@ export function NodeEditorPanel() {
   if (loading) {
     return (
       <div className="p-5 flex items-center justify-center py-12">
-        <span className="text-[var(--text-muted)] text-sm">Loading...</span>
+        <span className="text-[var(--text-secondary)] text-sm">Loading...</span>
       </div>
     )
   }
@@ -333,7 +333,9 @@ export function NodeEditorPanel() {
       {loadError ? (
         <p className="text-[var(--danger)] text-sm">Failed to load your venues. Please refresh.</p>
       ) : nodes.length === 0 ? (
-        <p className="text-[var(--text-muted)] text-sm">No nodes yet. Add your venue by entering your address below.</p>
+        <p className="text-[var(--text-secondary)] text-sm">
+          No nodes yet. Add your venue by entering your address below.
+        </p>
       ) : (
         <div className="flex flex-col gap-4">
           {nodes.length > 1 && (
@@ -378,7 +380,7 @@ export function NodeEditorPanel() {
 
               <div className="flex flex-col gap-2">
                 <label className="text-[var(--text-secondary)] text-xs font-medium">
-                  Address <span className="text-[var(--text-muted)]">(leave blank to keep current)</span>
+                  Address <span className="text-[var(--text-secondary)]">(leave blank to keep current)</span>
                 </label>
                 <MapboxAddressInput
                   inputRef={editAddressInputRef}
@@ -394,9 +396,9 @@ export function NodeEditorPanel() {
                     setEditLng(lng)
                   }}
                   placeholder="Type new address to change location"
-                  className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
                 />
-                <span className="text-[var(--text-muted)] text-xs">
+                <span className="text-[var(--text-secondary)] text-xs">
                   Current location: {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}
                   {selected.claimStatus && (
                     <>
@@ -443,7 +445,7 @@ export function NodeEditorPanel() {
                     // "Add business photo" (R5.3, no silent success-without-preview).
                     <PhotoUnavailable className="absolute inset-0" />
                   ) : (
-                    <span className="absolute inset-0 flex items-center justify-center px-6 text-center text-[var(--text-muted)] text-sm">
+                    <span className="absolute inset-0 flex items-center justify-center px-6 text-center text-[var(--text-secondary)] text-sm">
                       Add business photo
                     </span>
                   )}
@@ -486,13 +488,13 @@ export function NodeEditorPanel() {
               {/* Social links (one handle per platform) */}
               <div className="flex flex-col gap-3">
                 <label className="text-[var(--text-secondary)] text-xs font-medium">Social links</label>
-                <p className="text-[var(--text-muted)] text-xs -mt-1">
+                <p className="text-[var(--text-secondary)] text-xs -mt-1">
                   Add the handles your crowd follows. They show on your venue page, and check-ins can tag them when fans
                   share your spot.
                 </p>
                 {SOCIAL_PLATFORMS.map((p) => (
                   <div key={p.platform} className="flex flex-col gap-1">
-                    <span className="text-[var(--text-muted)] text-xs">{p.label}</span>
+                    <span className="text-[var(--text-secondary)] text-xs">{p.label}</span>
                     <input
                       type="text"
                       aria-label={`${p.label} handle`}
@@ -507,7 +509,7 @@ export function NodeEditorPanel() {
                         })
                       }
                       placeholder={`e.g. ${p.placeholder}`}
-                      className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                      className="bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
                     />
                   </div>
                 ))}
@@ -546,11 +548,11 @@ export function NodeEditorPanel() {
                 value={addVenueName}
                 onChange={(e) => setAddVenueName(e.target.value)}
                 placeholder="e.g. Father Coffee"
-                className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
               />
               <label className="text-[var(--text-primary)] text-xs font-medium">Address</label>
               {mapsUnavailable && (
-                <p className="text-[var(--text-muted)] text-xs -mt-1">
+                <p className="text-[var(--text-secondary)] text-xs -mt-1">
                   Autocomplete unavailable | enter address manually.
                 </p>
               )}
@@ -569,7 +571,7 @@ export function NodeEditorPanel() {
                 }}
                 onUnavailable={() => setMapsUnavailable(true)}
                 placeholder="e.g. 73 Juta Street, Braamfontein, Johannesburg"
-                className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none"
+                className="w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-secondary)] focus:border-[var(--accent)] focus:outline-none"
               />
               <label className="text-[var(--text-primary)] text-xs font-medium">Category</label>
               <select

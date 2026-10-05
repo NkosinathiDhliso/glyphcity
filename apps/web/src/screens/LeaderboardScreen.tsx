@@ -87,7 +87,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
       data-scroll-container
     >
       <h1 className="text-[var(--text-primary)] font-bold text-xl font-display mb-1">{title}</h1>
-      <p className="text-[var(--text-muted)] text-xs mb-3">{t('leaderboard.thisWeek')}</p>
+      <p className="text-[var(--text-secondary)] text-xs mb-3">{t('leaderboard.thisWeek')}</p>
 
       {/* Segment toggle */}
       <div className="flex flex-row gap-2 mb-4" role="tablist" aria-label={t('leaderboard.viewToggle', 'View toggle')}>
@@ -99,7 +99,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
           className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all ${
             viewMode === 'archetype'
               ? 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
-              : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
+              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border)]'
           } ${!userArchetypeId ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {userArchetypeId
@@ -116,7 +116,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
           className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all ${
             viewMode === 'city-wide'
               ? 'bg-[var(--accent-cta)] text-[var(--on-accent)]'
-              : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
+              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border)]'
           }`}
         >
           {t('leaderboard.cityWide', 'City-wide')}
@@ -146,7 +146,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
         </div>
       ) : isError ? (
         <div className="flex flex-col items-center gap-3 py-8">
-          <p className="text-[var(--text-muted)] text-sm text-center">
+          <p className="text-[var(--text-secondary)] text-sm text-center">
             {t('leaderboard.loadError', "Couldn't load the leaderboard. Check your connection.")}
           </p>
           <button onClick={() => void refetch()} className="text-[var(--accent)] text-sm font-medium">
@@ -175,7 +175,7 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
           )}
         </div>
       ) : (
-        <p className="text-[var(--text-muted)] text-sm text-center py-8">{t('leaderboard.noData')}</p>
+        <p className="text-[var(--text-secondary)] text-sm text-center py-8">{t('leaderboard.noData')}</p>
       )}
     </div>
   )
@@ -263,7 +263,7 @@ function LeaderboardRow({ entry, onVenueStreakTap, t }: LeaderboardRowProps) {
   return (
     <div className="flex flex-row items-center gap-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl px-4 py-3">
       {/* Rank position */}
-      <span className="text-[var(--text-muted)] text-sm font-medium w-6 text-right shrink-0">{entry.rank}</span>
+      <span className="text-[var(--text-secondary)] text-sm font-medium w-6 text-right shrink-0">{entry.rank}</span>
 
       {/* Avatar or tier badge */}
       {entry.isFriend ? (
@@ -285,7 +285,7 @@ function LeaderboardRow({ entry, onVenueStreakTap, t }: LeaderboardRowProps) {
         {entry.topVenueName && entry.topVenueId && (
           <button
             onClick={() => onVenueStreakTap(entry.topVenueId!)}
-            className="text-[var(--text-muted)] text-xs truncate hover:text-[var(--accent)] transition-colors text-left"
+            className="text-[var(--text-secondary)] text-xs truncate hover:text-[var(--accent)] transition-colors text-left"
             aria-label={t('leaderboard.venueStreakLabel', {
               venue: entry.topVenueName,
               defaultValue: 'Go to {{venue}}',

@@ -85,7 +85,7 @@ function Dismissible({ children, onDismiss, tone }: { children: ReactNode; onDis
       <button
         onClick={onDismiss}
         aria-label="Dismiss"
-        className="text-[var(--text-muted)] text-sm shrink-0 w-6 h-6 flex items-center justify-center active:scale-95"
+        className="text-[var(--text-secondary)] text-sm shrink-0 w-6 h-6 flex items-center justify-center active:scale-95"
       >
         &times;
       </button>

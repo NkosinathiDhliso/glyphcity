@@ -41,7 +41,7 @@ export function MusicInsightsSection() {
   if (loadError) {
     return (
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4">
-        <p className="text-[var(--text-muted)] text-sm text-center">
+        <p className="text-[var(--text-secondary)] text-sm text-center">
           {t('biz.audience.loadError', "Couldn't load music insights.")}
         </p>
       </div>
@@ -52,7 +52,7 @@ export function MusicInsightsSection() {
     if (data && data.totalWithMusicPrefs < 20) {
       return (
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4">
-          <p className="text-[var(--text-muted)] text-sm text-center">{t('biz.audience.minMusicData')}</p>
+          <p className="text-[var(--text-secondary)] text-sm text-center">{t('biz.audience.minMusicData')}</p>
         </div>
       )
     }
@@ -84,7 +84,7 @@ export function MusicInsightsSection() {
                   style={{ width: `${((count ?? 0) / maxGenre) * 100}%` }}
                 />
               </div>
-              <span className="text-[var(--text-muted)] text-xs w-8 text-right">{count}%</span>
+              <span className="text-[var(--text-secondary)] text-xs w-8 text-right">{count}%</span>
             </div>
           ))}
         </div>
@@ -116,7 +116,7 @@ export function MusicInsightsSection() {
         <div className="flex flex-col gap-2">
           {data.peakArchetypeByTime.map((seg) => (
             <div key={seg.timeSegment} className="flex flex-row items-center justify-between py-1">
-              <span className="text-[var(--text-muted)] text-xs">{seg.timeSegment}</span>
+              <span className="text-[var(--text-secondary)] text-xs">{seg.timeSegment}</span>
               <span className="text-[var(--text-primary)] text-sm">{seg.archetypeName}</span>
             </div>
           ))}

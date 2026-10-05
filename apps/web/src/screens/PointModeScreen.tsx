@@ -97,7 +97,7 @@ export function PointModeScreen({ sensors, onClose, onCheckIn, isCheckingIn }: P
 
   const select = (nodeId: string) => useSelectionStore.getState().selectVenue(nodeId, 'marker')
   const activeNode = activeVenueId ? (nodes[activeVenueId] ?? null) : null
-  const inView = view?.stacks.flatMap((s) => s.venues.map((v) => v.venue)) ?? []
+  const inView = view?.ranked ?? []
 
   return (
     <div className="fixed inset-0 z-[9000] overflow-hidden" style={{ background: 'var(--bg-base)' }}>

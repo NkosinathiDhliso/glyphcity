@@ -1,7 +1,6 @@
+import { BRAND_I18N_VARIABLES } from '@area-code/shared/constants/brand'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-
-import { BRAND_I18N_VARIABLES } from '@area-code/shared/constants/brand'
 
 import en from './locales/en.json'
 

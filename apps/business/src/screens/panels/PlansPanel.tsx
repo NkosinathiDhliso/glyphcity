@@ -212,16 +212,16 @@ export function PlansPanel() {
 
         <span className="text-[var(--accent)] font-bold text-2xl tracking-[-0.03em]">{priceDisplay}</span>
         {!isPAYG && plan.yearlyPriceCents !== undefined && plan.yearlyPriceCents > 0 && (
-          <span className="text-[var(--text-muted)] text-xs">
+          <span className="text-[var(--text-secondary)] text-xs">
             {t('biz.plans.yearlyAlternative', { price: formatZAR(plan.yearlyPriceCents / 100) })}
           </span>
         )}
         {isPAYG && plan.weeklyPriceCents !== undefined && (
-          <span className="text-[var(--text-muted)] text-xs">
+          <span className="text-[var(--text-secondary)] text-xs">
             {t('biz.plans.weeklyAlternative', { price: formatZAR(plan.weeklyPriceCents / 100) })}
           </span>
         )}
-        {canStartTrial && <span className="text-[var(--text-muted)] text-xs">{t('biz.plans.trialNoCard')}</span>}
+        {canStartTrial && <span className="text-[var(--text-secondary)] text-xs">{t('biz.plans.trialNoCard')}</span>}
 
         <div className="flex flex-col gap-1 mt-1">
           <FeatureRow label={t('biz.plans.nodes')} value={formatLimit(plan.maxNodes)} />

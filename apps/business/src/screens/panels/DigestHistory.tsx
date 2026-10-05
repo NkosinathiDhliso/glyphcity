@@ -29,7 +29,7 @@ function HistoryRow({ digest }: { digest: DigestView }) {
     >
       <div className="flex flex-row items-center justify-between gap-2">
         <span className="text-[var(--text-primary)] text-sm font-semibold">{formatWeekStart(digest.weekStart)}</span>
-        <span className="text-[var(--text-muted)] text-xs">
+        <span className="text-[var(--text-secondary)] text-xs">
           {metrics.visits} {t('biz.digest.metric.visits', 'Visits recorded')}
         </span>
       </div>
@@ -84,7 +84,7 @@ export function DigestHistory() {
       {expanded && (
         <div id="digest-history-panel" data-testid="digest-history-panel" className="flex flex-col gap-3">
           {isLoading && (
-            <span data-testid="digest-history-loading" className="text-[var(--text-muted)] text-sm">
+            <span data-testid="digest-history-loading" className="text-[var(--text-secondary)] text-sm">
               {t('biz.digest.history.loading', 'Loading prior weeks…')}
             </span>
           )}

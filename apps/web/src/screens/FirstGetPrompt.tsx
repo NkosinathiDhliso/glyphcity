@@ -88,7 +88,7 @@ export function FirstGetPrompt({ onNavigate }: FirstGetPromptProps) {
           )}
         </button>
 
-        <button onClick={() => onNavigate('map')} className="text-[var(--text-muted)] text-sm py-2">
+        <button onClick={() => onNavigate('map')} className="text-[var(--text-secondary)] text-sm py-2">
           {t('auth.firstGet.skip', "Skip | I don't have a code")}
         </button>
 

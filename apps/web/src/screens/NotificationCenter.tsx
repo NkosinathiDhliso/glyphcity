@@ -46,7 +46,7 @@ export function NotificationCenter({ onNavigate }: NotificationCenterProps) {
           <button
             onClick={() => onNavigate('profile')}
             aria-label={t('common.back', 'Back')}
-            className="text-[var(--text-muted)] transition-all active:scale-95"
+            className="text-[var(--text-secondary)] transition-all active:scale-95"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6" />
@@ -85,7 +85,7 @@ export function NotificationCenter({ onNavigate }: NotificationCenterProps) {
             >
               <div className="flex flex-row items-start justify-between gap-3">
                 <p className="text-[var(--text-primary)] text-sm font-medium">{n.title}</p>
-                <span className="text-[var(--text-muted)] text-[11px] shrink-0">{timeAgo(n.createdAt)}</span>
+                <span className="text-[var(--text-secondary)] text-[11px] shrink-0">{timeAgo(n.createdAt)}</span>
               </div>
               {n.body ? <p className="text-[var(--text-secondary)] text-xs mt-1">{n.body}</p> : null}
             </div>

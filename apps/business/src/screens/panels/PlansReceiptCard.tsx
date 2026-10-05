@@ -87,12 +87,12 @@ export function PlansReceiptCard({ receiptWindow }: PlansReceiptCardProps) {
         </p>
       )}
       {data.bySource && (
-        <p data-testid="plans-receipt-bysource" className="text-[var(--text-muted)] text-xs">
+        <p data-testid="plans-receipt-bysource" className="text-[var(--text-secondary)] text-xs">
           {data.bySource}
         </p>
       )}
       {data.measuredFrom && (
-        <p data-testid="plans-receipt-measuredfrom" className="text-[var(--text-muted)] text-xs">
+        <p data-testid="plans-receipt-measuredfrom" className="text-[var(--text-secondary)] text-xs">
           {data.measuredFrom}
         </p>
       )}

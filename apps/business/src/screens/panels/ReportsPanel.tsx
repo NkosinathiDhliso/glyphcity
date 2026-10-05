@@ -162,7 +162,7 @@ function directionIcon(dir: 'up' | 'down' | 'flat') {
 function directionColor(dir: 'up' | 'down' | 'flat') {
   if (dir === 'up') return 'var(--success, #22c55e)'
   if (dir === 'down') return 'var(--danger, #ef4444)'
-  return 'var(--text-muted)'
+  return 'var(--text-secondary)'
 }
 
 const DONUT_COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899']
@@ -188,8 +188,8 @@ function PeakHoursChart({ data }: { data: PeakHoursResult }) {
       <h3 className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-3">Peak Hours</h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={chartData}>
-          <XAxis dataKey="hour" tick={{ fontSize: 9, fill: 'var(--text-muted)' }} interval={3} />
-          <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} width={30} />
+          <XAxis dataKey="hour" tick={{ fontSize: 9, fill: 'var(--text-secondary)' }} interval={3} />
+          <YAxis tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} width={30} />
           <Tooltip
             contentStyle={{
               background: 'var(--bg-raised)',
@@ -201,7 +201,7 @@ function PeakHoursChart({ data }: { data: PeakHoursResult }) {
           <Bar dataKey="count" fill="var(--accent)" radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-      <p className="text-[var(--text-muted)] text-xs mt-2">
+      <p className="text-[var(--text-secondary)] text-xs mt-2">
         Peak day: <span className="text-[var(--text-primary)] font-medium">{data.peakDay}</span>
       </p>
     </div>
@@ -246,7 +246,7 @@ function CrowdCompositionChart({ data }: { data: CrowdCompositionResult }) {
           />
         </PieChart>
       </ResponsiveContainer>
-      <p className="text-[var(--text-muted)] text-xs mt-2">
+      <p className="text-[var(--text-secondary)] text-xs mt-2">
         Total unique visitors:{' '}
         <span className="text-[var(--text-primary)] font-medium">{data.totalUniqueVisitors}</span>
       </p>
@@ -269,7 +269,7 @@ function MusicProfileChart({ data }: { data: MusicProfileResult }) {
         <RadarChart data={chartData}>
           <PolarGrid stroke="var(--border)" />
           <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} />
-          <PolarRadiusAxis tick={{ fontSize: 9, fill: 'var(--text-muted)' }} />
+          <PolarRadiusAxis tick={{ fontSize: 9, fill: 'var(--text-secondary)' }} />
           <Radar dataKey="score" stroke="var(--accent)" fill="var(--accent)" fillOpacity={0.25} />
           <Tooltip
             contentStyle={{
@@ -283,7 +283,7 @@ function MusicProfileChart({ data }: { data: MusicProfileResult }) {
       </ResponsiveContainer>
       {data.topGenres.length > 0 && (
         <div className="mt-3">
-          <p className="text-[var(--text-muted)] text-xs mb-1">Top genres:</p>
+          <p className="text-[var(--text-secondary)] text-xs mb-1">Top genres:</p>
           <div className="flex flex-wrap gap-1">
             {data.topGenres.map((g) => (
               <span
@@ -393,7 +393,7 @@ export function ReportsPanel() {
   if (listLoading) {
     return (
       <div className="p-5 flex items-center justify-center h-full">
-        <span className="text-[var(--text-muted)] text-sm">Loading reports…</span>
+        <span className="text-[var(--text-secondary)] text-sm">Loading reports…</span>
       </div>
     )
   }
@@ -418,7 +418,7 @@ export function ReportsPanel() {
           }}
         />
         <div className="flex flex-col items-center justify-center py-12 gap-4">
-          <span className="text-[var(--text-muted)] text-sm text-center max-w-[280px]">
+          <span className="text-[var(--text-secondary)] text-sm text-center max-w-[280px]">
             No {periodFilter} reports yet. Generate one now from your recent check-ins.
           </span>
           <button
@@ -492,7 +492,7 @@ export function ReportsPanel() {
       {/* Report content */}
       {reportLoading && (
         <div className="flex items-center justify-center py-8">
-          <span className="text-[var(--text-muted)] text-sm">Loading report…</span>
+          <span className="text-[var(--text-secondary)] text-sm">Loading report…</span>
         </div>
       )}
 
@@ -626,18 +626,20 @@ function FullReportView({ report }: { report: FullReport }) {
           <h3 className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-3">Journey Insights</h3>
           {report.journeyInsights.topOverlapVenues.length > 0 && (
             <div className="flex flex-col gap-2 mb-3">
-              <p className="text-[var(--text-muted)] text-xs">Your visitors also check in at:</p>
+              <p className="text-[var(--text-secondary)] text-xs">Your visitors also check in at:</p>
               {report.journeyInsights.topOverlapVenues.map((v) => (
                 <div key={v.venueName} className="flex flex-row items-center justify-between">
                   <span className="text-[var(--text-primary)] text-sm">{v.venueName}</span>
-                  <span className="text-[var(--text-muted)] text-sm">{Math.round(v.overlapPercentage)}% overlap</span>
+                  <span className="text-[var(--text-secondary)] text-sm">
+                    {Math.round(v.overlapPercentage)}% overlap
+                  </span>
                 </div>
               ))}
             </div>
           )}
           {report.journeyInsights.partnershipSuggestions.length > 0 && (
             <div className="border-t border-[var(--border)] pt-3">
-              <p className="text-[var(--text-muted)] text-xs mb-1">Partnership opportunities:</p>
+              <p className="text-[var(--text-secondary)] text-xs mb-1">Partnership opportunities:</p>
               {report.journeyInsights.partnershipSuggestions.map((s, i) => (
                 <p key={i} className="text-[var(--text-primary)] text-sm">
                   • {s}
@@ -662,19 +664,19 @@ function SummaryCards({ summary }: { summary: ReportSummary }) {
     <div className="grid grid-cols-3 gap-3">
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">
         <span className="text-[var(--text-primary)] text-2xl font-bold font-display">{summary.totalCheckIns}</span>
-        <span className="text-[var(--text-muted)] text-xs">Check-ins</span>
+        <span className="text-[var(--text-secondary)] text-xs">Check-ins</span>
       </div>
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">
         <span className="text-[var(--text-primary)] text-lg font-semibold">
           {t(pulseLabelKey, PLAIN_SCALE_EN[pulseLabelKey])}
         </span>
-        <span className="text-[var(--text-muted)] text-xs">Pulse</span>
+        <span className="text-[var(--text-secondary)] text-xs">Pulse</span>
       </div>
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-3 flex flex-col items-center gap-1">
         <span className="text-[var(--text-primary)] text-sm font-medium truncate w-full text-center">
           {summary.topGenre ?? '-'}
         </span>
-        <span className="text-[var(--text-muted)] text-xs">Top Genre</span>
+        <span className="text-[var(--text-secondary)] text-xs">Top Genre</span>
       </div>
     </div>
   )

@@ -215,7 +215,7 @@ export function StreamingSection() {
                   })}
                 </span>
               </div>
-              <p className="text-[var(--text-muted)] text-xs mt-1">
+              <p className="text-[var(--text-secondary)] text-xs mt-1">
                 {genres.length > 0
                   ? `${genres.length} genres synced${glyphName ? `, ${glyphName}` : ''}`
                   : 'Connected. Add listening history or pick genres manually to shape your archetype.'}
@@ -253,7 +253,7 @@ export function StreamingSection() {
                 </span>
                 <div>
                   <p className="text-[var(--text-primary)] text-sm font-medium">Spotify music sync</p>
-                  <p className="text-[var(--text-muted)] text-xs">Ready to discover your music personality</p>
+                  <p className="text-[var(--text-secondary)] text-xs">Ready to discover your music personality</p>
                 </div>
               </div>
               <span className="rounded-xl border border-[var(--accent)] px-2 py-1 text-[var(--accent)] text-[10px] font-medium uppercase tracking-wider">
@@ -294,10 +294,10 @@ export function StreamingSection() {
           {showManual ? (
             <>
               <div className="flex flex-row items-center justify-between gap-3 mb-2">
-                <p className="text-[var(--text-muted)] text-xs">
+                <p className="text-[var(--text-secondary)] text-xs">
                   Fallback: pick up to 5 genres. Connecting Spotify later replaces these.
                 </p>
-                <span className="text-[var(--text-muted)] text-xs whitespace-nowrap">
+                <span className="text-[var(--text-secondary)] text-xs whitespace-nowrap">
                   {t('profile.streaming.connectApple')} soon
                 </span>
               </div>

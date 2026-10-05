@@ -106,12 +106,12 @@ export function BoostPurchasesPanel() {
       </h3>
 
       {!loaded && loading && (
-        <div className="text-[var(--text-muted)] text-sm">{t('common.loading', 'Loading...')}</div>
+        <div className="text-[var(--text-secondary)] text-sm">{t('common.loading', 'Loading...')}</div>
       )}
 
       {/* R6.8 - empty-state copy when the response has zero items. */}
       {loaded && !error && items.length === 0 && (
-        <div className="text-[var(--text-muted)] text-sm">
+        <div className="text-[var(--text-secondary)] text-sm">
           {t('biz.boost.purchases.empty', 'No booster purchases yet.')}
         </div>
       )}
@@ -126,7 +126,7 @@ export function BoostPurchasesPanel() {
               <div className="flex flex-row items-center justify-between">
                 <div className="flex flex-col gap-1">
                   <span className="text-[var(--text-primary)] font-medium text-sm">{nodeName(row.nodeId)}</span>
-                  <div className="flex flex-row items-center gap-2 text-[var(--text-muted)] text-xs">
+                  <div className="flex flex-row items-center gap-2 text-[var(--text-secondary)] text-xs">
                     <span>{formatPaidAt(row.paidAt)}</span>
                     <span>·</span>
                     <span>{row.duration}</span>
