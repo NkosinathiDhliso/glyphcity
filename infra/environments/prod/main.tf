@@ -35,6 +35,20 @@ provider "aws" {
 locals {
   env = "prod"
 
+  # The app's one domain (glyphcity-rebrand R7). Every app host, URL and record
+  # below derives from it. areacode.co.za is Area Code's own site and carries no
+  # app record (decision 4 in docs/decisions/glyphcity-rebrand.md).
+  app_domain   = "glyphcity.com"
+  web_url      = "https://${local.app_domain}"
+  business_url = "https://business.${local.app_domain}"
+  staff_url    = "https://staff.${local.app_domain}"
+  admin_url    = "https://admin.${local.app_domain}"
+  api_domain   = "api.${local.app_domain}"
+  api_url      = "https://${local.api_domain}"
+  # Transactional sender, on the SES identity for glyphcity.com. Set on every
+  # Lambda that loads backend/src/shared/email/ses.ts.
+  from_email = "noreply@${local.app_domain}"
+
   # One list of allowed browser origins, consumed by BOTH the API Gateway CORS
   # config and the S3 media bucket CORS rule. The business header-photo upload
   # is a presigned PUT straight to S3 from the origin that just called the API,
@@ -44,14 +58,11 @@ locals {
   #
   # Add a host here and it is allowed on both surfaces, or on neither.
   app_cors_origins = [
-    "https://areacode.co.za",
-    "https://www.areacode.co.za",
-    "https://business.areacode.co.za",
-    "https://www.business.areacode.co.za",
-    "https://staff.areacode.co.za",
-    "https://www.staff.areacode.co.za",
-    "https://admin.areacode.co.za",
-    "https://www.admin.areacode.co.za",
+    local.web_url,
+    "https://www.${local.app_domain}",
+    local.business_url,
+    local.staff_url,
+    local.admin_url,
     # Amplify default branch URLs (consumer, business, staff, admin). Kept so an
     # owner who reaches the portal on the Amplify host can still upload.
     "https://master.d3pm78r41ma6w6.amplifyapp.com",
@@ -78,7 +89,7 @@ variable "spotify_client_secret" {
 variable "spotify_redirect_uri" {
   description = "Spotify OAuth callback URL — must exactly match what is configured in the Spotify dashboard"
   type        = string
-  default     = "https://areacode.co.za/api/v1/streaming/spotify/callback"
+  default     = "https://glyphcity.com/api/v1/streaming/spotify/callback"
 }
 
 variable "anonymization_salt" {
@@ -135,21 +146,20 @@ variable "apple_music_private_key" {
 }
 
 variable "enable_api_custom_domain" {
-  description = "Set to true to provision api.areacode.co.za in front of the HTTP API. Requires the areacode.co.za Route53 zone to already exist in this account."
+  description = "Set to true to provision api.glyphcity.com in front of the HTTP API, in the glyphcity.com zone this stack manages."
   type        = bool
   default     = true
 }
 
 variable "enable_media_custom_domain" {
-  description = "Set to true to alias cdn.areacode.co.za onto the media CloudFront distribution (ACM cert + Route53 records). Reuses the areacode.co.za zone, so it requires enable_api_custom_domain."
+  description = "Set to true to alias cdn.glyphcity.com onto the media CloudFront distribution (ACM cert + Route53 records). Requires enable_api_custom_domain."
   type        = bool
   default     = true
 }
 
 locals {
-  # Media CDN custom domain. Gated on the API-domain flag because both share the
-  # single areacode.co.za Route53 zone data source below.
-  media_cdn_domain     = "cdn.areacode.co.za"
+  # Media CDN custom domain, in the same glyphcity.com zone as the API domain.
+  media_cdn_domain     = "cdn.${local.app_domain}"
   media_domain_enabled = var.enable_api_custom_domain && var.enable_media_custom_domain
 }
 
@@ -218,8 +228,8 @@ locals {
 # all consumer auth — never let TF recreate it). The client name intentionally
 # stays `area-code-prod-consumer-client` (not `-v2-client`); renaming it forces
 # replacement and would break the app client id the web app uses. The OAuth /
-# Hosted-UI client attributes (callback urls, scopes, IdPs) and the IdP
-# provider_details are managed live and ignored here.
+# Hosted-UI client attributes (scopes, flows, IdPs) and the IdP provider_details
+# are managed live and ignored here; the redirect URLs are Terraform-owned.
 resource "aws_cognito_user_pool" "consumer_v2" {
   name = "area-code-prod-consumer-v2"
 
@@ -267,11 +277,27 @@ resource "aws_cognito_user_pool_client" "consumer_v2" {
 
   prevent_user_existence_errors = "ENABLED"
 
-  # Hosted-UI / OAuth attributes are Optional+Computed and managed live.
+  # Redirect URLs are Terraform-owned from the glyphcity.com cutover on, so the
+  # domain switch lands in one apply. The rest of the live set is kept as read
+  # on 2026-10-04: the mobile scheme (founder call before task 8.7), the Vite dev
+  # server and the Amplify default host.
+  callback_urls = [
+    "areacode://auth/callback",
+    "http://localhost:5173/auth/callback",
+    "${local.web_url}/auth/callback",
+    "https://www.${local.app_domain}/auth/callback",
+    "https://master.d3pm78r41ma6w6.amplifyapp.com/auth/callback",
+  ]
+  logout_urls = [
+    "http://localhost:5173/",
+    "${local.web_url}/",
+    "https://www.${local.app_domain}/",
+    "https://master.d3pm78r41ma6w6.amplifyapp.com/",
+  ]
+
+  # The other Hosted-UI / OAuth attributes are Optional+Computed and managed live.
   lifecycle {
     ignore_changes = [
-      callback_urls,
-      logout_urls,
       allowed_oauth_flows,
       allowed_oauth_scopes,
       allowed_oauth_flows_user_pool_client,
@@ -399,8 +425,8 @@ resource "aws_cognito_user_pool_client" "business_v2" {
 
   # Hosted UI (PKCE code flow, scopes must cover what
   # buildHostedUiAuthorizeUrl requests: openid email profile).
-  callback_urls = ["https://business.areacode.co.za/auth/callback"]
-  logout_urls   = ["https://business.areacode.co.za/"]
+  callback_urls = ["${local.business_url}/auth/callback"]
+  logout_urls   = ["${local.business_url}/"]
 
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = true
@@ -506,12 +532,12 @@ resource "aws_cognito_user_pool_client" "staff_v2" {
   # (startManagerGoogleOAuthWeb), so the business origin is a valid callback
   # alongside the staff app's own.
   callback_urls = [
-    "https://staff.areacode.co.za/auth/callback",
-    "https://business.areacode.co.za/auth/callback",
+    "${local.staff_url}/auth/callback",
+    "${local.business_url}/auth/callback",
   ]
   logout_urls = [
-    "https://staff.areacode.co.za/",
-    "https://business.areacode.co.za/",
+    "${local.staff_url}/",
+    "${local.business_url}/",
   ]
 
   allowed_oauth_flows                  = ["code"]
@@ -627,6 +653,19 @@ module "cognito_admin" {
   enable_hosted_ui     = true
   google_client_id     = local.google_oauth.client_id
   google_client_secret = local.google_oauth.client_secret
+
+  # Redirect URLs, Terraform-owned from the glyphcity.com cutover. Localhost and
+  # the Amplify default host are kept as read live on 2026-10-04.
+  callback_urls = [
+    "http://localhost:3003/auth/callback",
+    "${local.admin_url}/auth/callback",
+    "https://master.d1ay6jict0ql9w.amplifyapp.com/auth/callback",
+  ]
+  logout_urls = [
+    "http://localhost:3003/",
+    "${local.admin_url}/",
+    "https://master.d1ay6jict0ql9w.amplifyapp.com/",
+  ]
 }
 
 # --- Cognito CUSTOM_AUTH Lambda triggers ---
@@ -666,7 +705,7 @@ module "media_cdn" {
   bucket_arn                  = module.s3_media.bucket_arn
   bucket_regional_domain_name = module.s3_media.bucket_regional_domain_name
 
-  # Serve venue photos from cdn.areacode.co.za (matches VITE_CDN_URL) instead of
+  # Serve venue photos from cdn.glyphcity.com (matches VITE_CDN_URL) instead of
   # the raw *.cloudfront.net domain. Cert + DNS records defined in the custom
   # domain section below.
   custom_domain       = local.media_domain_enabled ? local.media_cdn_domain : ""
@@ -1137,7 +1176,10 @@ module "lambda_api" {
     AREA_CODE_MEDIA_CDN_URL = module.media_cdn.media_cdn_url
     # Consumer web origin the API points consumers at: email verification links
     # and the Share_Preview canonical / og:url. Required in prod (webBaseUrl()).
-    AREA_CODE_WEB_URL = "https://areacode.co.za"
+    AREA_CODE_WEB_URL = local.web_url
+    # Sender and business portal origin for owner emails (shared/email/ses.ts).
+    AREA_CODE_FROM_EMAIL   = local.from_email
+    AREA_CODE_BUSINESS_URL = local.business_url
     # Win-back campaigns: the API async-invokes this dispatcher on send-now.
     AREA_CODE_CAMPAIGN_DISPATCHER_FUNCTION = module.lambda_campaign_dispatcher.function_name
     # HMAC secret used for QR codes AND Spotify OAuth state signing
@@ -1150,14 +1192,14 @@ module "lambda_api" {
     YOCO_PROD_SECRET_KEY = var.yoco_secret_key
     YOCO_WEBHOOK_SECRET  = var.yoco_webhook_secret
     # Business portal URL for Yoco checkout redirects
-    BUSINESS_APP_URL = "https://business.areacode.co.za"
+    BUSINESS_APP_URL = local.business_url
     # WebSocket broadcast support — allows API Lambda to push events to connected clients
     CONNECTIONS_TABLE  = module.websocket.connections_table_name
     WEBSOCKET_ENDPOINT = replace(module.websocket.websocket_api_endpoint, "wss://", "https://")
     # Web push (VAPID) — no-op if keys are empty
     AREA_CODE_VAPID_PUBLIC_KEY  = var.vapid_public_key
     AREA_CODE_VAPID_PRIVATE_KEY = var.vapid_private_key
-    AREA_CODE_VAPID_SUBJECT     = "mailto:tech@areacode.co.za"
+    AREA_CODE_VAPID_SUBJECT     = local.web_url
     # Apple Music integration — no-op if keys are empty
     APPLE_MUSIC_TEAM_ID     = var.apple_music_team_id
     APPLE_MUSIC_KEY_ID      = var.apple_music_key_id
@@ -1204,7 +1246,7 @@ module "lambda_reward_evaluator" {
     # Lambda (no in-process socket).
     AREA_CODE_VAPID_PUBLIC_KEY  = var.vapid_public_key
     AREA_CODE_VAPID_PRIVATE_KEY = var.vapid_private_key
-    AREA_CODE_VAPID_SUBJECT     = "mailto:tech@areacode.co.za"
+    AREA_CODE_VAPID_SUBJECT     = local.web_url
   }
 }
 
@@ -1332,7 +1374,7 @@ module "lambda_streak_reminder" {
     # Web push (VAPID) — reminder falls back to push for backgrounded users.
     AREA_CODE_VAPID_PUBLIC_KEY  = var.vapid_public_key
     AREA_CODE_VAPID_PRIVATE_KEY = var.vapid_private_key
-    AREA_CODE_VAPID_SUBJECT     = "mailto:tech@areacode.co.za"
+    AREA_CODE_VAPID_SUBJECT     = local.web_url
   }
 }
 
@@ -1387,6 +1429,9 @@ module "lambda_cleanup" {
     REWARDS_TABLE                           = aws_dynamodb_table.rewards.name
     AREA_CODE_COGNITO_CONSUMER_USER_POOL_ID = local.consumer_pool_id
     AREA_CODE_COGNITO_CONSUMER_CLIENT_ID    = local.consumer_client_id
+    # The lapse sweep sends renewal emails (shared/email/ses.ts).
+    AREA_CODE_FROM_EMAIL   = local.from_email
+    AREA_CODE_BUSINESS_URL = local.business_url
   }
 }
 
@@ -1429,6 +1474,9 @@ module "lambda_report_generator" {
     APP_DATA_TABLE               = aws_dynamodb_table.app_data.name
     AREA_CODE_REPORT_QUEUE_URL   = module.sqs_report_generation.queue_url
     AREA_CODE_ANONYMIZATION_SALT = var.anonymization_salt
+    # The weekly digest email (shared/email/ses.ts).
+    AREA_CODE_FROM_EMAIL   = local.from_email
+    AREA_CODE_BUSINESS_URL = local.business_url
   }
 }
 
@@ -1467,8 +1515,10 @@ module "lambda_campaign_sender" {
     USERS_TABLE              = aws_dynamodb_table.users.name
     BUSINESSES_TABLE         = aws_dynamodb_table.businesses.name
     APP_DATA_TABLE           = aws_dynamodb_table.app_data.name
-    AREA_CODE_API_BASE_URL   = "https://api.areacode.co.za"
+    AREA_CODE_API_BASE_URL   = local.api_url
     AREA_CODE_QR_HMAC_SECRET = data.aws_secretsmanager_secret_version.qr_hmac.secret_string
+    AREA_CODE_FROM_EMAIL     = local.from_email
+    AREA_CODE_BUSINESS_URL   = local.business_url
   }
 }
 
@@ -1729,8 +1779,8 @@ resource "aws_iam_role_policy" "api_s3_media" {
 # --- Lambda IAM: API -> SES (transactional email) ---
 # Powers email verification, password-reset codes, trial-expiry notices and
 # win-back campaigns (backend/src/shared/email/ses.ts). Without this the SESv2
-# SendEmail calls are denied with AccessDenied. Scoped to the verified sending
-# identity for areacode.co.za in this account/region.
+# SendEmail calls are denied with AccessDenied. Sends as the glyphcity.com SES
+# identity defined in the domain section.
 resource "aws_iam_role_policy" "api_ses_send" {
   name = "ses-send"
   role = module.lambda_api.role_name
@@ -1743,6 +1793,24 @@ resource "aws_iam_role_policy" "api_ses_send" {
         "ses:SendEmail",
         "ses:SendRawEmail"
       ]
+      Resource = "*"
+    }]
+  })
+}
+
+# --- Lambda IAM: API -> CloudWatch metric read ---
+# The admin funnel by source (backend/src/features/admin/acquisition-funnel.ts)
+# reads the AreaCode/Usage metrics. GetMetricData has no resource-level
+# permissions, so Resource is "*".
+resource "aws_iam_role_policy" "api_cloudwatch_read" {
+  name = "cloudwatch-read"
+  role = module.lambda_api.role_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["cloudwatch:GetMetricData"]
       Resource = "*"
     }]
   })
@@ -2107,27 +2175,68 @@ resource "aws_lambda_permission" "apigw_api" {
 
 # =============================================================================
 # glyphcity.com: registered at Namecheap, DNS delegated to this zone
-# (GlyphCity rebrand spec, task 8.1). App records are added in the cutover.
+# (GlyphCity rebrand spec, task 8.1). Every app record lives here.
 # =============================================================================
 
 resource "aws_route53_zone" "glyphcity" {
-  name    = "glyphcity.com"
+  name    = local.app_domain
   comment = "GlyphCity app domain. Nameservers are set at the Namecheap registrar."
 }
 
-# =============================================================================
-# Custom domain (api.areacode.co.za) — optional, gated on enable_api_custom_domain
-# =============================================================================
-
-data "aws_route53_zone" "root" {
-  count        = var.enable_api_custom_domain ? 1 : 0
-  name         = "areacode.co.za"
-  private_zone = false
+# --- SES sending identity (task 8.1) ---
+# Easy DKIM (three CNAMEs) verifies the domain; a custom MAIL FROM keeps SPF
+# aligned to glyphcity.com. Sending only: no inbound mail for this domain.
+resource "aws_sesv2_email_identity" "glyphcity" {
+  email_identity = local.app_domain
 }
+
+resource "aws_route53_record" "ses_dkim" {
+  count   = 3
+  zone_id = aws_route53_zone.glyphcity.zone_id
+  name    = "${aws_sesv2_email_identity.glyphcity.dkim_signing_attributes[0].tokens[count.index]}._domainkey.${local.app_domain}"
+  type    = "CNAME"
+  ttl     = 600
+  records = ["${aws_sesv2_email_identity.glyphcity.dkim_signing_attributes[0].tokens[count.index]}.dkim.amazonses.com"]
+}
+
+resource "aws_sesv2_email_identity_mail_from_attributes" "glyphcity" {
+  email_identity         = aws_sesv2_email_identity.glyphcity.email_identity
+  mail_from_domain       = "mail.${local.app_domain}"
+  behavior_on_mx_failure = "USE_DEFAULT_VALUE"
+}
+
+resource "aws_route53_record" "ses_mail_from_mx" {
+  zone_id = aws_route53_zone.glyphcity.zone_id
+  name    = "mail.${local.app_domain}"
+  type    = "MX"
+  ttl     = 600
+  records = ["10 feedback-smtp.us-east-1.amazonses.com"]
+}
+
+resource "aws_route53_record" "ses_mail_from_spf" {
+  zone_id = aws_route53_zone.glyphcity.zone_id
+  name    = "mail.${local.app_domain}"
+  type    = "TXT"
+  ttl     = 600
+  records = ["v=spf1 include:amazonses.com ~all"]
+}
+
+# Monitor-only DMARC to start; tighten to quarantine once SES reports are clean.
+resource "aws_route53_record" "dmarc" {
+  zone_id = aws_route53_zone.glyphcity.zone_id
+  name    = "_dmarc.${local.app_domain}"
+  type    = "TXT"
+  ttl     = 600
+  records = ["v=DMARC1; p=none"]
+}
+
+# =============================================================================
+# Custom domain (api.glyphcity.com) — gated on enable_api_custom_domain
+# =============================================================================
 
 resource "aws_acm_certificate" "api" {
   count             = var.enable_api_custom_domain ? 1 : 0
-  domain_name       = "api.areacode.co.za"
+  domain_name       = local.api_domain
   validation_method = "DNS"
 
   lifecycle {
@@ -2149,7 +2258,7 @@ resource "aws_route53_record" "api_cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.root[0].zone_id
+  zone_id         = aws_route53_zone.glyphcity.zone_id
 }
 
 resource "aws_acm_certificate_validation" "api" {
@@ -2160,7 +2269,7 @@ resource "aws_acm_certificate_validation" "api" {
 
 resource "aws_apigatewayv2_domain_name" "api" {
   count       = var.enable_api_custom_domain ? 1 : 0
-  domain_name = "api.areacode.co.za"
+  domain_name = local.api_domain
 
   domain_name_configuration {
     certificate_arn = aws_acm_certificate_validation.api[0].certificate_arn
@@ -2178,8 +2287,8 @@ resource "aws_apigatewayv2_api_mapping" "api" {
 
 resource "aws_route53_record" "api" {
   count   = var.enable_api_custom_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = "api.areacode.co.za"
+  zone_id = aws_route53_zone.glyphcity.zone_id
+  name    = local.api_domain
   type    = "A"
 
   alias {
@@ -2190,9 +2299,9 @@ resource "aws_route53_record" "api" {
 }
 
 # =============================================================================
-# Custom domain (cdn.areacode.co.za) for the media CDN — gated on
+# Custom domain (cdn.glyphcity.com) for the media CDN — gated on
 # enable_media_custom_domain (which also requires enable_api_custom_domain, as
-# both share the areacode.co.za zone above). CloudFront requires its ACM
+# both live in the glyphcity.com zone above). CloudFront requires its ACM
 # certificate in us-east-1; this stack's provider is already us-east-1.
 # =============================================================================
 
@@ -2220,7 +2329,7 @@ resource "aws_route53_record" "media_cdn_cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.root[0].zone_id
+  zone_id         = aws_route53_zone.glyphcity.zone_id
 }
 
 resource "aws_acm_certificate_validation" "media_cdn" {
@@ -2229,12 +2338,12 @@ resource "aws_acm_certificate_validation" "media_cdn" {
   validation_record_fqdns = [for r in aws_route53_record.media_cdn_cert_validation : r.fqdn]
 }
 
-# Alias cdn.areacode.co.za at the CloudFront distribution. Both A and AAAA so
+# Alias cdn.glyphcity.com at the CloudFront distribution. Both A and AAAA so
 # IPv6 clients resolve too. Z2FDTNDATAQYW2 is CloudFront's fixed hosted zone id,
 # surfaced via the module output.
 resource "aws_route53_record" "media_cdn_a" {
   count   = local.media_domain_enabled ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
+  zone_id = aws_route53_zone.glyphcity.zone_id
   name    = local.media_cdn_domain
   type    = "A"
 
@@ -2247,7 +2356,7 @@ resource "aws_route53_record" "media_cdn_a" {
 
 resource "aws_route53_record" "media_cdn_aaaa" {
   count   = local.media_domain_enabled ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
+  zone_id = aws_route53_zone.glyphcity.zone_id
   name    = local.media_cdn_domain
   type    = "AAAA"
 
@@ -2264,7 +2373,7 @@ resource "aws_route53_record" "media_cdn_aaaa" {
 
 resource "aws_route53_health_check" "api" {
   count             = var.enable_api_custom_domain ? 1 : 0
-  fqdn              = "api.areacode.co.za"
+  fqdn              = local.api_domain
   port              = 443
   type              = "HTTPS"
   resource_path     = "/health"
@@ -2281,7 +2390,7 @@ resource "aws_route53_health_check" "api" {
 resource "aws_cloudwatch_metric_alarm" "api_health" {
   count               = var.enable_api_custom_domain ? 1 : 0
   alarm_name          = "area-code-${local.env}-api-health"
-  alarm_description   = "api.areacode.co.za /health is failing"
+  alarm_description   = "${local.api_domain} /health is failing"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 2
   metric_name         = "HealthCheckStatus"
@@ -2496,11 +2605,14 @@ resource "aws_budgets_budget" "monthly" {
 }
 
 # --- Amplify domains ---
+# glyphcity.com only (R7.5): changing domain_name replaces each association, so
+# the areacode.co.za app hosts are removed in the same apply, with no redirect.
+# The zone is in this account, so Amplify writes its own records into it.
 module "amplify_domain_web" {
   source         = "../../modules/amplify-domain"
   env            = local.env
   amplify_app_id = "d3pm78r41ma6w6"
-  domain_name    = "areacode.co.za"
+  domain_name    = local.app_domain
 
   sub_domains = [
     { branch_name = "master", prefix = "" },
@@ -2512,7 +2624,7 @@ module "amplify_domain_admin" {
   source         = "../../modules/amplify-domain"
   env            = local.env
   amplify_app_id = "d1ay6jict0ql9w"
-  domain_name    = "areacode.co.za"
+  domain_name    = local.app_domain
 
   sub_domains = [
     { branch_name = "master", prefix = "admin" }
@@ -2523,7 +2635,7 @@ module "amplify_domain_business" {
   source         = "../../modules/amplify-domain"
   env            = local.env
   amplify_app_id = "dbp54yxhyjvk0"
-  domain_name    = "areacode.co.za"
+  domain_name    = local.app_domain
 
   sub_domains = [
     { branch_name = "master", prefix = "business" }
@@ -2534,7 +2646,7 @@ module "amplify_domain_staff" {
   source         = "../../modules/amplify-domain"
   env            = local.env
   amplify_app_id = "d166bb81tg4k61"
-  domain_name    = "areacode.co.za"
+  domain_name    = local.app_domain
 
   sub_domains = [
     { branch_name = "master", prefix = "staff" }
@@ -2550,22 +2662,22 @@ module "rum" {
 
   monitors = {
     web = {
-      domain              = "areacode.co.za"
-      additional_domains  = ["www.areacode.co.za"]
+      domain              = local.app_domain
+      additional_domains  = ["www.${local.app_domain}"]
       session_sample_rate = 1.0 # capture every session pre-launch
     }
     business = {
-      domain              = "business.areacode.co.za"
+      domain              = "business.${local.app_domain}"
       additional_domains  = []
       session_sample_rate = 1.0
     }
     staff = {
-      domain              = "staff.areacode.co.za"
+      domain              = "staff.${local.app_domain}"
       additional_domains  = []
       session_sample_rate = 1.0
     }
     admin = {
-      domain              = "admin.areacode.co.za"
+      domain              = "admin.${local.app_domain}"
       additional_domains  = []
       session_sample_rate = 1.0
     }
@@ -2648,7 +2760,7 @@ output "sns_alerts_topic_arn" {
 }
 
 output "api_custom_domain" {
-  value       = var.enable_api_custom_domain ? "https://api.areacode.co.za" : null
+  value       = var.enable_api_custom_domain ? local.api_url : null
   description = "Custom API domain (null when enable_api_custom_domain=false)"
 }
 

@@ -9,7 +9,7 @@ variable "amplify_app_id" {
 
 variable "domain_name" {
   type        = string
-  description = "Root domain name, e.g. areacode.co.za"
+  description = "Root domain name, e.g. glyphcity.com"
 }
 
 variable "sub_domains" {

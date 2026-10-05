@@ -73,10 +73,10 @@ variable "verify_auth_challenge_arn" {
 # ─── Hosted UI / federated (Google) sign-in ───
 # Provisions the Cognito Hosted-UI domain and the Google identity provider for
 # this pool. Gated by a plan-time boolean (defaults off) so pools that do not
-# use Hosted UI stay untouched. The user-pool *client*'s OAuth attributes are
-# deliberately NOT set here: they are Optional+Computed and are managed live
-# (consumer/business pools rely on this), so adding them would clobber existing
-# callback/identity-provider settings.
+# use Hosted UI stay untouched. The user-pool *client*'s OAuth flows, scopes and
+# identity providers are deliberately NOT set here: they are Optional+Computed
+# and managed live, so adding them would clobber existing settings. Redirect
+# URLs are opt-in through `callback_urls` / `logout_urls` below.
 variable "enable_hosted_ui" {
   description = "Provision a Hosted UI domain and Google IdP for this pool."
   type        = bool
@@ -92,6 +92,18 @@ variable "hosted_ui_domain" {
 variable "google_client_id" {
   type    = string
   default = ""
+}
+
+# Hosted-UI redirect URLs. Null leaves the live value alone (the attributes are
+# Optional+Computed); a list makes Terraform own them for this pool's client.
+variable "callback_urls" {
+  type    = list(string)
+  default = null
+}
+
+variable "logout_urls" {
+  type    = list(string)
+  default = null
 }
 
 variable "google_client_secret" {
@@ -208,6 +220,9 @@ resource "aws_cognito_user_pool_client" "this" {
   }
 
   prevent_user_existence_errors = "ENABLED"
+
+  callback_urls = var.callback_urls
+  logout_urls   = var.logout_urls
 }
 
 # ─── Hosted UI domain + Google identity provider ───

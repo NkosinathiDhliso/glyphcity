@@ -141,7 +141,7 @@ resource "aws_wafv2_web_acl" "this" {
 # WAF-to-ALB association removed (billing-revenue-integrity R11.3): ALBs are
 # forbidden infrastructure (serverless-only.md), so the association could never
 # be used. AWS WAFv2 cannot associate with API Gateway v2 HTTP APIs, so edge
-# protection for api.areacode.co.za requires a CloudFront distribution, whose
+# protection for api.glyphcity.com requires a CloudFront distribution, whose
 # build is deferred pending founder cost approval (docs/GO_LIVE_AUDIT.md).
 
 resource "aws_wafv2_web_acl_logging_configuration" "this" {

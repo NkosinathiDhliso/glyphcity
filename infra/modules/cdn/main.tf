@@ -10,7 +10,7 @@
 # When no custom_domain is set, the default *.cloudfront.net domain (and its
 # managed certificate) serves HTTPS, and media_cdn_url is that domain. When a
 # custom_domain + us-east-1 acm_certificate_arn are supplied (prod uses
-# cdn.areacode.co.za), the distribution is aliased to that domain, media_cdn_url
+# cdn.glyphcity.com), the distribution is aliased to that domain, media_cdn_url
 # becomes https://<custom_domain>, and the caller owns the DNS alias record.
 # CloudFront requires the ACM certificate in us-east-1; the whole prod stack is
 # already us-east-1, so no separate provider alias is needed.
@@ -23,7 +23,7 @@ variable "env" {
 variable "custom_domain" {
   type        = string
   default     = ""
-  description = "Optional CNAME/alias for the distribution, e.g. cdn.areacode.co.za. Empty means serve only the default *.cloudfront.net domain."
+  description = "Optional CNAME/alias for the distribution, e.g. cdn.glyphcity.com. Empty means serve only the default *.cloudfront.net domain."
 }
 
 variable "acm_certificate_arn" {

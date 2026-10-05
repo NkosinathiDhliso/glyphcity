@@ -1400,6 +1400,23 @@ resource "aws_iam_role_policy" "api_ses_send" {
   })
 }
 
+# Lambda IAM: API -> CloudWatch metric read (admin funnel by source,
+# backend/src/features/admin/acquisition-funnel.ts). GetMetricData has no
+# resource-level permissions, so Resource is "*".
+resource "aws_iam_role_policy" "api_cloudwatch_read" {
+  name = "cloudwatch-read"
+  role = module.lambda_api.role_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["cloudwatch:GetMetricData"]
+      Resource = "*"
+    }]
+  })
+}
+
 # Lambda IAM: reward-evaluator -> SQS
 resource "aws_iam_role_policy" "reward_eval_sqs" {
   name = "sqs-access"

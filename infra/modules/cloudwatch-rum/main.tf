@@ -36,8 +36,8 @@ variable "monitors" {
     used for resource naming and as the monitor name suffix.
   EOT
   type = map(object({
-    domain              = string       # e.g. "areacode.co.za"
-    additional_domains  = list(string) # e.g. ["www.areacode.co.za"]
+    domain              = string       # e.g. "glyphcity.com"
+    additional_domains  = list(string) # e.g. ["www.glyphcity.com"]
     session_sample_rate = number       # 0.0–1.0, fraction of sessions to record
   }))
 }
