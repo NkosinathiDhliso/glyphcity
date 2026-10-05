@@ -85,6 +85,43 @@ export const FOUND_VIA = [...OPEN_SOURCES, 'walk_in'] as const
 export type FoundVia = (typeof FOUND_VIA)[number]
 
 /**
+ * How a consumer first arrived, stored once on the user record at sign-up
+ * (GlyphCity rebrand R10.3). It answers "did a creator bring this person", so
+ * the founder can tell whether the unexplained glyph language works for people
+ * who never saw a creator video (R11). It is NOT an Open_Source: it is never
+ * written to a Venue_Open and never feeds Found_Via or any owner-facing number.
+ * `organic` is the honest default when no first-touch signal was seen.
+ */
+export const ACQUISITION_SOURCES = ['creator', 'share', 'qr', 'organic'] as const
+
+export type AcquisitionSource = (typeof ACQUISITION_SOURCES)[number]
+
+export function isAcquisitionSource(value: unknown): value is AcquisitionSource {
+  return typeof value === 'string' && (ACQUISITION_SOURCES as readonly string[]).includes(value)
+}
+
+/**
+ * The label a usage metric carries: the user's Acquisition_Source, or `unknown`
+ * for an account created before the source was recorded (GlyphCity rebrand R11).
+ */
+export const ACQUISITION_LABELS = [...ACQUISITION_SOURCES, 'unknown'] as const
+
+export type AcquisitionLabel = (typeof ACQUISITION_LABELS)[number]
+
+/**
+ * Map a first-visit `ref` query value to a source. Creator links carry
+ * `ref=creator` or `ref=creator-<handle>`; the handle is not stored. Anything
+ * else returns null so the caller falls through to the other first-touch signals.
+ */
+export function acquisitionFromRef(ref: string | null | undefined): AcquisitionSource | null {
+  if (!ref) return null
+  const value = ref.trim().toLowerCase()
+  if (/^creator(-|$)/.test(value)) return 'creator'
+  if (value === 'share' || value === 'qr') return value
+  return null
+}
+
+/**
  * A stored or received value is only a Found_Via if it is on the enum. The one
  * guard for every reader (the check-in row mapper, the business check-in cache
  * row, the live panel badge), so an absent or unrecognised value resolves to

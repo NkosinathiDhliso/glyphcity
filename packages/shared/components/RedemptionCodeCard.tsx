@@ -1,3 +1,5 @@
+import { APP_NAME } from '../constants/brand'
+
 import { CountdownBadge } from './CountdownBadge'
 
 export interface RedemptionCodeCardProps {
@@ -8,7 +10,7 @@ export interface RedemptionCodeCardProps {
   /** Optional helper copy shown beneath the code. */
   hint?: string
   /**
-   * Whether the code's venue is still active on Area Code
+   * Whether the code's venue is still active on the map
    * (cross-portal-lifecycle-alignment R4). When false, the card shows an honest
    * line that the venue has left but the code stays valid and scannable. Absent
    * (older payloads) is treated as active.
@@ -55,7 +57,7 @@ export function RedemptionCodeCard({
 
       <div className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-xl py-4 flex items-center justify-center">
         <span
-          className="text-[var(--accent)] font-bold text-3xl tracking-[0.35em] font-[Syne] select-all"
+          className="text-[var(--accent)] font-bold text-3xl tracking-[0.35em] font-mono select-all"
           aria-label={`Redemption code ${redemptionCode.split('').join(' ')}`}
         >
           {redemptionCode}
@@ -64,7 +66,7 @@ export function RedemptionCodeCard({
 
       {venueLapsed ? (
         <p className="text-[var(--text-secondary)] text-xs text-center">
-          This venue has left Area Code. Your code stays valid until {formatExpiry(codeExpiresAt)} and staff can still
+          This venue has left {APP_NAME}. Your code stays valid until {formatExpiry(codeExpiresAt)} and staff can still
           scan it.
         </p>
       ) : (

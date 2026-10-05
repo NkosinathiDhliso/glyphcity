@@ -506,6 +506,12 @@ export interface Node {
    */
   boostActive?: boolean
   /**
+   * Owner-set front door, within 75 m of `lat`/`lng` (GlyphCity rebrand R9).
+   * Present only when set. Read by Point_Mode alone; the map, `vibeRank`,
+   * membership and the check-in radius never use it.
+   */
+  entrance?: { lat: number; lng: number }
+  /**
    * Tonight summary for the venue's current local night, derived at read time
    * from the owning business's Music_Schedule (proof-of-demand R8.5). Absent or
    * null means nothing is published: the surface renders no Tonight line rather

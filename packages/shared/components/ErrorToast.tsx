@@ -59,7 +59,7 @@ export function ErrorToast({ message, onRetry, onDismiss, autoDismissMs = 5000 }
           style={{
             fontSize: '13px',
             fontWeight: '600',
-            color: 'var(--accent, #6366f1)',
+            color: 'var(--accent)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',

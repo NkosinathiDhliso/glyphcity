@@ -7,10 +7,14 @@
  * The web app currently renders its own richly-formatted versions; this module
  * is the canonical plain-text source for the mobile app and the intended
  * single source for both surfaces going forward. Any legal review should
- * update this file. Contact: privacy@areacode.co.za / legal@areacode.co.za.
+ * update this file. Contact: PRIVACY_EMAIL / LEGAL_EMAIL in brand.ts.
  */
 
+import { APP_NAME, COMPANY_NAME, LEGAL_EMAIL, PRIVACY_EMAIL } from './brand'
 import { TIER_PERMANENCE_CLAUSE } from './legal'
+
+/** The one operator statement shown near the top of both documents (R1.3). */
+export const OPERATOR_STATEMENT = `${APP_NAME} is operated by ${COMPANY_NAME}.`
 
 export interface LegalSection {
   heading: string
@@ -29,15 +33,15 @@ export const PRIVACY_POLICY: LegalDocument = {
   title: 'Privacy Policy',
   lastUpdated: '16 May 2026',
   intro: [
-    'Area Code ("we", "us", "our") is a venue-discovery platform operated from South Africa. This policy explains what personal information we collect when you use the Area Code consumer app, why we collect it, how we use it, and the rights you have over it.',
+    `${OPERATOR_STATEMENT} ${APP_NAME} is a venue-discovery platform operated from South Africa. In this policy "we", "us" and "our" mean ${COMPANY_NAME}. This policy explains what personal information we collect when you use the ${APP_NAME} consumer app, why we collect it, how we use it, and the rights you have over it.`,
     "We are committed to processing your personal information in line with South Africa's Protection of Personal Information Act (POPIA, Act No. 4 of 2013).",
   ],
   sections: [
     {
       heading: '1. Who we are',
       body: [
-        'Responsible party: Area Code, Johannesburg, South Africa.',
-        'Information officer: contactable at privacy@areacode.co.za.',
+        `Responsible party: ${COMPANY_NAME}, Johannesburg, South Africa, the operator of ${APP_NAME}.`,
+        `Information officer: contactable at ${PRIVACY_EMAIL}.`,
       ],
     },
     {
@@ -55,7 +59,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       heading: '3. Why we collect it',
       body: [
-        '• To create and operate your Area Code account.',
+        `• To create and operate your ${APP_NAME} account.`,
         '• To verify that check-ins are genuine (proximity check at the moment of check-in only).',
         '• To award rewards, tiers, and leaderboard positions.',
         '• To produce the live venue pulse score and features such as the music taste profile.',
@@ -87,14 +91,14 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       heading: '7. Your rights',
       body: [
-        'Under POPIA you can access, correct, delete, and object to processing of your personal information, and withdraw consent for optional features. Use the data controls in your profile or email privacy@areacode.co.za.',
+        `Under POPIA you can access, correct, delete, and object to processing of your personal information, and withdraw consent for optional features. Use the data controls in your profile or email ${PRIVACY_EMAIL}.`,
         'You may lodge a complaint with the Information Regulator of South Africa at inforegulator.org.za.',
       ],
     },
     {
       heading: '8. Children',
       body: [
-        'Area Code is not intended for users under 18. We do not knowingly collect personal information from children.',
+        `${APP_NAME} is not intended for users under 18. We do not knowingly collect personal information from children.`,
       ],
     },
     {
@@ -111,7 +115,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     },
     {
       heading: '11. Contact',
-      body: ['For any privacy question, request, or complaint: privacy@areacode.co.za.'],
+      body: [`For any privacy question, request, or complaint: ${PRIVACY_EMAIL}.`],
     },
   ],
 }
@@ -120,19 +124,20 @@ export const TERMS_OF_SERVICE: LegalDocument = {
   title: 'Terms of Service',
   lastUpdated: '16 May 2026',
   intro: [
-    'These terms govern your use of the Area Code consumer app. By creating an account or signing in, you agree to them.',
+    `${OPERATOR_STATEMENT} In these terms "we", "us" and "our" mean ${COMPANY_NAME}.`,
+    `These terms govern your use of the ${APP_NAME} consumer app. By creating an account or signing in, you agree to them.`,
   ],
   sections: [
     {
-      heading: '1. Who can use Area Code',
+      heading: `1. Who can use ${APP_NAME}`,
       body: [
         'You must be 18 years or older. You must provide accurate information when you sign up and keep your credentials confidential. You are responsible for everything that happens under your account.',
       ],
     },
     {
-      heading: '2. What Area Code is',
+      heading: `2. What ${APP_NAME} is`,
       body: [
-        'Area Code is a venue-discovery and rewards platform. Rewards are issued and honoured by individual venues, not by Area Code. Area Code is not the seller of any reward.',
+        `${APP_NAME} is a venue-discovery and rewards platform. Rewards are issued and honoured by individual venues, not by ${COMPANY_NAME}. ${COMPANY_NAME} is not the seller of any reward.`,
       ],
     },
     {
@@ -151,7 +156,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       heading: '5. Streaming connections',
       body: [
-        'If you connect Spotify or Apple Music, you authorise Area Code to read aggregated taste data while the connection is active. You can revoke it at any time in your profile or with the provider.',
+        `If you connect Spotify or Apple Music, you authorise ${COMPANY_NAME} to read aggregated taste data while the connection is active. You can revoke it at any time in your profile or with the provider.`,
       ],
     },
     {
@@ -181,25 +186,25 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       heading: '10. Intellectual property',
       body: [
-        'The Area Code name, logo, design, software, and related IP are owned by Area Code. Nothing in these terms transfers that ownership to you.',
+        `The ${APP_NAME} name, logo, design, software, and related IP are owned by ${COMPANY_NAME}. Nothing in these terms transfers that ownership to you.`,
       ],
     },
     {
       heading: '11. Disclaimers',
       body: [
-        'Area Code is provided "as is". We do not warrant the platform will be error-free or that any specific reward or venue information is available, accurate, or current. To the fullest extent permitted by law we exclude all implied warranties.',
+        `${APP_NAME} is provided "as is". We do not warrant the platform will be error-free or that any specific reward or venue information is available, accurate, or current. To the fullest extent permitted by law we exclude all implied warranties.`,
       ],
     },
     {
       heading: '12. Limitation of liability',
       body: [
-        'To the maximum extent permitted by law, Area Code is not liable for indirect, incidental, special, or consequential damages. Nothing limits liability that cannot be limited under South African law, including your rights under the Consumer Protection Act.',
+        `To the maximum extent permitted by law, ${COMPANY_NAME} is not liable for indirect, incidental, special, or consequential damages. Nothing limits liability that cannot be limited under South African law, including your rights under the Consumer Protection Act.`,
       ],
     },
     {
       heading: '13. Privacy',
       body: [
-        'Our use of your personal information is described in our Privacy Policy. By using Area Code you confirm you have read it.',
+        `Our use of your personal information is described in our Privacy Policy. By using ${APP_NAME} you confirm you have read it.`,
       ],
     },
     {
@@ -216,7 +221,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     },
     {
       heading: '16. Contact',
-      body: ['For any question about these terms: legal@areacode.co.za.'],
+      body: [`For any question about these terms: ${LEGAL_EMAIL}.`],
     },
   ],
 }

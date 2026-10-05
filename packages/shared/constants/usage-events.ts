@@ -14,6 +14,9 @@
  * - Constellation gate: beam_tap, zoom_commit, checkin_completed
  * - First-Get:          firstget_token_entered, firstget_token_redeemed
  * - Proof of demand:    venue_open (carries `source` only, never a venue id)
+ * - Silence measure:    venue_probe (detail opened and closed within
+ *                       `VENUE_PROBE_MAX_MS`; a sign the glyph did not land,
+ *                       GlyphCity rebrand R11.1)
  */
 export const USAGE_EVENT_NAMES = [
   'auth_gate_shown',
@@ -27,7 +30,11 @@ export const USAGE_EVENT_NAMES = [
   'firstget_token_entered',
   'firstget_token_redeemed',
   'venue_open',
+  'venue_probe',
 ] as const
+
+/** A venue detail open shorter than this counts as a probe. */
+export const VENUE_PROBE_MAX_MS = 2_000
 
 export type UsageEventName = (typeof USAGE_EVENT_NAMES)[number]
 

@@ -100,7 +100,7 @@ export function getArchetypeIcon(iconId: string): ArchetypeIconSpec | undefined 
  * Canonical hex values for each `NodeCategory`'s node-core colour. Mirrors the
  * dark-theme tokens; used by the contrast calculation below.
  */
-const NODE_CATEGORY_HEX: Readonly<Record<NodeCategory, string>> = Object.freeze({
+export const NODE_CATEGORY_HEX: Readonly<Record<NodeCategory, string>> = Object.freeze({
   food: '#ff6b6b',
   coffee: '#a0785a',
   nightlife: '#3b7dd8',

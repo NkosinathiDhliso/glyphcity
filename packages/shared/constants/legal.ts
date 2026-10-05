@@ -10,8 +10,9 @@
  * for the rationale.
  */
 
-export const TIER_PERMANENCE_CLAUSE =
-  'Your tier and accumulated visit count are permanent. Area Code commits never to reset, downgrade, or annualise tier or visit count.'
+import { APP_NAME } from './brand'
+
+export const TIER_PERMANENCE_CLAUSE = `Your tier and accumulated visit count are permanent. ${APP_NAME} commits never to reset, downgrade, or annualise tier or visit count.`
 
 export const TIER_PERMANENCE_SHORT = 'Your tier never expires.'
 

@@ -137,3 +137,15 @@ export const ARCHETYPE_CATALOG: PersonalityArchetype[] = [
     isActive: true,
   },
 ]
+
+/** The archetype a user holds before any taste data exists. */
+export const UNCHARTED_ARCHETYPE_ID = 'archetype-uncharted'
+
+/**
+ * Glyph_Name for an archetype id: the catalog `name`. Undefined for an unknown
+ * id, so a surface omits the line rather than inventing one. Never returns the
+ * `description`, which is for the Glyph_Codex and internal tools only.
+ */
+export function getGlyphName(archetypeId: string): string | undefined {
+  return ARCHETYPE_CATALOG.find((a) => a.id === archetypeId)?.name
+}

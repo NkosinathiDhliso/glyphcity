@@ -12,6 +12,8 @@
  * which is the POPIA posture we want for user-supplied photos.
  */
 
+import { APP_DOMAIN } from '../constants/brand'
+
 /** Target longest-edge dimension for a compressed header image (px). */
 export const HEADER_IMAGE_MAX_DIMENSION = 1600
 
@@ -204,7 +206,7 @@ export const UPLOAD_ERROR_COPY: Record<UploadFailureKind, string> = {
     "This photo format can't be read in this browser. In your camera settings choose Most Compatible, or pick a JPG.",
   decode: "This photo couldn't be read. Try a smaller one.",
   'too-large': `Image must be under ${MAX_HEADER_IMAGE_LABEL}.`,
-  network: 'Upload blocked. Open the portal at business.areacode.co.za and try again.',
+  network: `Upload blocked. Open the portal at business.${APP_DOMAIN} and try again.`,
   server: 'Upload failed on our side. Please try again in a moment.',
   unknown: 'Upload failed. Try again, or pick a different photo.',
 }

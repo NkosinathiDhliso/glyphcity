@@ -1,30 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react'
 
+import { nodeStateFromScore as deriveNodeState } from '../constants/state-labels'
 import { useMapStore } from '../stores/mapStore'
 import { useToastStore } from '../stores/toastStore'
 import type { NodeState, Toast } from '../types'
-
-/**
- * Mirror of the Pulse_State threshold table in
- * `apps/web/src/lib/mapHelpers.ts`. Kept inline so this shared hook does
- * not have to depend on app-side code; the values are spec-stable per R8
- * Pulse_State and are intentionally duplicated rather than introducing a
- * new shared module just for this constant.
- */
-const STATE_THRESHOLDS: ReadonlyArray<{ min: number; state: NodeState }> = [
-  { min: 61, state: 'popping' },
-  { min: 31, state: 'buzzing' },
-  { min: 11, state: 'active' },
-  { min: 1, state: 'quiet' },
-  { min: 0, state: 'dormant' },
-]
-
-function deriveNodeState(score: number): NodeState {
-  for (const t of STATE_THRESHOLDS) {
-    if (score >= t.min) return t.state
-  }
-  return 'dormant'
-}
 
 const TOAST_ID = 'city-pulse'
 const GRACE_MS = 2000

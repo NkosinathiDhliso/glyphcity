@@ -17,6 +17,17 @@ export function haversineDistance(lat1: number, lng1: number, lat2: number, lng2
   return EARTH_RADIUS_KM * c
 }
 
+/** Initial great-circle bearing from point 1 to point 2, in degrees [0, 360), 0 = north. */
+export function initialBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const phi1 = toRadians(lat1)
+  const phi2 = toRadians(lat2)
+  const dLng = toRadians(lng2 - lng1)
+  const y = Math.sin(dLng) * Math.cos(phi2)
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLng)
+  const degrees = (Math.atan2(y, x) * 180) / Math.PI
+  return (degrees + 360) % 360
+}
+
 export function isWithinRadius(
   userLat: number,
   userLng: number,

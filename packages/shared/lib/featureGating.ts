@@ -13,11 +13,12 @@ const TIER_ORDER: Tier[] = ['local', 'regular', 'fixture', 'institution', 'legen
 // try/catch so a malformed override or missing env subsystem can never
 // crash callers - the default value wins.
 
-export type FeatureFlagName = 'live_vibe_on_map' | 'live_vibe_declaration'
+export type FeatureFlagName = 'live_vibe_on_map' | 'live_vibe_declaration' | 'point_mode'
 
 const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> = Object.freeze({
   live_vibe_on_map: false,
   live_vibe_declaration: false,
+  point_mode: false,
 })
 
 const featureFlagOverrides = new Map<FeatureFlagName, boolean>()
@@ -128,6 +129,14 @@ export function useLiveVibeOnMap(): boolean {
  */
 export function useLiveVibeDeclaration(): boolean {
   return getFeatureFlag('live_vibe_declaration')
+}
+
+/**
+ * Point_Mode camera view (glyphcity-rebrand R8.10). Off until the street
+ * rehearsal passes (task 16.3). A plain function, like the helpers above.
+ */
+export function usePointMode(): boolean {
+  return getFeatureFlag('point_mode')
 }
 
 function tierAtLeast(tier: Tier | null, minTier: Tier): boolean {

@@ -65,7 +65,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           paddingBottom: 'max(2rem, env(safe-area-inset-bottom))',
         }}
       >
-        <h1 className="text-[var(--text-primary)] text-2xl font-extrabold text-center mb-2 font-[Syne]">
+        <h1 className="text-[var(--text-primary)] text-2xl font-extrabold text-center mb-2 font-display">
           What do you listen to?
         </h1>
         <p className="text-[var(--text-secondary)] text-[13px] text-center mb-6 leading-relaxed">
@@ -82,7 +82,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 onClick={() => toggle(g.id)}
                 className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
                   active
-                    ? 'bg-[var(--accent)] text-white'
+                    ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                     : 'bg-[var(--bg-raised)] text-[var(--text-secondary)] border border-[var(--border)]'
                 }`}
               >
@@ -101,11 +101,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           disabled={saving || selected.length < 1}
           className={`w-full rounded-xl py-3.5 text-[15px] font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
             selected.length >= 1
-              ? 'bg-[var(--accent)] text-white'
+              ? 'bg-[var(--accent)] text-[var(--on-accent)]'
               : 'bg-[var(--bg-raised)] text-[var(--text-muted)] cursor-default'
           } ${saving ? 'opacity-50' : ''}`}
         >
-          {saving ? <Spinner size="sm" className="border-white border-t-transparent" /> : 'Continue'}
+          {saving ? <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" /> : 'Continue'}
         </button>
       </div>
     </div>

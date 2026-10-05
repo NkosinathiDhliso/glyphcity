@@ -3,6 +3,7 @@
  * Maintains mutable MockState for session-level state changes.
  */
 import { ARCHETYPE_CATALOG } from '../constants/archetype-catalog'
+import { APP_URL } from '../constants/brand'
 import { GENRE_WEIGHT_MATRIX } from '../constants/genre-weights'
 import { computeDimensionScores, resolveArchetype, matchesArchetype } from '../lib/archetypeResolver'
 import type { Reward, Report, ConsentRecord, User, NodeState, MusicGenre } from '../types'
@@ -554,7 +555,7 @@ register('GET', '/v1/business/staff', () => ({ items: MOCK_STAFF }))
 register('DELETE', '/v1/business/staff/:staffId', () => ({ success: true }))
 
 register('GET', '/v1/business/nodes/current/qr', () => ({
-  qrUrl: 'https://areacode.co.za/qr/mock-node-2',
+  qrUrl: `${APP_URL}/qr/mock-node-2`,
 }))
 
 register('PUT', '/v1/nodes/:nodeId', () => ({ success: true }))

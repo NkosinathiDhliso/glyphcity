@@ -1,33 +1,46 @@
-/* Area Code Tokens - Glacier/Slate accent, zero purple */
+/* Outdoor_Palette tokens. Dark (default) is Veld night under a dusk sky; light
+   is Lichen under a dawn sky. Chrome is ink on ground; saturated colour lives
+   only on cone nodes, glyphs and semantic states. */
+
+/* Type. Funnel Display: wordmark, headings, live counts. Funnel Sans:
+   interface. Geist Mono: labels, codes. Declared as Tailwind theme vars so
+   `font-display`, `font-sans` and `font-mono` map to them; `static` keeps all
+   three on :root for plain CSS reads. */
+@theme static {
+  --font-display: 'Funnel Display', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Funnel Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: var(--font-body);
+}
+
 :root {
   color-scheme: dark light;
-  --bg-map: #080a0e;
-  --bg-gradient: linear-gradient(145deg, #0b1018 0%, #111827 50%, #1a2030 100%);
-  --bg-base: #0c1018;
-  --bg-surface: rgba(18, 26, 38, 0.65);
-  --bg-raised: rgba(26, 36, 52, 0.7);
-  --bg-overlay: rgba(8, 10, 14, 0.8);
-  --bg-modal: #121a26;
+  --bg-map: #090e0c;
+  --bg-base: #090e0c;
+  --bg-surface: #111915;
+  --bg-raised: #18221d;
+  --bg-overlay: rgba(9, 14, 12, 0.8);
+  --bg-modal: #111915;
   --glass-blur: 16px;
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(231, 237, 230, 0.08);
   --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 60%);
-  --glow-accent: radial-gradient(ellipse at 50% 0%, rgba(169, 203, 224, 0.12) 0%, transparent 70%);
-  --glow-warm: radial-gradient(ellipse at 50% 100%, rgba(255, 107, 107, 0.08) 0%, transparent 60%);
-  --text-primary: #e8ecf0;
-  --text-secondary: #9aa8b8;
-  --text-muted: #7a8a9c;
-  --accent: #778ca9;
-  --accent-bright: #a9cbe0;
-  --accent-dim: #5a6f8a;
-  /* Solid accent for primary-CTA backgrounds with white/`--on-accent` text.
-     Darker than `--accent` so white text clears WCAG AA (>=4.5:1); `--accent`
-     itself stays for text/icons/switches where it already passes on the dark
-     base. See code-style.md styling rules. */
-  --accent-cta: #5a6f8a;
-  --accent-gradient: linear-gradient(135deg, #5a6f8a 0%, #778ca9 50%, #a9cbe0 100%);
-  --cta-gradient: linear-gradient(135deg, #5a6f8a 0%, #6e8ba8 100%);
-  --cta-gradient-hover: linear-gradient(135deg, #6e8ba8 0%, #8aa4c0 100%);
-  --on-accent: #f0f4f8;
+  --text-primary: #e7ede6;
+  --text-secondary: #a0aea3;
+  /* Labels only (11px uppercase mono or larger), never body text. */
+  --text-muted: #69776d;
+  /* Ink: the primary-action fill. `--on-accent` is the ground on top of it. */
+  --accent: #e7ede6;
+  --accent-bright: #ffffff;
+  --accent-cta: #e7ede6;
+  --on-accent: #090e0c;
+  --sky-top: #05080c;
+  --sky-mid: #0b1413;
+  --sky-horizon: #3b2a20;
+  --ridge: #0c1410;
+  --water: #0b1a1f;
+  --parks: #0e1912;
+  --contour: rgba(231, 237, 230, 0.05);
+  --star: rgba(231, 237, 230, 0.8);
   --success: #22d3a0;
   --success-soft: rgba(34, 211, 160, 0.12);
   --danger: #ff4757;
@@ -55,19 +68,11 @@
   --tier-fixture: #c0c0c0;
   --tier-institution: #ffd700;
   --tier-legend: linear-gradient(135deg, #a9cbe0, #ff6b6b, #ffb830);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.12);
-
-  --border-gradient: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(119, 140, 169, 0.14) 50%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
+  --border: rgba(231, 237, 230, 0.08);
+  --border-strong: rgba(231, 237, 230, 0.16);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(169, 203, 224, 0.12);
   --noise-opacity: 0.03;
   /* iOS Human Interface Guidelines tab-bar height (49pt); matches TikTok /
      Instagram / X on iPhone. Android Material bottom nav is 56dp. */
@@ -76,30 +81,31 @@
 }
 
 :root[data-theme='light'] {
-  --bg-map: #eef0f2;
-  --bg-gradient: linear-gradient(145deg, #f0ece6 0%, #e8e4de 50%, #dfe6ec 100%);
-  --bg-base: #f0ece6;
-  --bg-surface: rgba(255, 255, 255, 0.55);
-  --bg-raised: rgba(255, 255, 255, 0.7);
-  --bg-overlay: rgba(240, 236, 230, 0.85);
-  --bg-modal: #ffffff;
+  --bg-map: #edf0e8;
+  --bg-base: #edf0e8;
+  --bg-surface: #fafbf7;
+  --bg-raised: #e1e7da;
+  --bg-overlay: rgba(237, 240, 232, 0.85);
+  --bg-modal: #fafbf7;
   --glass-blur: 20px;
-  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border: rgba(19, 33, 27, 0.1);
   --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 60%);
-  --glow-accent: radial-gradient(ellipse at 50% 0%, rgba(119, 140, 169, 0.1) 0%, transparent 70%);
-  --glow-warm: radial-gradient(ellipse at 50% 100%, rgba(205, 127, 50, 0.08) 0%, transparent 60%);
-  --text-primary: #1a1e24;
-  --text-secondary: #4a5568;
-  --text-muted: #5f6a7a;
-  --accent: #5a6f8a;
-  --accent-bright: #778ca9;
-  --accent-dim: #465a72;
-  /* Solid accent for primary-CTA backgrounds with white text (WCAG AA >=4.5:1). */
-  --accent-cta: #4f6a88;
-  --accent-gradient: linear-gradient(135deg, #465a72 0%, #5a6f8a 50%, #778ca9 100%);
-  --cta-gradient: linear-gradient(135deg, #465a72 0%, #5a7088 100%);
-  --cta-gradient-hover: linear-gradient(135deg, #5a7088 0%, #6e8ba8 100%);
-  --on-accent: #ffffff;
+  --text-primary: #13211b;
+  --text-secondary: #4a5a50;
+  /* Labels only (11px uppercase mono or larger), never body text. */
+  --text-muted: #7e8b80;
+  --accent: #13211b;
+  --accent-bright: #24352c;
+  --accent-cta: #13211b;
+  --on-accent: #edf0e8;
+  --sky-top: #c9dce3;
+  --sky-mid: #e3ebe2;
+  --sky-horizon: #f2d8bc;
+  --ridge: #c3cfb8;
+  --water: #c8dcdb;
+  --parks: #d2dec6;
+  --contour: rgba(19, 33, 27, 0.08);
+  --star: rgba(231, 237, 230, 0);
   --success: #18b888;
   --success-soft: rgba(24, 184, 136, 0.1);
   --danger: #e8364a;
@@ -127,18 +133,11 @@
   --tier-fixture: #8a8a96;
   --tier-institution: #c8a800;
   --tier-legend: linear-gradient(135deg, #778ca9, #e85555, #e08830);
-  --border: rgba(0, 0, 0, 0.06);
-  --border-strong: rgba(0, 0, 0, 0.12);
-  --border-gradient: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.04) 0%,
-    rgba(90, 111, 138, 0.12) 50%,
-    rgba(0, 0, 0, 0.03) 100%
-  );
+  --border: rgba(19, 33, 27, 0.1);
+  --border-strong: rgba(19, 33, 27, 0.18);
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 16px rgba(90, 111, 138, 0.1);
   --noise-opacity: 0.018;
 }
 
@@ -160,38 +159,6 @@
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-md);
-}
-.gradient-accent {
-  background: var(--accent-gradient);
-  color: var(--on-accent);
-}
-.gradient-cta {
-  background: var(--cta-gradient);
-  color: var(--on-accent);
-  transition: background 0.2s ease;
-}
-.gradient-cta:hover {
-  background: var(--cta-gradient-hover);
-}
-.gradient-border {
-  position: relative;
-}
-.gradient-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: var(--border-gradient);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
 }
 .bg-success-soft {
   background: var(--success-soft);
@@ -323,14 +290,23 @@
     opacity: 1;
   }
 }
-@keyframes gradientDrift {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
+/**
+ * Grain: the one noise overlay for all four portals. Static fractal noise
+ * (baseFrequency 0.85, 3 octaves) for a fine, organic texture, at
+ * `--noise-opacity` (0.03 dark, 0.018 light). At that alpha the grain shifts
+ * any pixel by at most ~3% luminance, so text pairs keep their 4.5:1 floor.
+ * Decorative only: fixed, pointer-events none, no animation.
+ */
+@layer base {
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
   }
 }

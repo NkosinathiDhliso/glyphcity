@@ -298,7 +298,7 @@ export function StaffValidator() {
             </svg>
           )}
         </Text>
-        <Text className={`${resultTextClass} font-bold text-xl font-[Syne] text-center`}>
+        <Text className={`${resultTextClass} font-bold text-xl font-display text-center`}>
           {result.success
             ? 'Redeemed!'
             : transientFailure
@@ -340,7 +340,7 @@ export function StaffValidator() {
     return (
       <Box className="flex flex-col items-center px-5 pt-6 gap-5">
         <Box className="w-full max-w-sm bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-5 flex flex-col gap-3">
-          <Text className="text-[var(--text-primary)] font-bold text-lg font-[Syne] text-center">
+          <Text className="text-[var(--text-primary)] font-bold text-lg font-display text-center">
             {preview.rewardTitle}
           </Text>
           {preview.rewardType && (
