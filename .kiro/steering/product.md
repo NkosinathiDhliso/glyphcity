@@ -2,12 +2,23 @@
      Single source of truth: rules/*.md
      Regenerate with: pnpm sync:rules -->
 
-# Product: what Area Code is
+# Product: what GlyphCity is
 
-Area Code is a map-first social discovery app for South African cities
+GlyphCity is a map-first social discovery app for South African cities
 (Johannesburg, Cape Town, Durban). Consumers check in at venues, earn rewards,
 and see live activity on a map. Businesses see live check-ins, publish rewards,
-and get anonymized intelligence on their crowd. Live at areacode.co.za.
+and get anonymized intelligence on their crowd. Spoken name: Glyph. Line:
+"Check the beams."
+
+GlyphCity is one of Area Code's brands. Area Code is the operating company, an
+Africa-first PR and marketing house; its other brands are Volta Seek (artists
+and DJs, a separate company) and a social platform (parked). Area Code appears
+only in legal text, never as an endorsement in the app. Accounts are separate
+per brand and no data is shared with another brand without its own spec. The
+app moves from areacode.co.za to glyphcity.com in the `glyphcity-rebrand` spec;
+areacode.co.za then serves Area Code's own site, from the separate `areacode`
+repo. The app name, domain and company name live in
+`packages/shared/constants/brand.ts`; never type them as literals.
 
 The product is trust in a live signal. The map pulls people toward places that
 are alive and full of their kind of crowd, not toward whatever is closest. See
@@ -64,13 +75,13 @@ app. These are hard rules.
   aliveness, so a paid get must still be on-taste and alive to lead. Reach is the
   paid product; feed position is earned, never bought outright.
 
-## Receipt: what Area Code claims it did
+## Receipt: what GlyphCity claims it did
 
 The owner-facing proof of demand is one Receipt per window, never a causal
 claim. Decisions and thresholds: `docs/decisions/proof-of-demand.md`.
 
 - **Found_You vs Walk_In, server-derived.** A check-in is Found_You only when
-  the consumer opened that venue in Area Code first: a sourced Venue_Open
+  the consumer opened that venue in GlyphCity first: a sourced Venue_Open
   (`share`, `push`, `search`, `map`) inside the Attribution_Window (6h) that
   also clears the Away_Gate (at least 20 minutes before the check-in, or a
   known position outside `AWAY_DISTANCE_METRES`). Everything else is a Walk_In,

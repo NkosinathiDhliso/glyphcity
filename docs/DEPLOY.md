@@ -174,6 +174,56 @@ Post this in the deploy record for the window:
 
 Revert `AREA_CODE_CONSENT_VERSION` from `v1.1` back to `v1.0` and re-apply infra only. This stops new re-consent prompts immediately. Consents already recorded at `v1.1` are harmless: they are simply a newer accepted version and require no cleanup.
 
+## glyphcity.com cutover (one-time, glyphcity-rebrand 8.8)
+
+A hard switch: no redirect and no dual-domain period (R7.5). Sign-in on
+areacode.co.za stops the moment the Cognito redirect URLs change, so every
+step below runs in one window, in this order.
+
+### Before the window
+
+1. Confirm the glyphcity.com nameservers at Namecheap match
+   `terraform output glyphcity_name_servers`.
+2. Google Cloud console, the shared OAuth client:
+   - Branding: home page `https://glyphcity.com`, privacy policy
+     `https://glyphcity.com/legal/privacy`, terms
+     `https://glyphcity.com/legal/terms`, and `glyphcity.com` under authorised
+     domains. Keep areacode.co.za listed until the window closes.
+   - Authorised JavaScript origins: add `https://glyphcity.com`,
+     `https://www.glyphcity.com`, and the `business.`, `staff.` and `admin.`
+     hosts.
+   - Authorised redirect URIs stay on the Cognito Hosted UI domains
+     (`*.auth.us-east-1.amazoncognito.com/oauth2/idpresponse`); they do not
+     change.
+3. Spotify developer dashboard: add the redirect URI
+   `https://glyphcity.com/api/v1/streaming/spotify/callback` next to the old one.
+4. Keep the switch on a branch. Amplify builds on every push to `master`, so
+   the merge is the step that ships the frontends.
+
+### In the window
+
+1. From the branch, `terraform plan` in `infra/environments/prod`. Expect
+   replacements for the API and CDN certificates and domain names, the four
+   Amplify domain associations and the health check, plus the new SES identity
+   and records. Stop if anything else is replaced.
+2. From the branch, `./scripts/deploy-serverless.ps1 -Environment prod`
+   (Terraform and the Lambda code together).
+3. Wait for the SES identity to show Verified and the ACM certificates to show
+   Issued.
+4. `./scripts/update-all-amplify-apps.ps1` (defaults to glyphcity.com), then
+   `./scripts/apply-amplify-spa-rewrites.ps1`.
+5. Merge to `master` and push; Amplify builds the four frontends.
+6. `./scripts/go-live-check.ps1` must pass against the new domains.
+
+### After the window
+
+1. Remove areacode.co.za from the Google branding and origins, and the old
+   Spotify redirect URI.
+2. Reprint venue QR posters: old posters encode areacode.co.za/qr/... and no
+   longer reach the app.
+3. areacode.co.za now carries only Area Code's own site and company mail
+   (decision 4 in `docs/decisions/glyphcity-rebrand.md`).
+
 ## Deploy Frontend (reference)
 
 Amplify is wired to the `master` branch of each app. Pushing to `master` (step 3

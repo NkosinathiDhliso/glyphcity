@@ -11,7 +11,7 @@ nudges, in notifications, or in any future discovery surface.
 
 ## The principle
 
-**Area Code pulls people toward places that are alive and full of their kind of
+**GlyphCity pulls people toward places that are alive and full of their kind of
 crowd. It does not push people toward whatever is closest.**
 
 A consumer opens the map and sees a venue pulsing, its glyph filled with people

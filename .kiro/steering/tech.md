@@ -146,7 +146,11 @@ masking defaults (see `no-fallbacks-no-legacy.md`).
   `AREA_CODE_VAPID_SUBJECT`.
 - Consent: `AREA_CODE_CONSENT_VERSION` (required in prod).
 - Email and app URLs: `AREA_CODE_FROM_EMAIL`, `AREA_CODE_WEB_URL`,
-  `AREA_CODE_BUSINESS_URL`, `BUSINESS_APP_URL`.
+  `AREA_CODE_BUSINESS_URL`, `BUSINESS_APP_URL`, `AREA_CODE_API_BASE_URL`
+  (campaign unsubscribe links). The first three are required in prod and
+  checked at API cold start (`assertStartupConfig`); every Lambda that sends
+  email sets the sender and business URL. App URLs and contact mailboxes live
+  in `packages/shared/constants/brand.ts`.
 - Payments (Yoco): `YOCO_DEV_SECRET_KEY`, `YOCO_PROD_SECRET_KEY`,
   `YOCO_WEBHOOK_SECRET` (required outside dev).
 - Music streaming (Spotify): `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`,
@@ -183,8 +187,10 @@ they are allowlisted in `check-amplify-env-closure.mjs` rather than provisioned:
 - `VITE_APP_SHARE_URL`: optional share deep-link override with a hardcoded prod
   default, so unset is correct.
 - `VITE_FLAG_*`: dynamically built feature-flag keys
-  (`VITE_FLAG_LIVE_VIBE_ON_MAP`, `VITE_FLAG_LIVE_VIBE_DECLARATION`), read as a
-  dev/runtime override that defaults to false.
+  (`VITE_FLAG_LIVE_VIBE_ON_MAP`, `VITE_FLAG_LIVE_VIBE_DECLARATION`,
+  `VITE_FLAG_POINT_MODE`), read as a dev/runtime override that defaults to
+  false. `VITE_FLAG_POINT_MODE` stays off until the Point_Mode street rehearsal
+  passes (glyphcity-rebrand task 16.3).
 
 `VITE_SOCKET_URL` is retired: the websocket client reads `VITE_WEBSOCKET_URL`
 only. Do not reintroduce it.

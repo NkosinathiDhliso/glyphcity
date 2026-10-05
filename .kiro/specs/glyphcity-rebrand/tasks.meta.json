@@ -1,0 +1,775 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "0.1 Record decisions in `docs/decisions/glyphcity-rebrand.md`": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102979238
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791103314234
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791103415525
+      }
+    ],
+    "0.2 Pin the Cone_Invariants": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102979495
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791103422118
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791103893800
+      }
+    ],
+    "0.3 Write property test for cone invariance": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102979694
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791103898938
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104283230
+      }
+    ],
+    "0.4 `packages/shared/constants/brand.ts` with `APP_NAME`,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102979882
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104288728
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104533987
+      }
+    ],
+    "0.5 `scripts/check-brand-strings.mjs` guard wired into `pnpm test`": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102980068
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104543587
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104929099
+      }
+    ],
+    "1.1 Inventory every user-facing \"Area Code\" and `areacode.co.za`": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102980287
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104934817
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791105345231
+      }
+    ],
+    "1.2 Replace user-facing strings in all four apps via Brand_Constants:": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102980516
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791105350738
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791108410518
+      }
+    ],
+    "1.3 Emails and digest copy (`shared/email/ses.ts`, `features/reports/`)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102980739
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791108416614
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791109658419
+      }
+    ],
+    "1.4 Legal content edited in place: GlyphCity operated by": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102980925
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791109665083
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791110935670
+      }
+    ],
+    "2.1 `packages/shared/constants/state-labels.ts` with": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102981149
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791110945763
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791111318198
+      }
+    ],
+    "2.2 Move `share-snapshot.ts`, `whisperText.ts` and `AuthLanding.tsx`": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102981355
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791111323857
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791115036921
+      }
+    ],
+    "2.3 Card, detail, feed and any other state readout use the module;": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102981580
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791115043761
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791121868734
+      }
+    ],
+    "2.4 Write property test for label honesty": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102981995
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791121875116
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791122357133
+      }
+    ],
+    "2.5 Write property test for label parity": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102982351
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791122357828
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791122682160
+      }
+    ],
+    "2.6 Update existing tests that assert old labels": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102982645
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791122688748
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791124015057
+      }
+    ],
+    "3.1 Glyph_Name under the glyph on the selected `VenueCard` and in": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102982908
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791124022140
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791133646333
+      }
+    ],
+    "3.2 `ProfileScreen` (web) and mobile profile tab: \"Your glyph\",": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102983164
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791133673758
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791139138055
+      }
+    ],
+    "3.3 `packages/shared/lib/accessibleNodeName.ts`; glyph hit pad in": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102983382
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791139150343
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791141747970
+      }
+    ],
+    "3.4 Write property test for no description leak": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102983617
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791141768398
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791143886032
+      }
+    ],
+    "3.5 Write property test for accessible name completeness": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102983851
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791143895792
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791144414161
+      }
+    ],
+    "4.1 Edit `packages/shared/tokens.css` in place to the Outdoor_Palette": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102984055
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791144423822
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791145471273
+      }
+    ],
+    "4.2 Retune the `body::after` noise in `apps/web/src/app.css`; remove": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102984421
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791145487038
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791149843139
+      }
+    ],
+    "4.3 Swap DM Sans for Funnel Display, Funnel Sans and Geist Mono in all": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102984667
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791149840625
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791152302542
+      }
+    ],
+    "4.4 Sweep components that referenced removed tokens; primary buttons": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102984963
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791152304453
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791154943046
+      }
+    ],
+    "4.5 `SkyHeader.tsx`: dawn or dusk gradient, ridge, stars in dark, the": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102985229
+      },
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791172857608
+      }
+    ],
+    "5.1 `packages/shared/assets/logo-mark.svg` and the render script for": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102985488
+      }
+    ],
+    "5.2 Wordmark on the auth landing and headers; Map tab icon": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102985771
+      }
+    ],
+    "5.3 Brand_Line on auth landing, share cards and OG image only": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102986040
+      }
+    ],
+    "6.1 `applyOutdoorPaint(map, theme)` on `style.load` for background,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102986547
+      }
+    ],
+    "6.2 `addContours(map)` from `mapbox-terrain-v2`, below roads, hidden": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102986815
+      }
+    ],
+    "6.3 Retune `ATMOSPHERE` (dusk and dawn values in design); update": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102987067
+      }
+    ],
+    "6.4 Test that venue markers remain DOM markers above the canvas and": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102987318
+      }
+    ],
+    "7.1 Contrast script over token pairs, light and dark, run in CI": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102987597
+      }
+    ],
+    "7.2 Muted tone restricted to labels at 11px uppercase mono or larger": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102987825
+      }
+    ],
+    "8.1 Terraform: Route53 zone, ACM certs (us-east-1 and regional), SES": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102988061
+      }
+    ],
+    "8.2 Amplify domain associations for four apps via `amplify-domain`;": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102988301
+      }
+    ],
+    "8.3 Cognito callback and logout URLs, Hosted UI domains; Google OAuth": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102988539
+      }
+    ],
+    "8.4 CORS lists in Terraform and `backend/src/shared/security/origins.ts`": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102988748
+      }
+    ],
+    "8.5 Env values in Terraform and `update-all-amplify-apps.ps1`;": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102988992
+      }
+    ],
+    "8.6 Share route, sitemap, robots, canonical URLs, share text and QR": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102989197
+      }
+    ],
+    "8.7 Remove every app use of `areacode.co.za` (Amplify domains, API and": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102989418
+      }
+    ],
+    "8.8 `terraform plan`, `deploy-serverless.ps1 -Environment prod`,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102989839
+      }
+    ],
+    "9.1 `packages/shared/lib/pointMode/geometry.ts`: `bearingTo`,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102990062
+      }
+    ],
+    "9.2 Write property test for projection": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102990261
+      }
+    ],
+    "9.3 `cluster.ts` stacking by heading accuracy": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102990484
+      }
+    ],
+    "9.4 Write property test for cluster safety": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102990686
+      }
+    ],
+    "9.5 `accuracy.ts` gate for GPS and heading thresholds": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102990892
+      }
+    ],
+    "10.1 `usePointModeSensors`: camera, position watch, heading with iOS": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102991117
+      }
+    ],
+    "10.2 `PointModeScreen`: video, DOM markers via the shared builder at": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102991365
+      }
+    ],
+    "10.3 Selection writes `selectionStore`; others dim to 0.4; check-in": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102991582
+      }
+    ],
+    "10.4 Fallback states table from design, each with a route back": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102991805
+      }
+    ],
+    "10.5 Reduced motion, 44px targets, screen-reader list of in-view": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102992036
+      }
+    ],
+    "10.6 Camera control on the map top bar; `VITE_FLAG_POINT_MODE` off by": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102992253
+      }
+    ],
+    "10.7 Write property test for ranking parity": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102992484
+      }
+    ],
+    "10.8 Write property test for no persistence": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102992704
+      }
+    ],
+    "11.1 Node schema and service: `entrance { lat, lng }`, 75 m rule,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102993090
+      }
+    ],
+    "11.2 Write property test for entrance bound": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102993380
+      }
+    ],
+    "11.3 `NodeEditorPanel` drag marker with 75 m circle": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102993585
+      }
+    ],
+    "11.4 City payload carries `entrance` when set; Point_Mode prefers it;": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102993800
+      }
+    ],
+    "12.1 `glyphShareCard.ts` on `shareCard.ts` primitives; 1080 by 1350": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102994016
+      }
+    ],
+    "12.2 Venue share card restyled with Outdoor_Palette, Plain_Scale and": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102994220
+      }
+    ],
+    "13.1 Landing reads `ref`, stashes via `safeStorage`; sign-up writes": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102994437
+      }
+    ],
+    "13.2 Usage events for map-to-detail, glyph funnel and probing carry": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102994664
+      }
+    ],
+    "13.3 Admin funnel view split by source; decision rule recorded": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102994858
+      }
+    ],
+    "14.1 `docs/brand/glyph-codex.md`: per glyph name, icon, essence, music": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102995056
+      }
+    ],
+    "15.1 `rules/product.md` to GlyphCity as an Area Code brand; new": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102995283
+      }
+    ],
+    "15.2 `docs/DEPLOY.md`, `docs/RUNBOOK.md` domain references": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102995514
+      }
+    ],
+    "16.1 Plain_Scale sort test run and recorded against the 0.1 pass bar": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102995738
+      }
+    ],
+    "16.2 Playwright: brand on four portals and sign-in on new domains,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102995944
+      }
+    ],
+    "16.3 Street rehearsal: two phones, three or more venues within 150 m,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102996141
+      }
+    ],
+    "16.4 Full gate: `pnpm typecheck`, `pnpm test`, `pnpm lint`,": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791102996369
+      }
+    ],
+    "0. Founder decisions and guards (R1, R4, R6.5, R7, R8.3, R10.5, R11)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791104929526
+      }
+    ],
+    "1. Name (R1)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791110936217
+      }
+    ],
+    "2. Plain_Scale (R2)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791124015767
+      }
+    ],
+    "3. Glyphs named, never explained (R3)": [
+      {
+        "executionId": "eee02e91-eb2a-4daa-8565-89b60a0e5510",
+        "chatSessionId": "sess_dbe215a7-65a0-4bc0-a20d-00374a7e9e23",
+        "timestamp": 1791144416143
+      }
+    ]
+  }
+}
