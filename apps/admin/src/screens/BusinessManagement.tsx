@@ -123,7 +123,7 @@ export function BusinessManagement() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-[Syne]">{t('admin.businesses.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-display">{t('admin.businesses.title')}</h2>
 
       {searchError && (
         <div className="bg-[var(--danger)]/10 border border-[var(--danger)] rounded-xl p-3 text-[var(--danger)] text-sm mb-4">
@@ -148,7 +148,7 @@ export function BusinessManagement() {
         <button
           onClick={handleSearch}
           disabled={loading}
-          className="bg-[var(--accent)] text-white font-semibold rounded-xl px-6 py-3 text-sm"
+          className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-6 py-3 text-sm active:scale-95"
         >
           Search
         </button>
@@ -279,7 +279,7 @@ export function BusinessManagement() {
       {extendTrialId && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Extend Trial</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Extend Trial</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">How many days to extend the trial? (1-30)</p>
             <input
               type="number"
@@ -299,7 +299,7 @@ export function BusinessManagement() {
               </button>
               <button
                 onClick={() => void handleExtendTrial()}
-                className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2.5 text-sm font-medium"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium active:scale-95"
               >
                 Extend
               </button>
@@ -312,7 +312,7 @@ export function BusinessManagement() {
       {confirmDisable && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Disable Business?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Disable Business?</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This will deactivate all nodes owned by this business. Consumers will no longer be able to check in or
               claim rewards at their venues. This action creates an audit log entry.
@@ -339,7 +339,7 @@ export function BusinessManagement() {
       {confirmDeactivateRewards && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Deactivate Rewards?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Deactivate Rewards?</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This deactivates every active reward across all of this business's venues. Consumers will no longer see or
               claim them. This action creates an audit log entry.
@@ -367,7 +367,7 @@ export function BusinessManagement() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl max-h-[80vh] flex flex-col">
             <div className="flex flex-row items-center justify-between mb-4">
-              <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+              <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
                 {t('admin.businesses.staff')}
               </h3>
               <button
@@ -417,7 +417,7 @@ export function BusinessManagement() {
       {confirmRevokeId && staffBizId && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Revoke Staff Access?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Revoke Staff Access?</h3>
             {revokeError && <p className="text-[var(--danger)] text-xs mb-3">{revokeError}</p>}
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This staff member will immediately lose access to this business. This action creates an audit log entry.

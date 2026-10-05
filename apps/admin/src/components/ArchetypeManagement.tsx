@@ -104,8 +104,11 @@ export function ArchetypeManagement() {
   return (
     <div className="p-5 flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('admin.archetypes.title')}</h2>
-        <button onClick={startAdd} className="bg-[var(--accent)] text-white rounded-xl px-4 py-2 text-sm">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('admin.archetypes.title')}</h2>
+        <button
+          onClick={startAdd}
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 text-sm active:scale-95"
+        >
           {t('admin.archetypes.add')}
         </button>
       </div>
@@ -218,7 +221,7 @@ export function ArchetypeManagement() {
             </button>
             <button
               onClick={() => void handleSave()}
-              className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2 text-sm"
+              className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm active:scale-95"
             >
               Save
             </button>

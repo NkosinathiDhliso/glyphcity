@@ -87,7 +87,7 @@ export function SetTierDialog({ businessId, initialTier, onClose, onSaved }: Set
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
       <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-        <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+        <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
           {t('admin.businesses.setTier')}
         </h3>
         <p className="text-[var(--text-secondary)] text-sm mb-4">Assign a subscription plan to this business.</p>
@@ -140,7 +140,7 @@ export function SetTierDialog({ businessId, initialTier, onClose, onSaved }: Set
               <button
                 onClick={() => void handleSave()}
                 disabled={!reason.trim() || saving}
-                className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 active:scale-95"
               >
                 Set Tier
               </button>

@@ -113,7 +113,7 @@ export function RetentionDashboard() {
     <div className="p-5 flex flex-col gap-5">
       <div className="flex flex-row items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+          <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
             {t('admin.retention.title', 'Retention')}
           </h2>
           <p className="text-[var(--text-muted)] text-xs mt-1">
@@ -130,7 +130,7 @@ export function RetentionDashboard() {
               onClick={() => setWeeks(w)}
               className={`px-3 py-1.5 rounded-xl text-xs transition-all duration-150 ${
                 w === weeks
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                   : 'bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-secondary)]'
               }`}
             >
@@ -264,7 +264,7 @@ function SummaryCard({ label, value, tone }: { label: string; value: string; ton
           : 'var(--danger)'
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col items-center gap-1">
-      <span className="text-2xl font-bold font-[Syne]" style={{ color: colour }}>
+      <span className="text-2xl font-bold font-display" style={{ color: colour }}>
         {value}
       </span>
       <span className="text-[var(--text-muted)] text-xs">{label}</span>

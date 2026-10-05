@@ -78,7 +78,7 @@ export function AuditTrailViewer() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-[Syne]">
+      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-display">
         {t('admin.auditTrail.title', 'Audit Trail')}
       </h2>
 
@@ -124,7 +124,7 @@ export function AuditTrailViewer() {
         <div className="flex flex-row gap-2">
           <button
             onClick={handleApplyFilters}
-            className="bg-[var(--accent)] text-white rounded-xl px-4 py-2 text-xs font-medium"
+            className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 text-xs font-medium active:scale-95"
           >
             Apply Filters
           </button>

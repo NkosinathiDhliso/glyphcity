@@ -73,7 +73,7 @@ export function ConsumerManagement() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-[Syne]">{t('admin.consumers.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-display">{t('admin.consumers.title')}</h2>
 
       {searchError && (
         <div className="bg-[var(--danger)]/10 border border-[var(--danger)] rounded-xl p-3 text-[var(--danger)] text-sm mb-4">
@@ -98,7 +98,7 @@ export function ConsumerManagement() {
         <button
           onClick={handleSearch}
           disabled={loading}
-          className="bg-[var(--accent)] text-white font-semibold rounded-xl px-6 py-3 text-sm"
+          className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl px-6 py-3 text-sm active:scale-95"
         >
           Search
         </button>
@@ -205,7 +205,7 @@ export function ConsumerManagement() {
       {confirmDisable && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Disable Account?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Disable Account?</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This will revoke the user's session and prevent them from checking in or claiming rewards. This action
               creates an audit log entry.
@@ -232,7 +232,7 @@ export function ConsumerManagement() {
       {confirmErasure && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Process Erasure?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Process Erasure?</h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This queues the user's data for permanent erasure under POPIA. Their data will be erased within 30 days
               and this cannot be undone. This action creates an audit log entry.

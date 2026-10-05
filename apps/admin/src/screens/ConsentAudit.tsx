@@ -74,7 +74,7 @@ export function ConsentAudit() {
   return (
     <div className="p-5">
       <div className="flex flex-row items-center justify-between mb-4">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('admin.consent.title')}</h2>
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('admin.consent.title')}</h2>
         <button
           onClick={() => void handleExport()}
           className="border border-[var(--border-strong)] text-[var(--text-primary)] rounded-xl px-4 py-2 text-xs"
@@ -104,7 +104,7 @@ export function ConsentAudit() {
         <button
           onClick={() => setTab('consent')}
           className={`px-4 py-2 rounded-xl text-sm ${
-            tab === 'consent' ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-secondary)]'
+            tab === 'consent' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--text-secondary)]'
           }`}
         >
           Consent Records
@@ -112,7 +112,7 @@ export function ConsentAudit() {
         <button
           onClick={() => setTab('erasure')}
           className={`px-4 py-2 rounded-xl text-sm ${
-            tab === 'erasure' ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-secondary)]'
+            tab === 'erasure' ? 'bg-[var(--accent)] text-[var(--on-accent)]' : 'text-[var(--text-secondary)]'
           }`}
         >
           {t('admin.consent.erasureQueue')}

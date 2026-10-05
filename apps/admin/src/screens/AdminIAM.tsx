@@ -103,7 +103,7 @@ export function AdminIAM() {
 
   return (
     <div className="p-5 flex flex-col gap-6">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">Admin IAM</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">Admin IAM</h2>
 
       {/* Create new admin */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4">
@@ -138,9 +138,13 @@ export function AdminIAM() {
           <button
             onClick={() => void handleCreate()}
             disabled={createLoading || !createEmail.trim() || !createPassword.trim()}
-            className="bg-[var(--accent)] text-white font-semibold rounded-xl py-3 text-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3 text-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {createLoading ? <Spinner size="sm" className="border-white border-t-transparent" /> : 'Create Admin'}
+            {createLoading ? (
+              <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
+            ) : (
+              'Create Admin'
+            )}
           </button>
         </div>
       </div>
@@ -196,7 +200,7 @@ export function AdminIAM() {
       {changingRoleId && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-[Syne]">Change Role</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-display">Change Role</h3>
             {roleError && <p className="text-[var(--danger)] text-xs mb-3">{roleError}</p>}
             <select
               value={newRole}
@@ -219,7 +223,7 @@ export function AdminIAM() {
               <button
                 onClick={() => void handleChangeRole()}
                 disabled={roleLoading}
-                className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 active:scale-95"
               >
                 {roleLoading ? '...' : 'Save'}
               </button>
@@ -232,7 +236,7 @@ export function AdminIAM() {
       {confirmDeactivateId && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">Deactivate Admin?</h3>
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">Deactivate Admin?</h3>
             {deactivateError && <p className="text-[var(--danger)] text-xs mb-3">{deactivateError}</p>}
             <p className="text-[var(--text-secondary)] text-sm mb-4">
               This will immediately revoke all sessions. The account can be re-enabled manually in AWS Cognito.

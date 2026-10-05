@@ -97,7 +97,7 @@ export function DashboardOverview() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-[Syne]">
+      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-display">
         {t('admin.dashboard.title', 'Dashboard Overview')}
       </h2>
 
@@ -108,7 +108,7 @@ export function DashboardOverview() {
             className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col items-center gap-2 relative"
           >
             {card.badge && <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[var(--danger)]" />}
-            <span className="text-3xl font-bold font-[Syne]" style={{ color: card.color }}>
+            <span className="text-3xl font-bold font-display" style={{ color: card.color }}>
               {card.value.toLocaleString()}
             </span>
             <span className="text-[var(--text-muted)] text-xs text-center">{card.label}</span>

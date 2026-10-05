@@ -116,7 +116,7 @@ export function BoostFloorEditor() {
   return (
     <div className="p-5 flex flex-col gap-5">
       <div>
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('admin.boostFloors.title', 'Booster Price Floors')}
         </h2>
         <p className="text-[var(--text-muted)] text-xs mt-1">
@@ -218,14 +218,14 @@ function FloorCard({ floor, onUpdated }: FloorCardProps) {
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3">
       <div className="flex flex-row items-baseline justify-between">
-        <h3 className="text-[var(--text-primary)] font-bold text-base font-[Syne]">
+        <h3 className="text-[var(--text-primary)] font-bold text-base font-display">
           {DURATION_LABELS[floor.duration]}
         </h3>
         <span className="text-[var(--text-muted)] text-xs font-mono">{floor.duration}</span>
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-2xl font-bold font-[Syne] text-[var(--accent)]">
+        <span className="text-2xl font-bold font-display text-[var(--accent)]">
           {formatAmountCents(floor.floorCents)}
         </span>
         <span className="text-[var(--text-muted)] text-xs">{floor.floorCents} cents</span>
@@ -276,7 +276,7 @@ function FloorCard({ floor, onUpdated }: FloorCardProps) {
         <button
           type="submit"
           disabled={saving}
-          className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm font-medium disabled:opacity-50"
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm font-medium disabled:opacity-50 active:scale-95"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>

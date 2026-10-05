@@ -103,7 +103,7 @@ export function AdminOAuthCallback() {
 
   return (
     <div className="flex flex-col items-center justify-center h-dvh bg-[var(--bg-base)] px-5">
-      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-[Syne]">Finishing sign-in…</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-xl mb-6 font-display">Finishing sign-in…</h1>
       {!error ? (
         <Spinner size="lg" />
       ) : (

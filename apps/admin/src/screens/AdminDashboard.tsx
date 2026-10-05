@@ -1,3 +1,4 @@
+import { APP_NAME } from '@area-code/shared/constants/brand'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -6,6 +7,7 @@ import { GenreWeightEditor } from '../components/GenreWeightEditor'
 import { useAdminAuthStore } from '../stores/adminAuthStore'
 
 import { AbuseFlagDashboard } from './AbuseFlagDashboard'
+import { AcquisitionFunnel } from './AcquisitionFunnel'
 import { AdminIAM } from './AdminIAM'
 import { AuditTrailViewer } from './AuditTrailViewer'
 import { BoostFloorEditor } from './BoostFloorEditor'
@@ -23,6 +25,7 @@ import { SubscriptionPaymentsReport } from './SubscriptionPaymentsReport'
 type Tab =
   | 'dashboard'
   | 'retention'
+  | 'acquisition'
   | 'consumers'
   | 'businesses'
   | 'grace'
@@ -41,6 +44,7 @@ type Tab =
 const TAB_LABELS: Record<Tab, string> = {
   dashboard: 'admin.nav.dashboard',
   retention: 'admin.nav.retention',
+  acquisition: 'admin.nav.acquisition',
   consumers: 'admin.nav.consumers',
   businesses: 'admin.nav.businesses',
   grace: 'admin.nav.grace',
@@ -63,6 +67,7 @@ function getVisibleTabs(role: string | null): Tab[] {
       return [
         'dashboard',
         'retention',
+        'acquisition',
         'consumers',
         'businesses',
         'grace',
@@ -100,14 +105,14 @@ export function AdminDashboard() {
     return (
       <div className="flex flex-col h-dvh bg-[var(--bg-base)]">
         <header className="flex flex-row items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-          <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">Area Code Admin</span>
+          <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME} Admin</span>
           <button onClick={logout} className="text-[var(--text-muted)] text-sm">
             {t('admin.logout')}
           </button>
         </header>
         <main className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-sm">
-            <h2 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">No access</h2>
+            <h2 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">No access</h2>
             <p className="text-[var(--text-secondary)] text-sm">
               Your account does not have any permissions assigned. Contact a super admin to have a role provisioned.
             </p>
@@ -120,7 +125,7 @@ export function AdminDashboard() {
   return (
     <div className="flex flex-col h-dvh bg-[var(--bg-base)]">
       <header className="flex flex-row items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-        <span className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">Area Code Admin</span>
+        <span className="text-[var(--text-primary)] font-bold text-lg font-display">{APP_NAME} Admin</span>
         <div className="flex flex-row items-center gap-4">
           <span className="text-[var(--text-muted)] text-xs capitalize">{role?.replace(/_/g, ' ')}</span>
           <button onClick={logout} className="text-[var(--text-muted)] text-sm">
@@ -136,7 +141,7 @@ export function AdminDashboard() {
             onClick={() => setActiveTab(tab)}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm transition-all duration-150 whitespace-nowrap ${
               activeTab === tab
-                ? 'bg-[var(--accent)] text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -148,6 +153,7 @@ export function AdminDashboard() {
       <main className="flex-1 overflow-y-auto">
         {activeTab === 'dashboard' && <DashboardOverview />}
         {activeTab === 'retention' && <RetentionDashboard />}
+        {activeTab === 'acquisition' && <AcquisitionFunnel />}
         {activeTab === 'consumers' && <ConsumerManagement />}
         {activeTab === 'businesses' && <BusinessManagement />}
         {activeTab === 'grace' && <GraceList />}

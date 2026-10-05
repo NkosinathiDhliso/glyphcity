@@ -48,7 +48,7 @@ export function ReportQueue() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-[Syne]">{t('admin.reports.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl mb-4 font-display">{t('admin.reports.title')}</h2>
 
       {loadError && (
         <div className="bg-[var(--danger)]/10 border border-[var(--danger)] rounded-xl p-3 text-[var(--danger)] text-sm mb-4">

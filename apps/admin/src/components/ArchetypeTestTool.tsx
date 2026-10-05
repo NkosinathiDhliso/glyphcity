@@ -54,7 +54,7 @@ export function ArchetypeTestTool() {
             onClick={() => toggle(g)}
             className={`rounded-xl px-3 py-1 text-xs transition-all ${
               selected.includes(g)
-                ? 'bg-[var(--accent)] text-white'
+                ? 'bg-[var(--accent)] text-[var(--on-accent)]'
                 : 'bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-secondary)]'
             }`}
           >
@@ -66,7 +66,7 @@ export function ArchetypeTestTool() {
       <button
         onClick={handleTest}
         disabled={loading}
-        className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm disabled:opacity-50"
+        className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm disabled:opacity-50 active:scale-95"
       >
         {t('admin.archetypes.test')}
       </button>

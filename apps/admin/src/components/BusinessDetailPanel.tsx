@@ -64,7 +64,7 @@ export function BusinessDetailPanel({ businessId, onClose }: { businessId: strin
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
       <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-lg w-full shadow-2xl max-h-[85vh] flex flex-col">
         <div className="flex flex-row items-center justify-between mb-4">
-          <h3 className="text-[var(--text-primary)] font-bold text-lg font-[Syne]">
+          <h3 className="text-[var(--text-primary)] font-bold text-lg font-display">
             {t('admin.businesses.details', 'Business Details')}
           </h3>
           <button onClick={onClose} className="text-[var(--text-muted)] text-sm">

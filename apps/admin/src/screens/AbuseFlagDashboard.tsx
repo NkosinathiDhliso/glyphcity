@@ -103,7 +103,7 @@ export function AbuseFlagDashboard() {
         </div>
       )}
       <div className="flex flex-row items-center justify-between mb-4">
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('admin.abuseFlags.title', 'Abuse Flags')}
         </h2>
         {flags.length > 0 && (

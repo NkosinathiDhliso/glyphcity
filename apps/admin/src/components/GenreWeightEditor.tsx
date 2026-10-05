@@ -77,7 +77,7 @@ export function GenreWeightEditor() {
 
   return (
     <div className="p-5 flex flex-col gap-4">
-      <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">{t('admin.genreWeights.title')}</h2>
+      <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">{t('admin.genreWeights.title')}</h2>
 
       {loadError && (
         <div className="bg-[var(--danger)]/10 border border-[var(--danger)] rounded-xl p-3 text-[var(--danger)] text-sm">
@@ -119,7 +119,7 @@ export function GenreWeightEditor() {
       <button
         onClick={() => void handleSave()}
         disabled={saving}
-        className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm font-medium disabled:opacity-50"
+        className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm font-medium disabled:opacity-50 active:scale-95"
       >
         {t('admin.genreWeights.save')}
       </button>

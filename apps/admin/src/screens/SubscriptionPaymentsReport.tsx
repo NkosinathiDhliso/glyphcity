@@ -169,7 +169,7 @@ export function SubscriptionPaymentsReport() {
   return (
     <div className="p-5 flex flex-col gap-5">
       <div>
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('admin.subscriptionPayments.title', 'Subscription Payments')}
         </h2>
         <p className="text-[var(--text-muted)] text-xs mt-1">
@@ -185,7 +185,7 @@ export function SubscriptionPaymentsReport() {
         onSubmit={handleDateRangeSubmit}
         className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3 max-w-md"
       >
-        <h3 className="text-[var(--text-primary)] font-bold text-sm font-[Syne]">Search by date range</h3>
+        <h3 className="text-[var(--text-primary)] font-bold text-sm font-display">Search by date range</h3>
         <div className="flex flex-row gap-3">
           <label className="flex flex-col gap-1 flex-1">
             <span className="text-[var(--text-secondary)] text-xs">From</span>
@@ -211,7 +211,7 @@ export function SubscriptionPaymentsReport() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm font-medium disabled:opacity-50"
+          className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm font-medium disabled:opacity-50 active:scale-95"
         >
           {loading ? 'Searching…' : 'Search'}
         </button>

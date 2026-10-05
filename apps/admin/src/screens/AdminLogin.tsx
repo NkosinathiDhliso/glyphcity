@@ -108,7 +108,7 @@ export function AdminLogin() {
   const inputClass =
     'w-full bg-[var(--bg-raised)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl px-4 py-3 text-sm placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:outline-none'
   const buttonClass =
-    'bg-[var(--accent)] text-white font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2'
+    'bg-[var(--accent)] text-[var(--on-accent)] font-semibold rounded-xl py-3.5 text-base transition-all duration-150 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2'
 
   return (
     <div
@@ -118,7 +118,7 @@ export function AdminLogin() {
         paddingBottom: 'max(2rem, env(safe-area-inset-bottom))',
       }}
     >
-      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-[Syne]">{t('admin.login.title')}</h1>
+      <h1 className="text-[var(--text-primary)] font-bold text-2xl mb-8 font-display">{t('admin.login.title')}</h1>
 
       {phase === 'credentials' && (
         <div className="flex flex-col gap-4 w-full max-w-xs">
@@ -166,7 +166,11 @@ export function AdminLogin() {
             className={inputClass}
           />
           <button onClick={() => void handleLogin()} disabled={loading || !email || !password} className={buttonClass}>
-            {loading ? <Spinner size="sm" className="border-white border-t-transparent" /> : t('admin.login.submit')}
+            {loading ? (
+              <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
+            ) : (
+              t('admin.login.submit')
+            )}
           </button>
         </div>
       )}
@@ -220,7 +224,7 @@ export function AdminLogin() {
           />
           <button onClick={() => void submitCode()} disabled={loading || code.length !== 6} className={buttonClass}>
             {loading ? (
-              <Spinner size="sm" className="border-white border-t-transparent" />
+              <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
             ) : (
               t('admin.login.mfaSubmit', 'Verify')
             )}

@@ -220,7 +220,7 @@ export function BoostPurchaseReport() {
   return (
     <div className="p-5 flex flex-col gap-5">
       <div>
-        <h2 className="text-[var(--text-primary)] font-bold text-xl font-[Syne]">
+        <h2 className="text-[var(--text-primary)] font-bold text-xl font-display">
           {t('admin.boostPurchases.title', 'Booster Purchases')}
         </h2>
         <p className="text-[var(--text-muted)] text-xs mt-1">
@@ -237,7 +237,7 @@ export function BoostPurchaseReport() {
           onSubmit={handleDateRangeSubmit}
           className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3"
         >
-          <h3 className="text-[var(--text-primary)] font-bold text-sm font-[Syne]">Search by date range</h3>
+          <h3 className="text-[var(--text-primary)] font-bold text-sm font-display">Search by date range</h3>
           <div className="flex flex-row gap-3">
             <label className="flex flex-col gap-1 flex-1">
               <span className="text-[var(--text-secondary)] text-xs">From</span>
@@ -263,7 +263,7 @@ export function BoostPurchaseReport() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm font-medium disabled:opacity-50"
+            className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm font-medium disabled:opacity-50 active:scale-95"
           >
             {loading && mode === 'date-range' ? 'Searching…' : 'Search'}
           </button>
@@ -278,7 +278,7 @@ export function BoostPurchaseReport() {
           onSubmit={handleYocoSubmit}
           className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3"
         >
-          <h3 className="text-[var(--text-primary)] font-bold text-sm font-[Syne]">Look up by Yoco checkout id</h3>
+          <h3 className="text-[var(--text-primary)] font-bold text-sm font-display">Look up by Yoco checkout id</h3>
           <label className="flex flex-col gap-1">
             <span className="text-[var(--text-secondary)] text-xs">Yoco checkout id</span>
             <input
@@ -293,7 +293,7 @@ export function BoostPurchaseReport() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[var(--accent)] text-white rounded-xl py-2 text-sm font-medium disabled:opacity-50"
+            className="bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2 text-sm font-medium disabled:opacity-50 active:scale-95"
           >
             {loading && mode === 'yoco-checkout' ? 'Looking up…' : 'Look up'}
           </button>

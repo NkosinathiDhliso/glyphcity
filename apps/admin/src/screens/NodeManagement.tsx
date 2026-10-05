@@ -66,7 +66,7 @@ export function NodeManagement() {
 
   return (
     <div className="p-5">
-      <h2 className="text-[var(--text-primary)] font-bold text-lg font-[Syne] mb-4">
+      <h2 className="text-[var(--text-primary)] font-bold text-lg font-display mb-4">
         {t('admin.nodes.title', 'Node Management')}
       </h2>
 
@@ -82,10 +82,10 @@ export function NodeManagement() {
         <button
           onClick={handleSearch}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl bg-[var(--accent)] text-white text-sm font-medium"
+          className="px-4 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--on-accent)] text-sm font-medium active:scale-95"
         >
           {loading ? (
-            <Spinner size="sm" className="border-white border-t-transparent" />
+            <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
           ) : (
             t('admin.nodes.search', 'Search')
           )}
@@ -150,7 +150,7 @@ export function NodeManagement() {
       {editingNode && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-[Syne]">
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-4 font-display">
               {t('admin.nodes.editTitle', 'Edit Node')}
             </h3>
             <div className="flex flex-col gap-3 mb-4">
@@ -187,10 +187,10 @@ export function NodeManagement() {
               <button
                 onClick={handleSaveEdit}
                 disabled={actionLoading}
-                className="flex-1 bg-[var(--accent)] text-white rounded-xl py-2.5 text-sm font-medium flex items-center justify-center"
+                className="flex-1 bg-[var(--accent)] text-[var(--on-accent)] rounded-xl py-2.5 text-sm font-medium flex items-center justify-center active:scale-95"
               >
                 {actionLoading ? (
-                  <Spinner size="sm" className="border-white border-t-transparent" />
+                  <Spinner size="sm" className="border-[var(--on-accent)] border-t-transparent" />
                 ) : (
                   t('common.save', 'Save')
                 )}
@@ -204,7 +204,7 @@ export function NodeManagement() {
       {confirmDeactivate && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">
           <div className="bg-[var(--bg-modal)] border border-[var(--border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-[Syne]">
+            <h3 className="text-[var(--text-primary)] font-bold text-lg mb-2 font-display">
               {t('admin.nodes.deactivateTitle', 'Deactivate Venue?')}
             </h3>
             <p className="text-[var(--text-secondary)] text-sm mb-4">
