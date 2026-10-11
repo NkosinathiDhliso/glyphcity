@@ -1,7 +1,7 @@
 /**
  * Map discovery — the Peek-Carousel browse-and-compare surface.
  *
- * Spec: .kiro/specs/map-discovery-experience
+ * Spec: .kiro/completed/map-discovery-experience
  *
  * These flows exercise the two-state Peek_Carousel end-to-end against a running
  * stack: Browse_Mode (swipeable Venue_Card strip + Flick_Controls), Commit_Mode

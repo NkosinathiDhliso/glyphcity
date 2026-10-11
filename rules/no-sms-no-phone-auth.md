@@ -59,5 +59,5 @@ If you are about to "clean up" any of these, the right answer is **don't**. Leav
 For the full architecture and rationale, read in this order:
 
 1. `docs/CHURN_DEFENSES.md` (sections 1.4 and 1.6 in particular)
-2. `.kiro/specs/churn-defences/requirements.md` Requirement 6
+2. `.kiro/completed/churn-defences/requirements.md` Requirement 6
 3. `docs/PILOT_LAUNCH_CHECKLIST.md` §1 blocker 2

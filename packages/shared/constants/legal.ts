@@ -4,7 +4,7 @@
  * never drift between them.
  *
  * Updates here should be reviewed against the churn-defences spec
- * (.kiro/specs/churn-defences/requirements.md, Requirement 3) before
+ * (.kiro/completed/churn-defences/requirements.md, Requirement 3) before
  * merging. The tier-permanence clause may only be strengthened - never
  * weakened - in subsequent revisions. See `docs/CHURN_DEFENSES.md` §1.2
  * for the rationale.

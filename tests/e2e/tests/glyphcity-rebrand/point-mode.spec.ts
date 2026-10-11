@@ -1,7 +1,7 @@
 /**
  * Point_Mode camera view with mocked sensors.
  *
- * Spec: .kiro/specs/glyphcity-rebrand, Requirements 8.1, 8.2, 8.4, 8.6 to
+ * Spec: .kiro/completed/glyphcity-rebrand, Requirements 8.1, 8.2, 8.4, 8.6 to
  * 8.9, task 16.2 (R12.4).
  *
  * Camera, geolocation and compass are replaced before boot (`mockSensors`):

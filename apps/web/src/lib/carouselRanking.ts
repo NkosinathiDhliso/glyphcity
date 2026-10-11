@@ -13,7 +13,7 @@ import { BROWSE_STEP, INITIAL_BROWSE_COUNT } from './carouselConstants'
  * Ranking is vibe-first with proximity as a pure tiebreaker, per the discovery
  * DNA (`.kiro/steering/discovery-dna-vibe-over-convenience.md`).
  *
- * Design: .kiro/specs/map-discovery-experience/design.md
+ * Design: .kiro/completed/map-discovery-experience/design.md
  *   - Components and Interfaces → "Key interfaces"
  *   - "proximityBiasedRank algorithm" (now `vibeRank`)
  * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.5
@@ -72,7 +72,7 @@ export function haversineMeters(a: { lat: number; lng: number }, b: { lat: numbe
  *   2. Fallback to `node.defaultArchetypeId` (static node config)
  *   3. Final fallback: `'archetype-eclectic'` (no archetype is penalised)
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § resolveArchetype
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § resolveArchetype
  * Requirements: 2.1
  */
 export function resolveArchetype(node: Node, venueArchetypeIds: Record<string, string>): string {
@@ -91,7 +91,7 @@ export function resolveArchetype(node: Node, venueArchetypeIds: Record<string, s
  * priority 1. A venue with archetype match + 2 friends (score 3) outranks one
  * with only archetype match (score 1).
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § tasteMatchScore
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § tasteMatchScore
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
  */
 export function tasteMatchScore(
@@ -113,7 +113,7 @@ export function tasteMatchScore(
  *
  * Pure function - no internal `Date.now()`; the caller supplies `nowMs`.
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § filterActiveFriends
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § filterActiveFriends
  * Requirements: 2.8, 3.5
  */
 export function filterActiveFriends(
@@ -184,7 +184,7 @@ export function deriveHasLiveGets(
  * The function is pure: no I/O, no Date.now, clock injected from outside.
  * Deterministic for any valid RankInput (R1.8, R5.3, R5.5).
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § vibeRank Comparator
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § vibeRank Comparator
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 5.3, 5.4, 8.1, 8.2, 8.3
  */
 export function vibeRank(input: RankInput): Node[] {
@@ -298,7 +298,7 @@ export function scopeToViewport(ranked: Node[], bounds: ViewportBounds | null, a
  *   - `TAP_MORE` -> reveal one more venue ({@link BROWSE_STEP})
  *   - `STEP` -> no expansion change (stepping through venues)
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § Browse Strip State Reducer
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § Browse Strip State Reducer
  * Requirements: 4.3, 4.4
  */
 export type BrowseAction =
@@ -335,7 +335,7 @@ export interface BrowseState {
  * (itself capped at `RECOMMENDED_LIMIT` in the recommended scope), so the strip
  * can never reveal more venues than actually exist.
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § Browse Strip State Reducer
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § Browse Strip State Reducer
  * Requirements: 4.3, 4.4
  */
 export function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
@@ -367,7 +367,7 @@ export function browseReducer(state: BrowseState, action: BrowseAction): BrowseS
  *     (`visible.length < ranked.length`), so the "Keep exploring" card keeps
  *     appearing until the whole ranked list is shown, then disappears.
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md § Top N + More Entry Point
+ * Design: .kiro/completed/vibe-ranked-browse/design.md § Top N + More Entry Point
  * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
  */
 export function deriveBrowseStrip(ranked: Node[], visibleCount: number): { visible: Node[]; showMore: boolean } {

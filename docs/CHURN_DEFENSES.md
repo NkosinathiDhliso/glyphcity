@@ -23,7 +23,7 @@ Sources: [Washington Post (Jan 2023)](https://www.washingtonpost.com/food/2023/0
 
 **Our exposure:** medium. We don't have a star currency, but a business owner can edit a reward (e.g. "free coffee after 5 visits" → "after 8 visits"). A user halfway to the old threshold loses ground silently.
 
-**Defence:** grandfather any reward threshold for users already in flight. This is now a tracked spec — see `.kiro/specs/churn-defences/`.
+**Defence:** grandfather any reward threshold for users already in flight. This is now a tracked spec — see `.kiro/completed/churn-defences/`.
 
 ### 1.2 The 2026 elite-tier rollout (loyalty design + communication)
 
@@ -146,7 +146,7 @@ Found while researching this doc properly:
 5. **Casual-customer first-Get path** — a first-time walk-in can claim one introductory reward by phone number alone, with full signup deferred to a follow-up visit. Defends against the §1.6 wall.
 6. **T&C commitment: tier earned = tier kept** — written guarantee that tier is permanent. Defends against the §1.2 perception failure.
 
-## These are tracked in `.kiro/specs/churn-defences/`.
+## These are tracked in `.kiro/completed/churn-defences/`.
 
 ## Part 6 — POPIA close-out record (churn-defences Phase 6, Task 23)
 

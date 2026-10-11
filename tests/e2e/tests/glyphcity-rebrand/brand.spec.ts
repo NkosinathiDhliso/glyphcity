@@ -1,7 +1,7 @@
 /**
  * GlyphCity brand on all four portals, and sign-in on the glyphcity.com hosts.
  *
- * Spec: .kiro/specs/glyphcity-rebrand, Requirements 1.2, 1.4, 5.7, 7.1, 7.2,
+ * Spec: .kiro/completed/glyphcity-rebrand, Requirements 1.2, 1.4, 5.7, 7.1, 7.2,
  * task 16.2 (R12.4).
  *
  * Structural checks only: the document title, the wordmark's accessible name,

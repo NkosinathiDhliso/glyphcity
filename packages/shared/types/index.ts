@@ -230,7 +230,7 @@ export interface CrowdVibeSnapshot {
 // A metric group is either a computed value or `null` (the wire signal for
 // "not enough data yet"). Music audience carries an explicit
 // `hasInsufficientData` flag. A hardcoded `0`/`{}`/`[]` is never a real value.
-// See .kiro/specs/business-intelligence-honesty/design.md and honest-presence.md.
+// See .kiro/completed/business-intelligence-honesty/design.md and honest-presence.md.
 
 /**
  * The two Receipt sentences for a window, worded on the server by

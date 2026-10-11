@@ -7,7 +7,7 @@ never change fixed, and leaves the rest to you.
 Source of truth: `packages/shared/constants/archetype-catalog.ts` (names),
 `packages/shared/constants/archetype-icons.ts` (icons),
 `packages/shared/constants/genre-weights.ts` (how music maps to a glyph).
-Spec: `.kiro/specs/glyphcity-rebrand/` Requirement 10.4.
+Spec: `.kiro/completed/glyphcity-rebrand/` Requirement 10.4.
 
 ## Two layers
 

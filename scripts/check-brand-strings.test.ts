@@ -30,7 +30,7 @@ describe('isScannedFile', () => {
     expect(isScannedFile('backend/src/shared/email/ses.test.ts')).toBe(false)
     expect(isScannedFile('backend/src/shared/email/__tests__/ses.ts')).toBe(false)
     expect(isScannedFile('docs/DEPLOY.md')).toBe(false)
-    expect(isScannedFile('.kiro/specs/glyphcity-rebrand/design.md')).toBe(false)
+    expect(isScannedFile('.kiro/completed/glyphcity-rebrand/design.md')).toBe(false)
   })
 
   it('scans the task 1.2 widening: app source, shared components, flagged files', () => {

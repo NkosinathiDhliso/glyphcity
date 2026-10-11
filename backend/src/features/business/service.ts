@@ -555,7 +555,7 @@ async function handlePaymentSucceeded(payload: Record<string, unknown>) {
 
 // ─── Subscription payment activation (billing-revenue-integrity R2) ──────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` Flow 1.
+// See `.kiro/completed/billing-revenue-integrity/design.md` Flow 1.
 //
 // Mirrors `persistBoosterPurchase`'s write choreography (marker-first
 // conditional puts via `putSubscriptionPaymentWithMarker`, idempotent on
@@ -776,7 +776,7 @@ async function persistSubscriptionPayment(payload: Record<string, unknown>): Pro
 
 // ─── Booster purchase audit (R1) ────────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Flow 2.
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 2.
 //
 // When `processYocoWebhook → handlePaymentSucceeded` receives a
 // `payment.succeeded` event with `metadata.type === 'boost'`, persist a
@@ -1566,7 +1566,7 @@ export async function deactivateForNonPayment(
 
 // ─── Lapse_Sweep phase 1 (billing-revenue-integrity R3.1, R3.6) ─────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` Flow 3.
+// See `.kiro/completed/billing-revenue-integrity/design.md` Flow 3.
 //
 // The daily cleanup worker runs this BEFORE `enforceLapsedPayments` (phase 2).
 // Phase 1 moves a lapsed-but-not-yet-graced paid business into the 7-day
@@ -1763,7 +1763,7 @@ export async function getDigestHistoryView(
 
 // ─── Admin Boost Floor Management (R4, R5) ──────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Flow 3
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 3
 // (audit-row-first floor update). The three functions below back the admin
 // portal Floor_Editor: `getBoostFloors` returns the three floors merged with
 // their `BOOST_FLOOR_DEFAULTS` fallback (R4.8), `updateBoostFloor` writes the
@@ -1945,7 +1945,7 @@ export async function listFloorChangeAudit(
 }
 // ─── Operator Booster Purchase Queries (R6) ─────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Operator
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Operator
 // Boost Panel. The operator-facing endpoint queries `pk = BOOST#<businessId>`
 // newest-first and returns the rows projected to the operator-safe
 // `BoosterPurchaseView`. The view deliberately omits `tierSnapshot`,
@@ -2037,7 +2037,7 @@ export async function listSubscriptionPaymentsForBusiness(
 
 // ─── Admin Booster Purchase Queries (R7) ────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Admin Boost
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Admin Boost
 // Report. The admin-facing surface supports two mutually-exclusive query
 // modes (R7.2):
 //
@@ -2118,7 +2118,7 @@ export async function listBoosterPurchasesByDateRange(
 
 // ─── Admin Subscription Payment Report (R8) ─────────────────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` access-pattern table
+// See `.kiro/completed/billing-revenue-integrity/design.md` access-pattern table
 // (Admin range). Mirrors `listBoosterPurchasesByDateRange` exactly: the
 // admin-facing surface queries GSI1 with `gsi1pk='SUB_BY_TIME'` and
 // `gsi1sk BETWEEN :from AND :to`, paginated newest-first. The single

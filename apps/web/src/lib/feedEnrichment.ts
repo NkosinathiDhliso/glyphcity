@@ -9,7 +9,7 @@ import type { NodeState } from '@area-code/shared/types'
  * N+1 queries (R14.2): the data is already in memory. These functions are pure
  * and total so they can be property-tested.
  *
- * Design: .kiro/specs/vibe-ranked-browse/design.md
+ * Design: .kiro/completed/vibe-ranked-browse/design.md
  * Requirements: 11.1, 11.2, 11.3, 11.4, 11.6
  */
 

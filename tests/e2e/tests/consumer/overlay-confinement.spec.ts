@@ -1,7 +1,7 @@
 /**
  * Overlay confinement — map-owned portaled surfaces must stay on the map tab.
  *
- * Spec: .kiro/specs/go-live-readiness (Requirement 5)
+ * Spec: .kiro/completed/go-live-readiness (Requirement 5)
  *
  * The consumer shell keeps the Map mounted across tab switches and only hides
  * it with `display:none` (so Mapbox is never torn down). The Peek_Carousel and

@@ -4,7 +4,7 @@
  * The CDN base is `VITE_CDN_URL` (the Media_CDN: CloudFront in front of the
  * private `s3_media` bucket). When the base is unset or empty, this returns
  * `null` so callers can render an explicit "unavailable" state rather than a
- * silent success-without-preview (see `.kiro/specs/deployment-parity`, R5.3,
+ * silent success-without-preview (see `.kiro/completed/deployment-parity`, R5.3,
  * and `no-fallbacks-no-legacy.md`). There is no fallback base.
  *
  * Read defensively so this module can also be imported from non-Vite contexts

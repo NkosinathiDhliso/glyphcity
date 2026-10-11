@@ -25,7 +25,7 @@ import { deleteConnectionsByUser } from '../shared/websocket/broadcast.js'
 
 // ─── Booster 7-year POPIA retention ─────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/` requirements 8.1–8.6.
+// See `.kiro/completed/booster-pricing-floor-and-audit/` requirements 8.1–8.6.
 //
 // `BoosterPurchase`, `Idempotency_Marker` (BOOST_CHECKOUT#…), and
 // `Floor_Change_Audit_Row` rows MUST NOT carry a DynamoDB `ttl` attribute

@@ -8,7 +8,7 @@ Read this before touching marker presentation, cold open, country zoom, beam
 visuals, map play interactions, or browse scope while `zoom < MIN_MARKER_ZOOM`.
 
 Supersedes the old **Globe_Zoom = hidden** rule in
-`.kiro/specs/map-discovery-experience/requirements.md` Req 12.3. Country zoom
+`.kiro/completed/map-discovery-experience/requirements.md` Req 12.3. Country zoom
 is not empty space. It is a designed discovery mode.
 
 ## The principle

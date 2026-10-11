@@ -1093,7 +1093,7 @@ export async function getRewardsForBusiness(businessId: string) {
 
 // ─── Booster Purchase audit & idempotency marker ────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Flow 2.
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 2.
 //
 // Two-step idempotency choreography for `payment.succeeded` webhooks with
 // `metadata.type === 'boost'`:
@@ -1177,7 +1177,7 @@ export async function putBoosterPurchaseWithMarker(args: {
 
 // ─── BoostFloor reads ───────────────────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Data Models.
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Data Models.
 //
 // `BoostFloor_Row` lives at `pk='BOOST_FLOOR'`, `sk=<duration>` (one of
 // `'2hr' | '6hr' | '24hr'`). Reads are point-lookups (R3.1) or a small
@@ -1266,7 +1266,7 @@ function encodeCursor(key: Record<string, unknown> | undefined): string | null {
 
 // ─── Floor audit write & query ──────────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` Flow 3.
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 3.
 //
 // Audit-first ordering for floor updates (R5.2): the
 // `Floor_Change_Audit_Row` is written *before* the `BoostFloor_Row` is
@@ -1344,7 +1344,7 @@ export async function queryFloorChangeAudit(
 
 // ─── BoosterPurchase reads ──────────────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/design.md` access-pattern
+// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` access-pattern
 // table:
 //
 // - Operator view of own purchases (R6.2): `Query` `pk='BOOST#<businessId>'`
@@ -1486,7 +1486,7 @@ export async function getBoosterPurchaseByKey(boostPk: string, boostSk: string):
 
 // ─── Subscription payment write (marker-first choreography) ──────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` Flow 1.
+// See `.kiro/completed/billing-revenue-integrity/design.md` Flow 1.
 //
 // Mirrors `putBoosterPurchaseWithMarker` exactly so the codebase keeps one
 // idempotency idiom (R2.2). Two conditional puts:
@@ -1569,7 +1569,7 @@ export async function putSubscriptionPaymentWithMarker(args: {
 
 // ─── Subscription payment reads ─────────────────────────────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` access-pattern table:
+// See `.kiro/completed/billing-revenue-integrity/design.md` access-pattern table:
 //
 // - Business history (R7.5): `Query` `pk='SUB#<businessId>'` with
 //   `ScanIndexForward=false` so the natural sort-order (by `paidAt` embedded in
@@ -1709,7 +1709,7 @@ export async function getSubscriptionPaymentByKey(
 
 // ─── Subscription activation on the Business_Row ─────────────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` Flow 1 step 5.
+// See `.kiro/completed/billing-revenue-integrity/design.md` Flow 1 step 5.
 //
 // A single UpdateItem that both grants the paid window and clears the two
 // windows that would otherwise demote or double-count the business: the trial
@@ -1737,7 +1737,7 @@ export async function activateSubscriptionOnBusiness(
 
 // ─── Lapsed paid-window sweep source ─────────────────────────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md` Flow 3, phase 1.
+// See `.kiro/completed/billing-revenue-integrity/design.md` Flow 3, phase 1.
 //
 // Businesses whose paid subscription window has lapsed and that have NOT yet
 // entered the renewal grace window. Consumed by the daily Lapse_Sweep
@@ -1823,7 +1823,7 @@ export async function listBusinessesWithLapsedPaidUntil(nowIso: string): Promise
 
 // ─── Pre-lapse renewal reminder source ───────────────────────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/design.md`: "trial-reminder worker
+// See `.kiro/completed/billing-revenue-integrity/design.md`: "trial-reminder worker
 // gains the renewal-reminder query (paid tier, `paidUntil` within 7 days,
 // interval monthly/yearly, one send per window recorded on the row as
 // `renewalReminderSentFor = paidUntil`)".

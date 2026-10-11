@@ -1,7 +1,7 @@
 /**
  * Shared structural-integrity helper for the authenticated shell of every
  * portal. One home for the four checks the go-live e2e layer owns (see
- * .kiro/specs/go-live-readiness Requirement 5, tasks 8 and 10):
+ * .kiro/completed/go-live-readiness Requirement 5, tasks 8 and 10):
  *
  *   (a) no horizontal scroll (documentElement.scrollWidth <= clientWidth,
  *       within a small tolerance),

@@ -341,7 +341,7 @@ This audit identifies **23 critical gaps** and **17 medium-priority issues** acr
 - The backend has `threshold-lock.ts` which suggests this feature exists
 - **BUT:** The file's implementation is unclear (not read in this audit)
 - The platform-completeness-audit tasks don't mention this feature
-- The churn-defences spec (`.kiro/specs/churn-defences/`) is referenced but not read
+- The churn-defences spec (`.kiro/completed/churn-defences/`) is referenced but not read
 
 **Required Actions:**
 
