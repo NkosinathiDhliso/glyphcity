@@ -1,16 +1,14 @@
-import { createHmac } from 'node:crypto'
-
 import type { FoundVia } from '@area-code/shared/constants/attribution'
 import { getTierLabel } from '@area-code/shared/constants/tier-levels'
 import { PutCommand } from '@aws-sdk/lib-dynamodb'
 
-import { AWS_REGION, DEV_MODE, qrHmacSecret } from '../../shared/config/env.js'
+import { AWS_REGION, DEV_MODE } from '../../shared/config/env.js'
 import { documentClient, TableNames } from '../../shared/db/dynamodb.js'
 import { AppError } from '../../shared/errors/AppError.js'
 import { kvGet, kvSet, kvIncr, kvTtl } from '../../shared/kv/dynamodb-kv.js'
 import { pushVenueUrl } from '../../shared/links/venue-arrival.js'
 import { canEmitIdentity, canEmitToFriends, sanitizeForBusiness } from '../../shared/privacy/privacy-guard.js'
-import { digestsEqual } from '../../shared/security/hmac.js'
+import { validateQrToken } from '../../shared/security/qr-token.js'
 import {
   emitPulseUpdate,
   emitPresenceUpdate,
@@ -61,18 +59,6 @@ function readProximityConfig(): ProximityConfig {
     minRadiusM: readRadiusEnv('CHECKIN_MIN_RADIUS_M', 150),
     accuracySlopCapM: readRadiusEnv('CHECKIN_ACCURACY_SLOP_CAP_M', 250),
   }
-}
-
-// ─── QR Token Validation ────────────────────────────────────────────────────
-
-function validateQrToken(nodeId: string, token: string): boolean {
-  const secret = qrHmacSecret()
-  for (let offset = 0; offset <= 1; offset++) {
-    const ts = Math.floor(Date.now() / (15 * 60 * 1000)) - offset
-    const expected = createHmac('sha256', secret).update(`${nodeId}${ts}`).digest('hex').slice(0, 32)
-    if (digestsEqual(token, expected)) return true
-  }
-  return false
 }
 
 // ─── Found_Via ──────────────────────────────────────────────────────────────

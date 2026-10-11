@@ -9,11 +9,12 @@ import type {
   ReceiptWindowName,
 } from '@area-code/shared/types'
 
-import { APP_ENV, DEV_MODE, qrHmacSecret, requireEnv, webBaseUrl } from '../../shared/config/env.js'
+import { APP_ENV, DEV_MODE, requireEnv, webBaseUrl } from '../../shared/config/env.js'
 import { sendRenewalReminderEmail, sendRenewalUpcomingEmail } from '../../shared/email/ses.js'
 import { AppError } from '../../shared/errors/AppError.js'
 import { getCloudWatchClient } from '../../shared/monitoring/cloudwatch.js'
 import { digestsEqual } from '../../shared/security/hmac.js'
+import { generateQrToken } from '../../shared/security/qr-token.js'
 import { deactivateNodesForBusiness } from '../nodes/dynamodb-repository.js'
 import { buildDigestCopy, type DigestData } from '../reports/digest.js'
 import { buildReceiptCopy, type ReceiptCopy } from '../reports/receipt-copy.js'
@@ -1050,23 +1051,6 @@ export async function removeStaff(staffId: string, businessId: string) {
 }
 
 // ─── QR Code ────────────────────────────────────────────────────────────────
-
-export function generateQrToken(nodeId: string): string {
-  const secret = qrHmacSecret()
-  const flooredTs = Math.floor(Date.now() / (15 * 60 * 1000))
-  return createHmac('sha256', secret).update(`${nodeId}${flooredTs}`).digest('hex').slice(0, 32)
-}
-
-export function validateQrToken(nodeId: string, token: string): boolean {
-  const secret = qrHmacSecret()
-  // Check current and previous window (handles edge cases)
-  for (let offset = 0; offset <= 1; offset++) {
-    const ts = Math.floor(Date.now() / (15 * 60 * 1000)) - offset
-    const expected = createHmac('sha256', secret).update(`${nodeId}${ts}`).digest('hex').slice(0, 32)
-    if (digestsEqual(token, expected)) return true
-  }
-  return false
-}
 
 export async function getQrData(nodeId: string, businessId: string) {
   if (DEV_MODE) {

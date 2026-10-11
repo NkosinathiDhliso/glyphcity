@@ -247,6 +247,6 @@ city-wide room cap, and pausing all of a venue's promoters on one unpaid claim.
   Attribution_Window (`backend/src/features/check-in/venue-open.ts`,
   `found-via.ts`). A morning map look no longer stamps an evening promoter
   arrival `walk_in`.
-- Consolidate the duplicate `validateQrToken` in `check-in/service.ts` and
-  `business/service.ts`, since paid arrivals depend on it.
+- Done: QR tokens are minted and checked in one place,
+  `backend/src/shared/security/qr-token.ts`.
 - A lawyer reads the venue and promoter terms (decision 4a).

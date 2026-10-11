@@ -9,9 +9,10 @@ import { timingSafeEqual } from 'node:crypto'
  * `false` (a mismatch) rather than throwing.
  *
  * Used by every signature-verification path that would otherwise reach for a
- * `===` string comparison: QR check-in tokens (`check-in/service.ts`,
- * `business/service.ts`), the music OAuth state (`music/service.ts`), and the
- * campaign unsubscribe token (`campaigns/unsubscribe.ts`).
+ * `===` string comparison: QR check-in tokens (`shared/security/qr-token.ts`),
+ * the Yoco webhook signature (`business/service.ts`), the music OAuth state
+ * (`music/service.ts`), and the campaign unsubscribe token
+ * (`campaigns/unsubscribe.ts`).
  */
 export function digestsEqual(provided: string, expected: string): boolean {
   const providedBuf = Buffer.from(provided)
