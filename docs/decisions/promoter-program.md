@@ -3,6 +3,8 @@
 Date: 2026-10-11
 
 Status: decided, not built. A spec follows this record; no code lands before it.
+Revised 2026-10-11: the two open items (fee amount, age) are decided below, and
+the Venue_Open prerequisite is fixed.
 Related: `docs/decisions/proof-of-demand.md`, `docs/decisions/map-membership.md`,
 `rules/honest-presence.md`, `rules/no-fallbacks-no-legacy.md`,
 `rules/dry-reuse-no-duplication.md`, `rules/serverless-only.md`.
@@ -87,13 +89,35 @@ An arrival pays only when all of these hold:
 6. The guest has not checked in at this venue in the last 30 days by any route.
    Rolling 30 days, not a calendar month. This covers "same guest pays once a
    month" and also stops the venue paying for its own regulars.
-7. At a `nightlife` venue, the guest has confirmed they are 18 or older. Asked
-   once per account, on the promoter link landing, never at the door. Skipping
-   it never blocks a check-in; the arrival just does not pay.
-8. The promoter's nightly cap and weekly ceiling are not reached.
+7. The promoter's nightly cap and weekly ceiling are not reached.
 
 Every branch that cannot be verified does not pay. The check-in itself is
 always recorded as presence, because it is true.
+
+### 4a. Age: the venue's door is the control, GlyphCity collects no age
+
+Decided 2026-10-11, replacing the guest 18+ confirmation in the first draft.
+
+The Liquor Act puts the duty not to admit or serve minors on the licence
+holder, and the venue already meets it at the door with an ID check. A paid
+arrival already needs a scan of the venue's rotating QR, which staff show. So:
+
+- Venue terms for the program: at a `nightlife` venue, staff show the check-in
+  code only to guests the venue has admitted under its own age policy. The
+  venue confirms this when it accepts its first promoter.
+- Promoter terms: promoters confirm they are 18 or older, and must not aim
+  posts or links at under-18s.
+- GlyphCity does not ask guests for an age or a date of birth.
+
+Why not the guest confirmation: a self-ticked "I am 18" proves nothing, it
+adds a step to every promoter arrival (churn), and it would make GlyphCity
+collect age data. Under POPIA, personal information about children is a
+special category, so knowing that a user is under 18 creates obligations the
+app does not otherwise have. The door check is real, happens anyway, and sits
+with the party the law already holds responsible.
+
+Launch item, not an open decision: a lawyer reads the venue and promoter terms
+text before the first promoter goes live.
 
 ### 5. Going carries the promoter forward
 
@@ -147,7 +171,7 @@ entry") cannot appear. Until approval the card shows the venue name and glyph.
   that promoter. Both read the same check-in rows, so they cannot disagree.
 - The statement shows counted arrivals, the rate, the amount owed, and
   GlyphCity's fee on its own line. It also shows what was not counted and why,
-  as weekly totals: recent visit, cap reached, no location, not 18+ confirmed.
+  as weekly totals: recent visit, cap reached, no location.
   A promoter who sees why a number is lower stays; one who sees only a low
   number assumes they were cheated.
 - Statements lock on Monday. A later account deletion does not change money
@@ -169,8 +193,16 @@ entry") cannot appear. Until approval the card shows the venue name and glyph.
 
 ### 11. GlyphCity's fee
 
-- A flat amount per counted arrival, not a percentage of the rate, so GlyphCity
-  has no stake in pushing rates up.
+- A flat R5 (500 cents) per counted arrival, not a percentage of the rate, so
+  GlyphCity has no stake in pushing rates up. Decided 2026-10-11.
+- Why R5: a promoter night is a night the venue cannot boost (decision 7), and a
+  6-hour boost is R50 (`BOOST_PRICING`). Ten counted arrivals replace that
+  revenue. It is small next to Growth at R299 a month, so the fee never reads as
+  the cost of the program; the promoter's rate is. If the pilot shows R5 above a
+  quarter of the median rate venues set, lower it; it is one constant.
+- Only counted arrivals carry the fee. An arrival past a cap, a recent visit or
+  a scan with no location is free, so GlyphCity earns only on what the venue
+  pays for.
 - There is no card on file today: Yoco is used through a hosted checkout per
   payment. The fee accrues and is charged in one monthly checkout, combined with
   the subscription renewal when both fall in the same month. Unpaid past the
@@ -181,7 +213,8 @@ entry") cannot appear. Until approval the card shows the venue name and glyph.
 
 A privacy policy update and an `AREA_CODE_CONSENT_VERSION` bump: a check-in made
 through a promoter's link is counted on a statement that decides what a venue
-owes that promoter; the promoter sees counts, never identities. The 30-day
+owes that promoter; the promoter sees counts, never identities. No age data is
+collected (decision 4a). The 30-day
 dedupe rows (`venueId` plus `userId`, TTL 30 days) are deleted by the erasure
 worker.
 
@@ -192,7 +225,7 @@ worker.
 | QR plus location        | Promoters, guests | Coarse 2 km bound; never refuses a check-in               |
 | Known near at open      | Promoters         | Unknown position still counts on time                     |
 | 30-day recent visit     | Promoters         | Shown as a "not counted" total on the statement           |
-| 18+ confirmation        | Guests            | Once, at the link landing, never blocks a check-in        |
+| Age control             | Guests            | Venue door check; no step in the app at all               |
 | 6h window               | Promoters         | Going carries the code; reminder credits the promoter     |
 | One room per night      | Top promoters     | No per-city cap; one extra room in another category       |
 | Not-paid pause          | Venues            | Pauses one promoter, not the venue's whole program        |
@@ -200,20 +233,20 @@ worker.
 | Boost hidden on a night | GlyphCity revenue | Per claimed night only; per-arrival fee covers that night |
 
 Rules rejected because the churn cost was higher than the fraud they stop: an
-exact 500 m location check on QR scans, an 18+ gate inside the check-in flow, a
+exact 500 m location check on QR scans, any 18+ step for guests, a
 city-wide room cap, and pausing all of a venue's promoters on one unpaid claim.
 
-## Open items for the founder
+## Decided after the first draft
 
-1. The flat fee amount per counted arrival.
-2. Legal review of paying promoters for arrivals at liquor-licensed venues
-   (Liquor Act, provincial liquor rules) and of the 18+ self-confirmation.
+1. Fee: R5 per counted arrival (decision 11).
+2. Age: the venue's door check is the control; no guest age data (decision 4a).
 
 ## Prerequisites before any money depends on the count
 
-- Fix the Venue_Open merge so a look older than the Attribution_Window cannot
-  erase a newer one (`backend/src/features/check-in/venue-open.ts`
-  `mergeVenueOpen`). Today a morning map look plus an evening promoter link
-  stamps the check-in `walk_in`.
+- Done: the Venue_Open merge credits the first open still inside the
+  Attribution_Window (`backend/src/features/check-in/venue-open.ts`,
+  `found-via.ts`). A morning map look no longer stamps an evening promoter
+  arrival `walk_in`.
 - Consolidate the duplicate `validateQrToken` in `check-in/service.ts` and
   `business/service.ts`, since paid arrivals depend on it.
+- A lawyer reads the venue and promoter terms (decision 4a).
