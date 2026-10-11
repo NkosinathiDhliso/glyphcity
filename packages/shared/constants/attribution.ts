@@ -30,6 +30,12 @@ export const AWAY_GATE_MIN_MINUTES = 20
  */
 export const AWAY_DISTANCE_METRES = 500
 
+/** `ATTRIBUTION_WINDOW_HOURS` in milliseconds, for the merge and the gate. */
+export const ATTRIBUTION_WINDOW_MS = ATTRIBUTION_WINDOW_HOURS * 60 * 60 * 1000
+
+/** `AWAY_GATE_MIN_MINUTES` in milliseconds. */
+export const AWAY_GATE_MIN_MS = AWAY_GATE_MIN_MINUTES * 60 * 1000
+
 /**
  * Consumers see a Going count only at this many or more, and only when a
  * Tonight exists. Below it, one or two marks read as empty rather than as

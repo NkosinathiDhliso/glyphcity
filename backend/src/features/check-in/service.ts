@@ -8,7 +8,7 @@ import { AppError } from '../../shared/errors/AppError.js'
 import { kvGet, kvSet, kvIncr, kvTtl } from '../../shared/kv/dynamodb-kv.js'
 import { pushVenueUrl } from '../../shared/links/venue-arrival.js'
 import { canEmitIdentity, canEmitToFriends, sanitizeForBusiness } from '../../shared/privacy/privacy-guard.js'
-import { validateQrToken } from '../../shared/security/qr-token.js'
+import { validateQrToken } from '../../shared/qr/token.js'
 import {
   emitPulseUpdate,
   emitPresenceUpdate,

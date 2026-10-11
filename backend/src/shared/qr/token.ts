@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto'
 
 import { qrHmacSecret } from '../config/env.js'
 
-import { digestsEqual } from './hmac.js'
+import { digestsEqual } from '../security/hmac.js'
 
 /**
  * Venue check-in QR tokens: the one home for minting and checking them.

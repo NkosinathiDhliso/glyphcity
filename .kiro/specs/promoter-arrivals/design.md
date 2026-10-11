@@ -121,24 +121,39 @@ closes. The Monday 06:00 pass locks that week.
 
 ### Chained-reopen merge
 
-`kvGet` drops a row past its TTL, so a single stale row is already gone.
-The defect is a chain: open 09:00, re-open 14:00 (row merged, `openedAt`
-stays 09:00, TTL reset), check-in 16:00. `resolveFoundVia` sees age 7 h
-and returns `walk_in`, although the 14:00 open was a real away look. Fix in
-the pure function, with `ATTRIBUTION_WINDOW_MS` exported from
-`attribution.ts` and imported by both `found-via.ts` and `venue-open.ts`:
+Built. `kvGet` drops a row past its TTL, so a single stale row is already
+gone. The defect was a chain: open 09:00, re-open 14:00 (row merged,
+`openedAt` stays 09:00, TTL reset), check-in 16:00. `resolveFoundVia` saw
+age 7 h and returned `walk_in`, although the 14:00 open was a real away
+look. Replacing the stored open only once it is more than the window older
+than the incoming one does not fix that chain: at 14:00 the 09:00 look is
+five hours old and stays first.
 
-```ts
-export function mergeVenueOpen(existing, incoming) {
-  if (!existing) return incoming
-  if (Date.parse(incoming.openedAt) - Date.parse(existing.openedAt) > ATTRIBUTION_WINDOW_MS) return incoming
-  // unchanged: earliest wins, away ORed, promoterLinkId follows the winner
-}
-```
+The row is now runs of `{ source, openedAt, lastOpenedAt, away }`, oldest
+first, never overlapping (`check-in/venue-open.ts`, `check-in/found-via.ts`):
+
+- `mergeVenueOpen` drops runs whose last open is older than the window
+  measured back from the incoming open, extends the latest run when the
+  incoming open has the same source and comes less than 20 minutes after
+  it (ORing `away`), and otherwise appends a run. At 20 runs the incoming
+  open is dropped, which can only under-claim.
+- `resolveFoundVia` credits the earliest run with an open inside the window.
+  A run whose first open aged out is credited on the time arm: its gaps are
+  under 20 minutes, so its earliest in-window open is older than the window
+  minus 20 minutes.
+- Property 1 (`venue-open-merge.property.test.ts`) checks the folded row
+  against a reference that keeps every open, for any sequence and any later
+  check-in. `ATTRIBUTION_WINDOW_MS` and `AWAY_GATE_MIN_MS` live in
+  `attribution.ts`.
+
+For Phase 2 and 3: `promoterLinkId` sits on the run, and a run extends only
+when source and `promoterLinkId` both match. `away` is ORed within a run, so
+R4.1.3 (the open's `away` is `true`) must not read it for money: Phase 3
+adds a per-run flag that is true only when every open in the run was away.
 
 ### One QR token module
 
-Create `backend/src/shared/qr/token.ts` with `generateQrToken` and
+Built. `backend/src/shared/qr/token.ts` holds `generateQrToken` and
 `validateQrToken` (15-minute buckets, current and previous). Delete the
 private copy in `check-in/service.ts` and the body in
 `business/service.ts`; both import from shared. Write
@@ -172,7 +187,7 @@ four prior sources".
 
 ### Venue_Open row
 
-`VenueOpenRow` gains `promoterLinkId?: string`. `venueOpenBodySchema` gains
+Each `VenueOpenRun` gains `promoterLinkId?: string`. `venueOpenBodySchema` gains
 `promoterCode?: string` (alphabet and length regex). Service:
 
 1. If `source === 'promoter'` and a code is present, hash it and read

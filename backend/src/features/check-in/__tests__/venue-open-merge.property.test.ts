@@ -23,11 +23,17 @@
  * argument to the KV write rather than a field of the row.
  */
 
-import { OPEN_SOURCES, type FoundVia, type OpenSource } from '@area-code/shared/constants/attribution'
+import {
+  ATTRIBUTION_WINDOW_MS,
+  AWAY_GATE_MIN_MS,
+  OPEN_SOURCES,
+  type FoundVia,
+  type OpenSource,
+} from '@area-code/shared/constants/attribution'
 import * as fc from 'fast-check'
 import { describe, it, expect } from 'vitest'
 
-import { ATTRIBUTION_WINDOW_MS, AWAY_GATE_MIN_MS, resolveFoundVia, type VenueOpenRow } from '../found-via.js'
+import { resolveFoundVia, type VenueOpenRow } from '../found-via.js'
 import { mergeVenueOpen, VENUE_OPEN_MAX_RUNS, type VenueOpenInputAt } from '../venue-open.js'
 
 const MINUTE_MS = 60_000
@@ -100,6 +106,19 @@ describe('Feature: Proof of demand, Property 1b: Venue_Open row matches the full
     const checkInAt = BASE_MS + 13 * HOUR_MS
 
     expect(resolveFoundVia(fold(opens), new Date(checkInAt).toISOString())).toBe('share')
+  })
+
+  it('credits the 14:00 reopen at a 16:00 check-in after a 09:00 look (promoter-arrivals design)', () => {
+    // Replacing the stored open only once it is past the window does not fix
+    // this: at 14:00 the 09:00 look is five hours old, so it would stay first
+    // and the check-in would read seven hours and stamp walk_in.
+    const opens: Open[] = [
+      { source: 'map', at: BASE_MS + 1 * HOUR_MS, away: null },
+      { source: 'map', at: BASE_MS + 6 * HOUR_MS, away: true },
+    ]
+    const checkInAt = BASE_MS + 8 * HOUR_MS
+
+    expect(resolveFoundVia(fold(opens), new Date(checkInAt).toISOString())).toBe('map')
   })
 
   it('never discards an away open inside the window', () => {

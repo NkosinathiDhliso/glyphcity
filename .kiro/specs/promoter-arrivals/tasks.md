@@ -25,24 +25,27 @@ tagged `Feature: Promoter arrivals, Property N: <desc>`. Code limits in
 
 ### Phase 1: fixes the money depends on
 
-- [ ] 1. Chained-reopen merge (R3.5, R5.2)
-  - [ ] 1.1 Export `ATTRIBUTION_WINDOW_MS` from `attribution.ts`; import it
+- [x] 1. Chained-reopen merge (R3.5, R5.2)
+  - [x] 1.1 Export `ATTRIBUTION_WINDOW_MS` from `attribution.ts`; import it
         in `found-via.ts` and `venue-open.ts`
     - _Requirements: 5.1, 5.2_
-  - [ ] 1.2 `mergeVenueOpen` returns `incoming` when it is more than the
-        window after `existing`; in-window behaviour unchanged
+  - [x] 1.2 Row as runs; `mergeVenueOpen` drops aged runs and folds
+        same-source opens under 20 minutes apart; `resolveFoundVia`
+        credits the earliest open still in the window
     - _Requirements: 3.5_
-  - [ ] 1.3 Property 1 in `venue-open-merge.property.test.ts`
+  - [x] 1.3 Property 1 in `venue-open-merge.property.test.ts`, against a
+        full-history reference
     - _Requirements: 3.5_
 
-- [ ] 2. One QR token module (R5.4)
-  - [ ] 2.1 `backend/src/shared/qr/token.ts`; delete the private copy in
+- [x] 2. One QR token module (R5.4)
+  - [x] 2.1 `backend/src/shared/qr/token.ts`; delete the private copy in
         `check-in/service.ts` and the body in `business/service.ts`; both
-        import from shared; `shared/qr/__tests__/token.test.ts`; repoint
-        `business/__tests__/handler.test.ts` and
-        `__tests__/data-integrity.test.ts`
+        import from shared; `shared/qr/__tests__/token.test.ts`. Neither
+        `business/__tests__/handler.test.ts` nor
+        `__tests__/data-integrity.test.ts` referenced the token functions,
+        so neither needed repointing
     - _Requirements: 5.4_
-  - [ ] 2.2 Grep test: `generateQrToken` and `validateQrToken` defined only
+  - [x] 2.2 Grep test: `generateQrToken` and `validateQrToken` defined only
         in `shared/qr/token.ts`. `qrHmacSecret()` stays in `env.ts`
     - _Requirements: 5.4_
 

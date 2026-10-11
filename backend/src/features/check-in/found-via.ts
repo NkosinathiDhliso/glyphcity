@@ -34,8 +34,8 @@
  */
 
 import {
-  ATTRIBUTION_WINDOW_HOURS,
-  AWAY_GATE_MIN_MINUTES,
+  ATTRIBUTION_WINDOW_MS,
+  AWAY_GATE_MIN_MS,
   OPEN_SOURCES,
   type FoundVia,
   type OpenSource,
@@ -43,14 +43,6 @@ import {
 
 /** The honest default outcome. */
 const WALK_IN: FoundVia = 'walk_in'
-
-const MINUTE_MS = 60_000
-
-/** Maximum age of an open that can still be credited. */
-export const ATTRIBUTION_WINDOW_MS = ATTRIBUTION_WINDOW_HOURS * 60 * MINUTE_MS
-
-/** Away_Gate time arm, in milliseconds. */
-export const AWAY_GATE_MIN_MS = AWAY_GATE_MIN_MINUTES * MINUTE_MS
 
 /**
  * One run of opens: consecutive opens from the same source, each less than the

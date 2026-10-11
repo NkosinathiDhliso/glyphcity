@@ -14,7 +14,7 @@ import { sendRenewalReminderEmail, sendRenewalUpcomingEmail } from '../../shared
 import { AppError } from '../../shared/errors/AppError.js'
 import { getCloudWatchClient } from '../../shared/monitoring/cloudwatch.js'
 import { digestsEqual } from '../../shared/security/hmac.js'
-import { generateQrToken } from '../../shared/security/qr-token.js'
+import { generateQrToken } from '../../shared/qr/token.js'
 import { deactivateNodesForBusiness } from '../nodes/dynamodb-repository.js'
 import { buildDigestCopy, type DigestData } from '../reports/digest.js'
 import { buildReceiptCopy, type ReceiptCopy } from '../reports/receipt-copy.js'

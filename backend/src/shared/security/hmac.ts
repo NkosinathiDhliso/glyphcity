@@ -9,7 +9,7 @@ import { timingSafeEqual } from 'node:crypto'
  * `false` (a mismatch) rather than throwing.
  *
  * Used by every signature-verification path that would otherwise reach for a
- * `===` string comparison: QR check-in tokens (`shared/security/qr-token.ts`),
+ * `===` string comparison: QR check-in tokens (`shared/qr/token.ts`),
  * the Yoco webhook signature (`business/service.ts`), the music OAuth state
  * (`music/service.ts`), and the campaign unsubscribe token
  * (`campaigns/unsubscribe.ts`).

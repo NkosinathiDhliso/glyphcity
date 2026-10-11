@@ -249,10 +249,14 @@ morning browse cannot erase the link I post that night.
 4. THE Venue_Open row SHALL gain one optional promoter reference, the hash
    id of the link, and nothing else. No coordinates, no device id, no guest
    display name.
-5. WHEN the stored open is older than the Attribution_Window, THE next open
-   SHALL replace it. Inside the window, the earliest open SHALL keep its
-   source and `openedAt`. `away` SHALL keep the existing three-valued OR.
-   This fix applies to every Open_Source, not only `promoter`.
+5. THE check-in SHALL be credited to the earliest open still inside the
+   Attribution_Window at check-in time, so a look that aged out never hides
+   a later one. The row SHALL keep every open that can still be credited, as
+   runs: consecutive opens from the same source less than 20 minutes apart.
+   `away` SHALL keep the existing three-valued OR within a run. This fix
+   applies to every Open_Source, not only `promoter`. (Replacing the stored
+   open only once it is past the window was rejected: open 09:00, reopen
+   14:00, check in 16:00 still reads seven hours and stamps `walk_in`.)
 6. THE open endpoint SHALL stay authenticated. The 6-hour and 20-minute
    clocks SHALL start at `recordVenueOpen`, which is after the guest has an
    account. A logged-out tap SHALL NOT start them.

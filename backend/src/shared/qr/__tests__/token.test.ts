@@ -1,8 +1,11 @@
 import { createHmac } from 'node:crypto'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { generateQrToken, QR_TOKEN_ROTATION_MS, validateQrToken } from '../qr-token.js'
+import { generateQrToken, QR_TOKEN_ROTATION_MS, validateQrToken } from '../token.js'
 
 /**
  * The venue QR token has one home. These tests pin the wire format (a printed
@@ -58,5 +61,26 @@ describe('validateQrToken', () => {
   it('rejects a malformed token without throwing', () => {
     expect(validateQrToken(NODE_ID, 'short', NOW)).toBe(false)
     expect(validateQrToken(NODE_ID, '', NOW)).toBe(false)
+  })
+})
+
+describe('one home (promoter-arrivals R5.4)', () => {
+  const BACKEND_SRC = fileURLToPath(new URL('../../../', import.meta.url))
+  const HOME = 'shared/qr/token.ts'
+
+  function sourceFiles(dir: string): string[] {
+    return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const path = join(dir, entry.name)
+      if (entry.isDirectory()) return entry.name === '__tests__' ? [] : sourceFiles(path)
+      return entry.name.endsWith('.ts') && !entry.name.endsWith('.test.ts') ? [path] : []
+    })
+  }
+
+  it('defines generateQrToken and validateQrToken only in shared/qr/token.ts', () => {
+    const definers = sourceFiles(BACKEND_SRC)
+      .filter((file) => /function\s+(generateQrToken|validateQrToken)\b/.test(readFileSync(file, 'utf8')))
+      .map((file) => relative(BACKEND_SRC, file).split('\\').join('/'))
+
+    expect(definers).toEqual([HOME])
   })
 })

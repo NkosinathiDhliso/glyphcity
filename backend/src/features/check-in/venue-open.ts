@@ -28,12 +28,18 @@
  * credited, folded into runs so it stays small (`mergeVenueOpen`).
  */
 
-import { ATTRIBUTION_WINDOW_HOURS, OPEN_SOURCES, type OpenSource } from '@area-code/shared/constants/attribution'
+import {
+  ATTRIBUTION_WINDOW_HOURS,
+  ATTRIBUTION_WINDOW_MS,
+  AWAY_GATE_MIN_MS,
+  OPEN_SOURCES,
+  type OpenSource,
+} from '@area-code/shared/constants/attribution'
 import { z } from 'zod'
 
 import { kvDel, kvGet, kvSet } from '../../shared/kv/dynamodb-kv.js'
 
-import { ATTRIBUTION_WINDOW_MS, AWAY_GATE_MIN_MS, type VenueOpenRow, type VenueOpenRun } from './found-via.js'
+import type { VenueOpenRow, VenueOpenRun } from './found-via.js'
 
 /**
  * TTL of the row, in seconds. The same Attribution_Window the Away_Gate uses, so
