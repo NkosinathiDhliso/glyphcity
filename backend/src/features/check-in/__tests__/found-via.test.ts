@@ -5,21 +5,37 @@
  * The universal rules are Property 1 and live in the property test.
  */
 
-import { ATTRIBUTION_WINDOW_HOURS, AWAY_GATE_MIN_MINUTES } from '@area-code/shared/constants/attribution'
+import {
+  ATTRIBUTION_WINDOW_HOURS,
+  AWAY_GATE_MIN_MINUTES,
+  type OpenSource,
+} from '@area-code/shared/constants/attribution'
 import { describe, expect, it } from 'vitest'
 
-import { resolveFoundVia, type VenueOpenRow } from '../found-via.js'
+import { resolveFoundVia, type VenueOpenRow, type VenueOpenRun } from '../found-via.js'
 
 const MINUTE_MS = 60_000
 const GATE_MS = AWAY_GATE_MIN_MINUTES * MINUTE_MS
 const WINDOW_MS = ATTRIBUTION_WINDOW_HOURS * 60 * MINUTE_MS
+const HOUR_MS = 60 * MINUTE_MS
 
 /** A Friday night check-in, 21:30 SAST. */
 const CHECK_IN_AT = Date.parse('2026-10-02T19:30:00.000Z')
 const CHECK_IN_ISO = new Date(CHECK_IN_AT).toISOString()
 
+/** One run of opens, the first `firstAgoMs` and the last `lastAgoMs` before the check-in. */
+function run(source: OpenSource, firstAgoMs: number, lastAgoMs: number, away: boolean | null): VenueOpenRun {
+  return {
+    source,
+    openedAt: new Date(CHECK_IN_AT - firstAgoMs).toISOString(),
+    lastOpenedAt: new Date(CHECK_IN_AT - lastAgoMs).toISOString(),
+    away,
+  }
+}
+
+/** A row holding a single open from the map, `ageMs` before the check-in. */
 function openedAgo(ageMs: number, away: boolean | null): VenueOpenRow {
-  return { source: 'map', openedAt: new Date(CHECK_IN_AT - ageMs).toISOString(), away }
+  return { opens: [run('map', ageMs, ageMs, away)] }
 }
 
 describe('resolveFoundVia — the time arm boundary', () => {
@@ -64,13 +80,29 @@ describe('resolveFoundVia — rows it refuses to trust', () => {
   })
 
   it('reads a row whose source is not an Open_Source as a walk-in', () => {
-    const row = { ...openedAgo(WINDOW_MS / 2, true), source: 'billboard' } as unknown as VenueOpenRow
+    const row = {
+      opens: [{ ...run('map', WINDOW_MS / 2, WINDOW_MS / 2, true), source: 'billboard' }],
+    } as unknown as VenueOpenRow
 
     expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('walk_in')
   })
 
+  it('reads a row whose runs overlap as a walk-in: it cannot say which open came first', () => {
+    const row: VenueOpenRow = {
+      opens: [run('map', 3 * HOUR_MS, HOUR_MS, null), run('share', 2 * HOUR_MS, 2 * HOUR_MS, null)],
+    }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('walk_in')
+  })
+
+  it('reads a run that ends before it starts as a walk-in', () => {
+    expect(resolveFoundVia({ opens: [run('map', HOUR_MS, 2 * HOUR_MS, null)] }, CHECK_IN_ISO)).toBe('walk_in')
+  })
+
   it('reads a row claiming walk_in as its source as a walk-in', () => {
-    const row = { ...openedAgo(WINDOW_MS / 2, true), source: 'walk_in' } as unknown as VenueOpenRow
+    const row = {
+      opens: [{ ...run('map', WINDOW_MS / 2, WINDOW_MS / 2, true), source: 'walk_in' }],
+    } as unknown as VenueOpenRow
 
     expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('walk_in')
   })
@@ -81,7 +113,7 @@ describe('resolveFoundVia — every source is carried through', () => {
     const ageMs = GATE_MS + MINUTE_MS
 
     for (const source of ['share', 'search', 'push'] as const) {
-      const row: VenueOpenRow = { source, openedAt: new Date(CHECK_IN_AT - ageMs).toISOString(), away: null }
+      const row: VenueOpenRow = { opens: [run(source, ageMs, ageMs, null)] }
 
       expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe(source)
     }
@@ -96,5 +128,54 @@ describe('resolveFoundVia — every source is carried through', () => {
 
     expect(resolveFoundVia(row, capturedAt)).toBe('map')
     expect(resolveFoundVia(row, syncedAt)).toBe('walk_in')
+  })
+})
+
+describe('resolveFoundVia — the first open inside the window earns the credit', () => {
+  it('credits a later open when an earlier look has aged out (noon map, 17:00 share, 21:00 check-in)', () => {
+    // The bug this shape fixes: a single earliest-open row kept the noon look,
+    // the 17:00 look reset its TTL, and the 21:00 check-in read nine hours of
+    // age and stamped walk_in.
+    const row: VenueOpenRow = {
+      opens: [run('map', 9 * HOUR_MS, 9 * HOUR_MS, null), run('share', 4 * HOUR_MS, 4 * HOUR_MS, null)],
+    }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('share')
+  })
+
+  it('credits the earlier open while both are inside the window', () => {
+    const row: VenueOpenRow = {
+      opens: [run('map', 5 * HOUR_MS, 5 * HOUR_MS, null), run('share', 4 * HOUR_MS, 4 * HOUR_MS, null)],
+    }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('map')
+  })
+
+  it('credits a run whose first open aged out but whose later opens did not', () => {
+    const row: VenueOpenRow = { opens: [run('map', WINDOW_MS + 10 * MINUTE_MS, WINDOW_MS - 5 * MINUTE_MS, null)] }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('map')
+  })
+
+  it('credits the earliest open when a later open was away, however recent the earliest', () => {
+    const row: VenueOpenRow = {
+      opens: [run('search', 10 * MINUTE_MS, 10 * MINUTE_MS, null), run('map', 5 * MINUTE_MS, 5 * MINUTE_MS, true)],
+    }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('search')
+  })
+
+  it('ignores an away flag from a run that continues past a replayed check-in', () => {
+    const row: VenueOpenRow = { opens: [run('map', 5 * MINUTE_MS, -5 * MINUTE_MS, true)] }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('walk_in')
+  })
+
+  it('reads a row whose every open aged out as a walk-in', () => {
+    const row: VenueOpenRow = {
+      opens: [run('map', 9 * HOUR_MS, 8 * HOUR_MS, true), run('share', 7 * HOUR_MS, 7 * HOUR_MS, true)],
+    }
+
+    expect(resolveFoundVia(row, CHECK_IN_ISO)).toBe('walk_in')
   })
 })

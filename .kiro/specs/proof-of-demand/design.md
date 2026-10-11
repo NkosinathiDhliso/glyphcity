@@ -141,12 +141,15 @@ fresh position. Position never leaves the device.
 
 Server: `POST /v1/nodes/:nodeId/open`, consumer auth, Zod body
 `{ source: enum, away: boolean | null }`, rate limited. Service reads
-`open:{userId}:{nodeId}`; if absent, writes `{ source, openedAt: now, away }`;
-if present, merges `{ source: existing.source, openedAt: existing.openedAt,
-away: existing.away || incoming.away }`. Either way the TTL is reset to
-`ATTRIBUTION_WINDOW_HOURS * 3600` from now, so a consumer who opened at
-14:00 and again at 19:00 still has a row at 20:30 while the time gate uses
-the earliest open. Emits usage event `venue_open` with `{ source }` only
+`open:{userId}:{nodeId}` and folds the open into it with `mergeVenueOpen`:
+the row is runs of `{ source, openedAt, lastOpenedAt, away }`, a same-source
+open less than the time arm after the latest run extends it, anything else
+starts a new run, and runs older than the window are dropped. Either way the
+TTL is reset to `ATTRIBUTION_WINDOW_HOURS * 3600` from now. At check-in the
+credit goes to the earliest open still inside the window, so a consumer who
+opened at 14:00 and again at 19:00 is credited from the 19:00 open at 20:30.
+(The first version kept only the earliest open, and the 14:00 look then
+stamped that check-in `walk_in`.) Emits usage event `venue_open` with `{ source }` only
 (`source` added to the props allowlist).
 
 #### Away_Gate and `foundVia`

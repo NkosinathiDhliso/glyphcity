@@ -17,7 +17,7 @@
  * is the exact row the owner's live panel reads back.
  *
  *   1. Device A records a Venue_Open through `POST /v1/nodes/:nodeId/open`
- *      (`source: 'map'`, `away: true`), stored as `{ source, openedAt, away }`
+ *      (`source: 'map'`, `away: true`), stored as one run of `{ source, openedAt, lastOpenedAt, away }`
  *      with an Attribution_Window TTL.
  *   2. More than `AWAY_GATE_MIN_MINUTES` later, Device A checks in by GPS at the
  *      venue. The Away_Gate passes on the time arm, so the stored check-in reads
@@ -551,7 +551,7 @@ describe('Receipt split — two-device dev rehearsal (R3.1, R3.2, R4.3)', () => 
 
     const openRow = h.kvRow(venueOpenKey(DEVICE_A, NODE_ID))
     expect(openRow).toBeDefined()
-    expect(JSON.parse(String(openRow!['value']))).toMatchObject({ source: 'map', away: true })
+    expect(JSON.parse(String(openRow!['value']))).toMatchObject({ opens: [{ source: 'map', away: true }] })
     // Expires on its own after the Attribution_Window: no sweeper, no new infra.
     expect(Number(openRow!['ttl']) - Math.floor(OPEN_AT_MS / 1000)).toBe(ATTRIBUTION_WINDOW_HOURS * 60 * 60)
 

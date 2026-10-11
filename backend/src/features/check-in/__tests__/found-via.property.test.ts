@@ -65,7 +65,8 @@ function rowFor(
   ageMs: number,
   away: boolean | null,
 ): VenueOpenRow {
-  return { source, openedAt: new Date(checkInAt - ageMs).toISOString(), away }
+  const at = new Date(checkInAt - ageMs).toISOString()
+  return { opens: [{ source, openedAt: at, lastOpenedAt: at, away }] }
 }
 
 describe('Feature: Proof of demand, Property 1: resolveFoundVia yields exactly one outcome and is pure', () => {
@@ -144,8 +145,13 @@ describe('Feature: Proof of demand, Property 1: walk_in whenever the gate fails 
       fc.property(sourceArb, checkInAtArb, awayArb, unreadableArb, (source, checkInAt, away, junk) => {
         const instant = new Date(checkInAt).toISOString()
 
-        expect(resolveFoundVia({ source, openedAt: junk, away }, instant)).toBe('walk_in')
-        expect(resolveFoundVia({ source, openedAt: instant, away }, junk)).toBe('walk_in')
+        const junkFirst = { opens: [{ source, openedAt: junk, lastOpenedAt: instant, away }] }
+        const junkLast = { opens: [{ source, openedAt: instant, lastOpenedAt: junk, away }] }
+        const readable = { opens: [{ source, openedAt: instant, lastOpenedAt: instant, away }] }
+
+        expect(resolveFoundVia(junkFirst, instant)).toBe('walk_in')
+        expect(resolveFoundVia(junkLast, instant)).toBe('walk_in')
+        expect(resolveFoundVia(readable, junk)).toBe('walk_in')
       }),
       { numRuns: 300 },
     )

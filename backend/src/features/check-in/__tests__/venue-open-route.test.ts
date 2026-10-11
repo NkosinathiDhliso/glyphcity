@@ -9,11 +9,12 @@
  * an owner and a consumer:
  *
  *  - it answers 204 with no body: the consumer app never reads its own opens back
- *  - the stored row is `{ source, openedAt, away }` and nothing else, with a TTL
- *    of exactly the Attribution_Window, so no sweeper is needed (R2.4, R11.1)
- *  - a repeat open merges rather than overwrites: the earliest open keeps the
- *    credit, an earlier away open is never discarded, and the window is never
- *    shortened (R2.3)
+ *  - the stored row is runs of `{ source, openedAt, lastOpenedAt, away }` and
+ *    nothing else, with a TTL of exactly the Attribution_Window, so no sweeper
+ *    is needed (R2.4, R11.1)
+ *  - a repeat open merges rather than overwrites: earlier opens are kept, an
+ *    earlier away open is never discarded, and the window is never shortened
+ *    (R2.3)
  *  - coordinates cannot be stored even when a client sends them
  *  - an unauthenticated caller and a caller over budget both write nothing
  *  - `walk_in` is rejected as a source: it is an outcome, never a claim
@@ -135,11 +136,31 @@ async function post(body: unknown, opts: { authenticated?: boolean } = {}) {
   return state
 }
 
+interface WrittenRun {
+  source: string
+  openedAt: string
+  lastOpenedAt: string
+  away: boolean | null
+}
+
 /** The row this call persisted, parsed back out of the KV write. */
-function writtenRow(): { source: string; openedAt: string; away: boolean | null } {
+function writtenRow(): { opens: WrittenRun[] } {
   const call = h.kvSet.mock.calls.find((c) => c[0] === OPEN_KEY)
   if (!call) throw new Error('no Venue_Open row was written')
   return JSON.parse(String(call[1]))
+}
+
+/** The newest run of the persisted row. */
+function latestRun(): WrittenRun {
+  const runs = writtenRow().opens
+  const run = runs[runs.length - 1]
+  if (!run) throw new Error('the Venue_Open row has no runs')
+  return run
+}
+
+/** A stored row holding one run that opened and last opened at `at`. */
+function storedRun(source: string, at: string, away: boolean | null): string {
+  return JSON.stringify({ opens: [{ source, openedAt: at, lastOpenedAt: at, away }] })
 }
 
 function writtenTtl(): number {
@@ -172,16 +193,19 @@ describe('POST /v1/nodes/:nodeId/open — the row (R2.1, R2.4, R11.1)', () => {
     await post({ source: 'share', away: false })
 
     const row = writtenRow()
-    expect(row.source).toBe('share')
-    expect(row.away).toBe(false)
-    expect(Date.parse(row.openedAt)).toBeGreaterThanOrEqual(before)
-    expect(Date.parse(row.openedAt)).toBeLessThanOrEqual(Date.now())
+    expect(row.opens).toHaveLength(1)
+    const run = latestRun()
+    expect(run.source).toBe('share')
+    expect(run.away).toBe(false)
+    expect(run.lastOpenedAt).toBe(run.openedAt)
+    expect(Date.parse(run.openedAt)).toBeGreaterThanOrEqual(before)
+    expect(Date.parse(run.openedAt)).toBeLessThanOrEqual(Date.now())
   })
 
   it('stores away as null when the client had no fresh position', async () => {
     await post({ source: 'map', away: null })
 
-    expect(writtenRow().away).toBeNull()
+    expect(latestRun().away).toBeNull()
   })
 
   it('expires the row after exactly the Attribution_Window, so nothing sweeps it', async () => {
@@ -191,58 +215,76 @@ describe('POST /v1/nodes/:nodeId/open — the row (R2.1, R2.4, R11.1)', () => {
     expect(writtenTtl()).toBe(ATTRIBUTION_WINDOW_SECONDS)
   })
 
-  it('stores three fields only: no coordinates, no device data, even when sent', async () => {
+  it('stores four fields per run only: no coordinates, no device data, even when sent', async () => {
     await post({ source: 'map', away: true, lat: -26.2041, lng: 28.0473, deviceId: 'abc' })
 
     const row = writtenRow()
-    expect(Object.keys(row).sort()).toEqual(['away', 'openedAt', 'source'])
+    expect(Object.keys(row)).toEqual(['opens'])
+    expect(Object.keys(latestRun()).sort()).toEqual(['away', 'lastOpenedAt', 'openedAt', 'source'])
     expect(JSON.stringify(row)).not.toContain('26.2')
     expect(JSON.stringify(row)).not.toContain('deviceId')
   })
 })
 
-// ─── Merge (earliest wins) ──────────────────────────────────────────────────
+// ─── Merge (earlier opens are kept) ─────────────────────────────────────────
 
 describe('POST /v1/nodes/:nodeId/open — repeat opens merge (R2.3)', () => {
   // Two hours ago: genuinely earlier than the open this request records.
   const earlier = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+  // Five minutes ago: close enough for a same-source open to join its run.
+  const moments = new Date(Date.now() - 5 * 60 * 1000).toISOString()
 
-  it('keeps the earliest open and its source when a row already exists', async () => {
-    h.kvGet.mockImplementation(async (key: string) =>
-      key === OPEN_KEY ? JSON.stringify({ source: 'share', openedAt: earlier, away: null }) : null,
-    )
+  it('keeps the earlier open first, with its own source, when a row already exists', async () => {
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('share', earlier, null) : null))
 
     await post({ source: 'map', away: null })
 
-    const row = writtenRow()
-    expect(row.openedAt).toBe(earlier)
-    expect(row.source).toBe('share')
+    const runs = writtenRow().opens
+    expect(runs).toHaveLength(2)
+    expect(runs[0]).toMatchObject({ source: 'share', openedAt: earlier })
+    expect(runs[1]!.source).toBe('map')
+  })
+
+  it('folds a same-source open minutes later into the same run', async () => {
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('map', moments, null) : null))
+
+    await post({ source: 'map', away: null })
+
+    const runs = writtenRow().opens
+    expect(runs).toHaveLength(1)
+    expect(runs[0]!.openedAt).toBe(moments)
+    expect(Date.parse(runs[0]!.lastOpenedAt)).toBeGreaterThan(Date.parse(moments))
   })
 
   it('never discards an earlier away open', async () => {
-    h.kvGet.mockImplementation(async (key: string) =>
-      key === OPEN_KEY ? JSON.stringify({ source: 'share', openedAt: earlier, away: true }) : null,
-    )
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('share', earlier, true) : null))
 
     await post({ source: 'map', away: false })
 
-    expect(writtenRow().away).toBe(true)
+    expect(writtenRow().opens[0]!.away).toBe(true)
   })
 
-  it('takes an away open that arrives second', async () => {
-    h.kvGet.mockImplementation(async (key: string) =>
-      key === OPEN_KEY ? JSON.stringify({ source: 'map', openedAt: earlier, away: false }) : null,
-    )
+  it('takes an away open that arrives second in the same run', async () => {
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('map', moments, false) : null))
 
     await post({ source: 'map', away: true })
 
-    expect(writtenRow().away).toBe(true)
+    expect(latestRun().away).toBe(true)
+  })
+
+  it('drops a run that has aged out of the window', async () => {
+    const aged = new Date(Date.now() - ATTRIBUTION_WINDOW_SECONDS * 1000 - 60_000).toISOString()
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('map', aged, null) : null))
+
+    await post({ source: 'share', away: null })
+
+    const runs = writtenRow().opens
+    expect(runs).toHaveLength(1)
+    expect(runs[0]!.source).toBe('share')
   })
 
   it('resets the TTL, so a second look never shortens the window', async () => {
-    h.kvGet.mockImplementation(async (key: string) =>
-      key === OPEN_KEY ? JSON.stringify({ source: 'map', openedAt: earlier, away: null }) : null,
-    )
+    h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? storedRun('map', earlier, null) : null))
 
     await post({ source: 'map', away: null })
 
@@ -254,7 +296,19 @@ describe('POST /v1/nodes/:nodeId/open — repeat opens merge (R2.3)', () => {
 
     await post({ source: 'push', away: true })
 
-    expect(writtenRow().source).toBe('push')
+    expect(writtenRow().opens).toHaveLength(1)
+    expect(latestRun().source).toBe('push')
+  })
+
+  it('reads a row in the retired single-open shape as no open', async () => {
+    h.kvGet.mockImplementation(async (key: string) =>
+      key === OPEN_KEY ? JSON.stringify({ source: 'share', openedAt: earlier, away: true }) : null,
+    )
+
+    await post({ source: 'map', away: null })
+
+    expect(writtenRow().opens).toHaveLength(1)
+    expect(latestRun().source).toBe('map')
   })
 })
 

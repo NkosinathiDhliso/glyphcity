@@ -9,20 +9,23 @@
  * itself is declared once, in `./found-via.ts`, so the gate and the storage can
  * never disagree about what is stored.
  *
- * What is stored, and nothing else: `{ source, openedAt, away }`. No
- * coordinates, no device data, no display name (R2.4, R11.1). `away` is a
- * boolean the client computes from a fresh position it never sends, so the only
- * spatial fact that leaves the device is "was I further than the maximum
- * check-in radius".
+ * What is stored, and nothing else: runs of `{ source, openedAt, lastOpenedAt,
+ * away }`. No coordinates, no device data, no display name (R2.4, R11.1).
+ * `away` is a boolean the client computes from a fresh position it never sends,
+ * so the only spatial fact that leaves the device is "was I further than the
+ * maximum check-in radius".
  *
- * Why it needs no sweeper: the TTL is the Attribution_Window, so an
- * uncredited row expires on its own and the KV holds at most one row per
- * consumer per venue for six hours (R12.1, no new infrastructure).
+ * Why it needs no sweeper: the TTL is the Attribution_Window from the latest
+ * open, so an uncredited row expires on its own and the KV holds at most one
+ * row per consumer per venue (R12.1, no new infrastructure).
  *
- * Merge, not overwrite (R2.3): the first open inside the window is the one that
- * earns the credit, so a repeat open keeps the earliest `openedAt` and its
- * `source`. It still ORs `away` (an earlier away open is never discarded) and
- * still resets the TTL, so a second look never shortens the window.
+ * First inside the window wins (R2.3): the check-in is credited to the earliest
+ * open that is still inside the Attribution_Window, so a repeat look never moves
+ * the credit later and a consumer cannot refresh their way out of a Walk_In.
+ * Keeping only the single earliest open was not enough: a look at noon held the
+ * row while a 17:00 look reset its TTL, then aged out by a 21:00 check-in and
+ * took the 17:00 look down with it. The row keeps every open that can still be
+ * credited, folded into runs so it stays small (`mergeVenueOpen`).
  */
 
 import { ATTRIBUTION_WINDOW_HOURS, OPEN_SOURCES, type OpenSource } from '@area-code/shared/constants/attribution'
@@ -30,7 +33,7 @@ import { z } from 'zod'
 
 import { kvDel, kvGet, kvSet } from '../../shared/kv/dynamodb-kv.js'
 
-import type { VenueOpenRow } from './found-via.js'
+import { ATTRIBUTION_WINDOW_MS, AWAY_GATE_MIN_MS, type VenueOpenRow, type VenueOpenRun } from './found-via.js'
 
 /**
  * TTL of the row, in seconds. The same Attribution_Window the Away_Gate uses, so
@@ -44,14 +47,30 @@ export function venueOpenKey(userId: string, nodeId: string): string {
 }
 
 /**
+ * Most runs one row holds. Opens from the same source fold into one run, and
+ * runs older than the window are dropped on every write, so a real night out
+ * stays far below this. Past it the newest open is dropped, never an older one:
+ * dropping an older open could hand the credit to a later source, dropping the
+ * newest can only under-claim.
+ */
+export const VENUE_OPEN_MAX_RUNS = 20
+
+/**
  * The row as it comes back off the KV: untyped JSON until proven otherwise. A
  * row that does not match is treated as no row at all, which resolves to
  * `walk_in` — the honest direction.
  */
 const venueOpenRowSchema = z.object({
-  source: z.enum(OPEN_SOURCES),
-  openedAt: z.string().datetime(),
-  away: z.boolean().nullable(),
+  opens: z
+    .array(
+      z.object({
+        source: z.enum(OPEN_SOURCES),
+        openedAt: z.string().datetime(),
+        lastOpenedAt: z.string().datetime(),
+        away: z.boolean().nullable(),
+      }),
+    )
+    .max(VENUE_OPEN_MAX_RUNS),
 })
 
 /** What the endpoint accepts and the service turns into a row. */
@@ -60,30 +79,51 @@ export interface VenueOpenInput {
   away: boolean | null
 }
 
+/** One open as the merge sees it: the endpoint input, stamped with its instant. */
+export interface VenueOpenInputAt extends VenueOpenInput {
+  openedAt: string
+}
+
 // ─── Merge (pure) ───────────────────────────────────────────────────────────
 
 /**
  * Fold a new open into the row already held for this consumer and venue.
  *
- * Earliest wins: the returned `openedAt` and `source` are the earlier open's,
- * so the time arm of the Away_Gate measures from the first look and a consumer
- * cannot refresh their way out of a Walk_In. `away` is a three-valued OR, so a
- * single away open survives any number of at-the-venue opens, and the result
- * does not depend on the order the opens arrived in:
+ * 1. Drop every run whose latest open is older than the window measured back
+ *    from this open. Any later check-in is later still, so those runs can never
+ *    be credited again.
+ * 2. A full row (`VENUE_OPEN_MAX_RUNS`) drops the incoming open.
+ * 3. Extend the latest run when this open has the same source and comes less
+ *    than the Away_Gate time arm after it. `away` is a three-valued OR, so an
+ *    away open is never discarded: any `true` → `true`; else any `false` →
+ *    `false`; else `null` (unknown).
+ * 4. Otherwise start a new run.
  *
- *   any `true` → `true`; else any `false` → `false`; else `null` (unknown).
+ * The incoming open is stamped by the server, so it is the newest. An instant
+ * earlier than the latest run (clock skew between invocations) is moved up to
+ * that run's end: later, never earlier, so skew can only under-claim.
  *
  * Pure: the caller supplies both rows and persists the result, so the whole
  * rule is testable without a database.
  */
-export function mergeVenueOpen(existing: VenueOpenRow | null, incoming: VenueOpenRow): VenueOpenRow {
-  if (!existing) return incoming
-  const earliest = Date.parse(existing.openedAt) <= Date.parse(incoming.openedAt) ? existing : incoming
-  return {
-    source: earliest.source,
-    openedAt: earliest.openedAt,
-    away: orAway(existing.away, incoming.away),
+export function mergeVenueOpen(existing: VenueOpenRow | null, incoming: VenueOpenInputAt): VenueOpenRow {
+  const incomingMs = Date.parse(incoming.openedAt)
+  const horizon = incomingMs - ATTRIBUTION_WINDOW_MS
+  const runs = (existing?.opens ?? []).filter((run) => Date.parse(run.lastOpenedAt) >= horizon)
+
+  // A full row takes nothing more, not even a run extension: once an open has
+  // been dropped, extending the run before it would skip over that open.
+  if (runs.length >= VENUE_OPEN_MAX_RUNS) return { opens: runs }
+
+  const latest = runs[runs.length - 1]
+  const atMs = latest ? Math.max(incomingMs, Date.parse(latest.lastOpenedAt)) : incomingMs
+  const at = new Date(atMs).toISOString()
+
+  if (latest && latest.source === incoming.source && atMs - Date.parse(latest.lastOpenedAt) < AWAY_GATE_MIN_MS) {
+    const extended: VenueOpenRun = { ...latest, lastOpenedAt: at, away: orAway(latest.away, incoming.away) }
+    return { opens: [...runs.slice(0, -1), extended] }
   }
+  return { opens: [...runs, { source: incoming.source, openedAt: at, lastOpenedAt: at, away: incoming.away }] }
 }
 
 function orAway(a: boolean | null, b: boolean | null): boolean | null {
@@ -138,16 +178,11 @@ export async function deleteVenueOpen(userId: string, nodeId: string): Promise<v
  * Record one Venue_Open, merging into any unexpired row (R2.3).
  *
  * Read-then-write rather than a conditional update: the only writer for a given
- * key is one consumer's own app, so there is no contention worth a transaction,
- * and the merge is idempotent in the fields that matter (earliest open, ORed
- * away) if a duplicate ever does land.
+ * key is one consumer's own app, so there is no contention worth a transaction.
+ * A duplicate landing twice folds into the same run.
  */
 export async function recordVenueOpen(userId: string, nodeId: string, input: VenueOpenInput): Promise<void> {
-  const incoming: VenueOpenRow = {
-    source: input.source,
-    openedAt: new Date().toISOString(),
-    away: input.away,
-  }
+  const incoming: VenueOpenInputAt = { ...input, openedAt: new Date().toISOString() }
   const existing = await readVenueOpen(userId, nodeId)
   await writeVenueOpen(userId, nodeId, mergeVenueOpen(existing, incoming))
 }

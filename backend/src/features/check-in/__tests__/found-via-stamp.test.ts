@@ -185,11 +185,8 @@ beforeEach(() => {
 
 /** Put a Venue_Open row in the KV, opened `minutesAgo` before now. */
 function withOpenRow(opts: { minutesAgo: number; source?: string; away?: boolean | null }) {
-  const row = {
-    source: opts.source ?? 'map',
-    openedAt: new Date(Date.now() - opts.minutesAgo * MINUTE_MS).toISOString(),
-    away: opts.away ?? null,
-  }
+  const openedAt = new Date(Date.now() - opts.minutesAgo * MINUTE_MS).toISOString()
+  const row = { opens: [{ source: opts.source ?? 'map', openedAt, lastOpenedAt: openedAt, away: opts.away ?? null }] }
   h.kvGet.mockImplementation(async (key: string) => (key === OPEN_KEY ? JSON.stringify(row) : null))
   return row
 }

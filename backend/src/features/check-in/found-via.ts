@@ -11,21 +11,19 @@
  * read from the KV and the check-in instant (`capturedAt` for an offline replay,
  * else now), so the whole rule is testable without a database.
  *
- * The rule, in the order it is applied:
+ * The rule: the first open inside the Attribution_Window before the check-in
+ * earns the credit, and only if it clears the Away_Gate.
  *
- * 1. No row → `walk_in`. A QR scan at the till with no earlier open is a
- *    Walk_In by construction.
- * 2. Unreadable row or instant, or an `openedAt` after the check-in → `walk_in`.
- *    We cannot verify the gate, so we do not claim the credit.
- * 3. Row older than the Attribution_Window → `walk_in`. The KV TTL normally
- *    removes the row first; this check is the defensive twin of that TTL, and it
- *    is what catches an offline replay whose row expired while the phone was
- *    dark.
- * 4. `away === true` → the row's source. The consumer was outside the check-in
- *    radius when they looked.
- * 5. Age at least `AWAY_GATE_MIN_MINUTES` → the row's source. `away === null`
- *    (position unknown) relies on this time arm alone.
- * 6. Otherwise → `walk_in`. Someone who opened the app in the room minutes
+ * 1. No row, or no open inside the window → `walk_in`. A QR scan at the till
+ *    with no earlier open is a Walk_In by construction, and a morning look that
+ *    aged out cannot hide a later one that did not.
+ * 2. Any unreadable or out-of-order run, or an unreadable instant → `walk_in`.
+ *    We cannot tell which open came first, so we do not claim the credit.
+ * 3. The earliest in-window open is at least `AWAY_GATE_MIN_MINUTES` old → its
+ *    source. `away === null` (position unknown) relies on this time arm alone.
+ * 4. Any in-window open was made away from the venue → the earliest one's
+ *    source. The consumer was outside the check-in radius when they looked.
+ * 5. Otherwise → `walk_in`. Someone who opened the app in the room minutes
  *    before checking in is not demand we created.
  *
  * Every branch that cannot be verified resolves to `walk_in`: the gate errs
@@ -48,49 +46,86 @@ const WALK_IN: FoundVia = 'walk_in'
 
 const MINUTE_MS = 60_000
 
-/** Maximum age of a Venue_Open row that can still be credited. */
-const ATTRIBUTION_WINDOW_MS = ATTRIBUTION_WINDOW_HOURS * 60 * MINUTE_MS
+/** Maximum age of an open that can still be credited. */
+export const ATTRIBUTION_WINDOW_MS = ATTRIBUTION_WINDOW_HOURS * 60 * MINUTE_MS
 
 /** Away_Gate time arm, in milliseconds. */
-const AWAY_GATE_MIN_MS = AWAY_GATE_MIN_MINUTES * MINUTE_MS
+export const AWAY_GATE_MIN_MS = AWAY_GATE_MIN_MINUTES * MINUTE_MS
 
 /**
- * The `open:{userId}:{nodeId}` KV row, as stored by the Venue_Open service.
- * No coordinates, no device data, no display name (R11.1): `away` is the only
- * spatial fact and it is a boolean.
+ * One run of opens: consecutive opens from the same source, each less than the
+ * Away_Gate time arm after the one before (see `mergeVenueOpen`). A single open
+ * is a run whose `openedAt` equals its `lastOpenedAt`.
+ *
+ * Why a run is enough: when a run's first open has aged out of the window but
+ * its last has not, some member sits within one gap of the window's start, so
+ * the earliest in-window open of that run is older than the window minus the
+ * time arm. That is past the time arm itself (5h40 against 20 minutes), so the
+ * run is credited exactly as the full list of opens would be.
+ */
+export interface VenueOpenRun {
+  /** Where every open in this run came from. */
+  source: OpenSource
+  /** ISO instant of the run's first open. */
+  openedAt: string
+  /** ISO instant of the run's latest open. */
+  lastOpenedAt: string
+  /** Was the consumer outside the check-in radius on any open of the run? */
+  away: boolean | null
+}
+
+/**
+ * The `open:{userId}:{nodeId}` KV row, as stored by the Venue_Open service:
+ * runs in time order, oldest first, none overlapping. No coordinates, no device
+ * data, no display name (R11.1): `away` is the only spatial fact and it is a
+ * boolean.
  */
 export interface VenueOpenRow {
-  /** Where the earliest open inside the window came from. */
-  source: OpenSource
-  /** ISO instant of the earliest open inside the window. */
-  openedAt: string
-  /** Was the consumer outside the check-in radius when they opened? */
-  away: boolean | null
+  opens: VenueOpenRun[]
 }
 
 /**
  * Resolve the `foundVia` for one check-in.
  *
- * @param open The Venue_Open row for this consumer and venue, or `null` when
+ * @param row The Venue_Open row for this consumer and venue, or `null` when
  *   none exists (absent or already expired by TTL).
  * @param checkInInstantIso The instant the check-in happened: `capturedAt` for
  *   an offline replay, otherwise now.
- * @returns The row's `source` when the Away_Gate passes inside the
- *   Attribution_Window, otherwise `walk_in`.
+ * @returns The source of the earliest open inside the Attribution_Window when
+ *   the Away_Gate passes, otherwise `walk_in`.
  */
-export function resolveFoundVia(open: VenueOpenRow | null, checkInInstantIso: string): FoundVia {
-  if (!open || !isOpenSource(open.source)) return WALK_IN
-
-  const openedAt = epochMs(open.openedAt)
+export function resolveFoundVia(row: VenueOpenRow | null, checkInInstantIso: string): FoundVia {
   const checkInAt = epochMs(checkInInstantIso)
-  if (openedAt === null || checkInAt === null) return WALK_IN
+  if (!row || checkInAt === null) return WALK_IN
 
-  const age = checkInAt - openedAt
-  // Negative age means a clock skew or a row from the future; both unverifiable.
-  if (age < 0 || age > ATTRIBUTION_WINDOW_MS) return WALK_IN
+  const runs: Array<{ source: OpenSource; first: number; last: number; away: boolean | null }> = []
+  for (const run of row.opens) {
+    const first = epochMs(run.openedAt)
+    const last = epochMs(run.lastOpenedAt)
+    if (!isOpenSource(run.source) || first === null || last === null || last < first) return WALK_IN
+    // Runs are stored oldest first and never overlap. A row that breaks that
+    // cannot say which open came first.
+    const previous = runs[runs.length - 1]
+    if (previous && first < previous.last) return WALK_IN
+    runs.push({ source: run.source, first, last, away: run.away })
+  }
 
-  if (open.away === true) return open.source
-  if (age >= AWAY_GATE_MIN_MS) return open.source
+  const windowStart = checkInAt - ATTRIBUTION_WINDOW_MS
+  // A run is live when one of its opens lies inside [windowStart, checkInAt].
+  // An open after the check-in (clock skew, or a replay judged at its capture)
+  // is never creditable.
+  const live = runs.filter((run) => run.first <= checkInAt && run.last >= windowStart)
+  const earliest = live[0]
+  if (!earliest) return WALK_IN
+
+  // First open aged out, a later one in the same run did not: that one is older
+  // than the window minus the time arm, so the time arm passes (see VenueOpenRun).
+  if (earliest.first < windowStart) return earliest.source
+  if (checkInAt - earliest.first >= AWAY_GATE_MIN_MS) return earliest.source
+
+  // A run that runs past the check-in may carry an away flag from an open after
+  // it, so only a run that ended by the check-in can prove the consumer was away.
+  if (live.some((run) => run.away === true && run.last <= checkInAt)) return earliest.source
   return WALK_IN
 }
 
@@ -102,7 +137,7 @@ function epochMs(iso: string): number | null {
 
 /**
  * A KV row is untyped JSON at read time, so a source that is not one of the
- * accepted Open_Sources is treated as no row at all rather than trusted.
+ * accepted Open_Sources makes the whole row unverifiable rather than trusted.
  * `walk_in` is never a source, only an outcome, so it fails this check too.
  */
 function isOpenSource(value: string): value is OpenSource {

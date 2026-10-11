@@ -756,7 +756,11 @@ async function seedFixture(nowIso: string): Promise<void> {
   const { startOfSastDayIso, sastDateString } = await import('../../../shared/time/sast.js')
   const { DEFAULT_SCHEDULE_ID, upsertSchedule } = await import('../../music/schedule-repository.js')
   const { putGoing } = await import('../../nodes/going-repository.js')
-  const { venueOpenKey: openKey, ATTRIBUTION_WINDOW_SECONDS } = await import('../../check-in/venue-open.js')
+  const {
+    venueOpenKey: openKey,
+    mergeVenueOpen,
+    ATTRIBUTION_WINDOW_SECONDS,
+  } = await import('../../check-in/venue-open.js')
 
   const anchorMs = Date.parse(startOfSastDayIso(nowIso))
   const createdAt = new Date(anchorMs - 21 * DAY_MS).toISOString()
@@ -889,7 +893,7 @@ async function seedFixture(nowIso: string): Promise<void> {
     h.seed(TableNames.appData, {
       pk: `KV#${openKey(open.userId, open.nodeId)}`,
       sk: 'VALUE',
-      value: JSON.stringify({ source: open.source, openedAt: open.openedAt, away: open.away }),
+      value: JSON.stringify(mergeVenueOpen(null, open)),
       ttl: Math.floor(Date.parse(nowIso) / 1000) + ATTRIBUTION_WINDOW_SECONDS,
       updatedAt: nowIso,
     })
@@ -993,7 +997,7 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
 
     const openRow = h.kvRow(venueOpenKey(T01.userId, KUDU.nodeId))
     expect(openRow).toBeDefined()
-    expect(JSON.parse(String(openRow!['value']))).toMatchObject({ source: 'share', away: true })
+    expect(JSON.parse(String(openRow!['value']))).toMatchObject({ opens: [{ source: 'share', away: true }] })
   })
 
   // ── Act 2: Found_You and Walk_In ────────────────────────────────────────────

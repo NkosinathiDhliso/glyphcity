@@ -31,7 +31,7 @@
 import { getTier } from '@area-code/shared/constants/tier-levels'
 import { PutCommand } from '@aws-sdk/lib-dynamodb'
 
-import { venueOpenKey, ATTRIBUTION_WINDOW_SECONDS } from '../features/check-in/venue-open.js'
+import { venueOpenKey, mergeVenueOpen, ATTRIBUTION_WINDOW_SECONDS } from '../features/check-in/venue-open.js'
 import { DEFAULT_SCHEDULE_ID, upsertSchedule } from '../features/music/schedule-repository.js'
 import { invalidateCityPayload } from '../features/nodes/cache.js'
 import { putGoing } from '../features/nodes/going-repository.js'
@@ -270,7 +270,7 @@ async function seedVenueOpens(nowIso: string): Promise<void> {
     await put(TableNames.appData, {
       pk: `KV#${venueOpenKey(open.userId, open.nodeId)}`,
       sk: 'VALUE',
-      value: JSON.stringify({ source: open.source, openedAt: open.openedAt, away: open.away }),
+      value: JSON.stringify(mergeVenueOpen(null, open)),
       ttl: Math.floor(Date.now() / 1000) + ATTRIBUTION_WINDOW_SECONDS,
       updatedAt: nowIso,
     })

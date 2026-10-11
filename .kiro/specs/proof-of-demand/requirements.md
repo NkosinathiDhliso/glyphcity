@@ -147,12 +147,17 @@ venue before they walked in, without building a browsing history.
    when one is available, as `distance > AWAY_DISTANCE_METRES` (default 500,
    the maximum check-in radius, so the gate errs toward `walk_in`); the
    position itself SHALL NOT be sent.
-3. THE service SHALL store `open:{userId}:{nodeId}` in the app-data KV with
-   `{ source, openedAt, away }`. WHEN an unexpired row exists, THE service
-   SHALL merge: keep the earliest `openedAt` and its `source`, set
-   `away = existing.away || incoming.away`, and reset the TTL to the
-   Attribution_Window from the latest open. A repeat open never shortens the
-   window or discards an earlier away open.
+3. THE service SHALL store `open:{userId}:{nodeId}` in the app-data KV as
+   runs of `{ source, openedAt, lastOpenedAt, away }`, oldest first. WHEN an
+   unexpired row exists, THE service SHALL merge: drop runs older than the
+   Attribution_Window, fold a same-source open less than
+   `AWAY_GATE_MIN_MINUTES` after the latest run into that run (ORing `away`),
+   otherwise append a new run, and reset the TTL to the Attribution_Window
+   from the latest open. The check-in is credited to the earliest open still
+   inside the window, so a look that aged out never hides a later one. A
+   repeat open never shortens the window or discards an away open. A row is
+   capped at `VENUE_OPEN_MAX_RUNS` runs; past it new opens are dropped, which
+   can only under-claim.
 4. THE row SHALL contain no coordinates, no device data and no display name.
 5. THE endpoint SHALL require consumer auth and SHALL be rate limited with
    the existing sliding window.
