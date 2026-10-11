@@ -3,7 +3,7 @@
  *
  * The Lapsed_Business_Banner renders on the staff home when the bootstrap read
  * reports `businessState: 'lapsed'`, and NOT when it is active. Critically, the
- * validator stays mounted in the lapsed case — the banner never blocks scanning
+ * validator stays mounted in the lapsed case - the banner never blocks scanning
  * of already-earned codes (R3.2).
  *
  * **Validates: Requirements 3.1**
@@ -39,7 +39,7 @@ import { StaffHome } from '../StaffHome'
 
 const BANNER_TEXT = 'no longer active'
 
-describe('StaffHome — Lapsed_Business_Banner (R3.1)', () => {
+describe('StaffHome - Lapsed_Business_Banner (R3.1)', () => {
   beforeEach(() => {
     mockApiGet.mockReset()
   })

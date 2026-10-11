@@ -4,7 +4,7 @@ import { AlertCircle } from 'lucide-react'
 // Staff-portal honest lapsed-business state (cross-portal-lifecycle-alignment
 // R3.1). Shown when the staff member's business is inactive or resolved to
 // starter after a non-payment demotion. Names the state and what still works
-// (validating already-earned codes). No billing amounts, no blame — the banner
+// (validating already-earned codes). No billing amounts, no blame - the banner
 // never blocks the validator, because earned codes still redeem (R3.2).
 export function LapsedBusinessBanner() {
   return (

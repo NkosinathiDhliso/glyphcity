@@ -8,7 +8,7 @@ import { RedemptionCodeCard } from '../RedemptionCodeCard'
 /**
  * Consumer wallet honesty (cross-portal-lifecycle-alignment R4). When a code's
  * venue is no longer active on the map, the card shows an honest secondary line
- * — the venue left, the code stays valid, staff can still scan — and never the
+ * - the venue left, the code stays valid, staff can still scan - and never the
  * word "expired" while the code is still valid (R4.3). When the venue is active
  * (or the flag is absent, older payloads), the normal hint shows instead.
  */
@@ -20,7 +20,7 @@ const BASE = {
   codeExpiresAt: '2026-08-01T12:00:00.000Z',
 }
 
-describe('RedemptionCodeCard — lapsed-venue line (R4.1, R4.3)', () => {
+describe('RedemptionCodeCard - lapsed-venue line (R4.1, R4.3)', () => {
   it('shows the honest lapsed line when venueActive is false', () => {
     const { container } = render(<RedemptionCodeCard {...BASE} venueActive={false} hint="Show this to staff." />)
     const text = container.textContent ?? ''

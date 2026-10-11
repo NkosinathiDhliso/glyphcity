@@ -71,7 +71,7 @@ describe('ParkedCheckinsSection (R5.6)', () => {
   it('retry on an aged-out entry discards it with an honest message', () => {
     const showError = vi.fn()
     useErrorStore.setState({ showError } as never)
-    // Captured 20 minutes ago — past the 15-minute Replay_Window.
+    // Captured 20 minutes ago - past the 15-minute Replay_Window.
     const old = new Date(Date.now() - 20 * 60 * 1000).toISOString()
     useCheckinOutboxStore.setState({ entries: [parkedEntry('1', old)] })
     const { getByText } = render(<ParkedCheckinsSection />)

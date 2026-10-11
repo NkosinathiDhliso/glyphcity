@@ -11,11 +11,11 @@
  * zero, never a fabricated number.
  *
  * Covers the four states from the design testing strategy:
- *   1. normal   — metrics plus copy sentences render, headline counts shown.
- *   2. deltas   — signed week-over-week chips render from the deltas field.
- *   3. quiet    — zero visits: honest zero headline, quiet-week copy rendered,
+ *   1. normal   - metrics plus copy sentences render, headline counts shown.
+ *   2. deltas   - signed week-over-week chips render from the deltas field.
+ *   3. quiet    - zero visits: honest zero headline, quiet-week copy rendered,
  *                 no fabricated numbers.
- *   4. close    — starter upgrade close vs paid full-report close, both taken
+ *   4. close    - starter upgrade close vs paid full-report close, both taken
  *                 straight from the API copy array (last line).
  */
 // @vitest-environment jsdom

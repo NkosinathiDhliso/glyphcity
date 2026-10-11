@@ -17,7 +17,7 @@ const STORAGE_KEY = 'areacode.checkinOutbox.v1'
 
 // localStorage-backed persistence for the outbox. Guarded for non-browser
 // environments (tests, SSR). A corrupt payload resets to empty rather than
-// throwing — a lost queue is acceptable, a crashed profile is not.
+// throwing - a lost queue is acceptable, a crashed profile is not.
 function readStorage(): OutboxEntry[] {
   if (typeof window === 'undefined' || !window.localStorage) return []
   try {

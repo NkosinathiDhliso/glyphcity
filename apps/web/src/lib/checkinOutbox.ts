@@ -1,10 +1,10 @@
 /**
- * Check-in outbox — pure logic core (cross-portal-lifecycle-alignment R5).
+ * Check-in outbox - pure logic core (cross-portal-lifecycle-alignment R5).
  *
  * A failed GPS check-in (network error or 5xx) is durable: it is queued in
  * localStorage and replayed oldest-first with bounded exponential backoff until
  * it lands, is rejected for good (4xx), or ages out of the Replay_Window. This
- * module is pure — no React, no I/O beyond the injected storage adapter — so the
+ * module is pure - no React, no I/O beyond the injected storage adapter - so the
  * enqueue/retry/park/discard state machine can be property-tested (Property 2).
  *
  * Honest-presence: the backend starts presence at delivery time and rejects a
@@ -59,7 +59,7 @@ export interface OutboxStorage {
 // Only transient failures are queued: a network error / timeout surfaces as
 // statusCode 0 from the shared API client, and 5xx is a server fault. 4xx
 // (proximity, rate limit, validation) is the user's answer and surfaces
-// immediately — never queued (R5.1).
+// immediately - never queued (R5.1).
 export function shouldEnqueue(statusCode: number): boolean {
   return statusCode === 0 || statusCode >= 500
 }
@@ -107,11 +107,11 @@ export function createEntry(attempt: CheckinAttempt, capturedAt: string, nowMs: 
 export type AttemptResult = { kind: 'success' } | { kind: 'transient' } | { kind: 'permanent' }
 
 // Apply a network attempt's result to a queued entry. Returns the next entry, or
-// null when the entry should be REMOVED — success, or a permanent 4xx (R5.5). A
+// null when the entry should be REMOVED - success, or a permanent 4xx (R5.5). A
 // transient failure increments retryCount and reschedules, or parks once the
 // retry budget is spent (retryCount never exceeds MAX_RETRIES).
 export function applyResult(entry: OutboxEntry, result: AttemptResult, nowMs: number): OutboxEntry | null {
-  // A parked entry is terminal for automatic processing — the pump never
+  // A parked entry is terminal for automatic processing - the pump never
   // attempts it, and only reEnqueue revives it. Guard so retryCount can never
   // exceed MAX_RETRIES under any call sequence.
   if (isParked(entry)) return entry

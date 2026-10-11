@@ -1,5 +1,5 @@
 /**
- * Portal Hardening item D — admin detail drill-down surfacing tests.
+ * Portal Hardening item D - admin detail drill-down surfacing tests.
  *
  * Task 4.3 surfacing tests, frontend half. Proves that each surfaced detail
  * view issues its read call(s) against the previously-unsurfaced admin

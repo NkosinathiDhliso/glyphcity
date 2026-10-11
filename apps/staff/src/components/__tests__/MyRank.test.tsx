@@ -1,5 +1,5 @@
 /**
- * Staff polish (item E) — leaderboard renders rank without emoji.
+ * Staff polish (item E) - leaderboard renders rank without emoji.
  *
  * `MyRank` must convey rank using text (`#{n}`) and the current-user accent
  * only, with no emoji code points in system UI (code-style.md).
@@ -51,7 +51,7 @@ const EMOJI_RE = /\p{Extended_Pictographic}/u
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('MyRank — no emoji in rendered leaderboard (R5.2)', () => {
+describe('MyRank - no emoji in rendered leaderboard (R5.2)', () => {
   beforeEach(() => {
     mockApiGet.mockReset()
   })

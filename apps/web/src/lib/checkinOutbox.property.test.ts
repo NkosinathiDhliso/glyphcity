@@ -24,7 +24,7 @@ import {
  *
  *   1. An entry is in exactly one of {queued, parked, gone} at every step.
  *   2. retryCount never exceeds MAX_RETRIES (3).
- *   3. An entry older than the Replay_Window is never "due" — it can never
+ *   3. An entry older than the Replay_Window is never "due" - it can never
  *      generate a network call.
  *   4. A success or a permanent (4xx) result always removes the entry.
  *   5. Only network (statusCode 0) and 5xx are enqueue-worthy; 4xx never is.
@@ -63,7 +63,7 @@ describe('Feature: cross-portal-lifecycle-alignment, Property 2: Outbox state ma
         let entry: OutboxEntry | null = createEntry(attempt, new Date(now).toISOString(), now, 'id-1')
 
         const check = (e: OutboxEntry | null) => {
-          // (1) exactly one state — classify is total and returns one label.
+          // (1) exactly one state - classify is total and returns one label.
           expect(['queued', 'parked', 'gone']).toContain(classify(e))
           if (e) {
             // (2) retry cap.

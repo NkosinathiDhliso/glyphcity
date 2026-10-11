@@ -83,7 +83,7 @@ afterEach(() => {
 
 // ─── Counts ────────────────────────────────────────────────────────────────
 
-describe('BoostScoreboardCard — counts always render (R7.1, R7.4)', () => {
+describe('BoostScoreboardCard - counts always render (R7.1, R7.4)', () => {
   it('reads the scoreboard for the purchase it was given', async () => {
     mocks.apiGet.mockResolvedValue(scoreboard())
 
@@ -141,7 +141,7 @@ describe('BoostScoreboardCard — counts always render (R7.1, R7.4)', () => {
 
 // ─── The comparison ────────────────────────────────────────────────────────
 
-describe('BoostScoreboardCard — the comparison is conditional (R7.3, R7.5)', () => {
+describe('BoostScoreboardCard - the comparison is conditional (R7.3, R7.5)', () => {
   it('shows the signed difference when the samples support it', async () => {
     mocks.apiGet.mockResolvedValue(scoreboard())
 
@@ -189,7 +189,7 @@ describe('BoostScoreboardCard — the comparison is conditional (R7.3, R7.5)', (
 
 // ─── The zero state ────────────────────────────────────────────────────────
 
-describe('BoostScoreboardCard — an empty window is neither a failure nor a claim (R7.5)', () => {
+describe('BoostScoreboardCard - an empty window is neither a failure nor a claim (R7.5)', () => {
   const empty = scoreboard({
     window: { ...scoreboard().window, checkIns: 0, visitors: 0, foundYou: 0, walkIns: 0 },
     comparable: false,
@@ -236,7 +236,7 @@ describe('BoostScoreboardCard — an empty window is neither a failure nor a cla
 
 // ─── Loading and failure ───────────────────────────────────────────────────
 
-describe('BoostScoreboardCard — its own loading and error states (R7.4)', () => {
+describe('BoostScoreboardCard - its own loading and error states (R7.4)', () => {
   it('shows a loading state while the read is in flight, and no numbers', async () => {
     mocks.apiGet.mockImplementation(() => new Promise(() => {}))
 

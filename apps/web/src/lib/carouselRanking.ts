@@ -165,7 +165,7 @@ export function deriveHasLiveGets(
  *      Higher wins. When the consumer has no archetypeId and no friends, this
  *      is 0 for all venues → gracefully degrades to aliveness-first (R7.1).
  *   2. **Aliveness** (pulseScore + checkInCount). Higher wins.
- *   3. **Boost then business tier** — the paid lever among equally-alive venues,
+ *   3. **Boost then business tier** - the paid lever among equally-alive venues,
  *      ordered `(boostActive desc, tierWeight desc)`:
  *        3a. **Boost active** (node.boostActive, billing R5.3). A venue inside
  *            its Boost_Window sorts ahead of a non-boosted one. True > false.

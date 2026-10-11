@@ -11,9 +11,9 @@
  * there are no prior digests.
  *
  * Covers:
- *   1. list    — renders a reverse-chronological list of prior digests.
- *   2. paging  — "Load more" passes the cursor and appends the next page.
- *   3. empty   — honest empty state when the history has no items.
+ *   1. list    - renders a reverse-chronological list of prior digests.
+ *   2. paging  - "Load more" passes the cursor and appends the next page.
+ *   3. empty   - honest empty state when the history has no items.
  */
 // @vitest-environment jsdom
 import { APP_NAME } from '@area-code/shared/constants/brand'

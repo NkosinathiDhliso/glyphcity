@@ -1,5 +1,5 @@
 /**
- * Staff polish (item E) — manual redemption-code input.
+ * Staff polish (item E) - manual redemption-code input.
  *
  * The validator's manual input must accept the canonical redemption code:
  * 8 characters over `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (uppercase A-Z minus
@@ -37,7 +37,7 @@ vi.mock('../../../shared/components/primitives', () => ({
 
 const CANONICAL_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
-/** 1–8 char strings over the canonical redemption-code alphabet. */
+/** 1-8 char strings over the canonical redemption-code alphabet. */
 const canonicalCodeArb = fc.string({
   minLength: 1,
   maxLength: 8,
@@ -53,7 +53,7 @@ function renderInput(): HTMLInputElement {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('Staff validator manual input — canonical code entry (R5.3)', () => {
+describe('Staff validator manual input - canonical code entry (R5.3)', () => {
   afterEach(() => {
     cleanup()
   })
