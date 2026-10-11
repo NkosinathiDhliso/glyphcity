@@ -1,7 +1,7 @@
 /**
  * Consumer app words and glyphs after the rebrand.
  *
- * Spec: .kiro/specs/glyphcity-rebrand, Requirements 2.3, 2.4, 3.1, 3.2, 3.4,
+ * Spec: .kiro/completed/glyphcity-rebrand, Requirements 2.3, 2.4, 3.1, 3.2, 3.4,
  * 3.5, 5.3, task 16.2 (R12.4).
  *
  * What these tests pin:

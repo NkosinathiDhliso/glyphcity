@@ -1,7 +1,7 @@
 /**
  * Tonight and Going — the anticipation and intent magnets on the consumer map.
  *
- * Spec: .kiro/specs/proof-of-demand (Requirements 8.5 to 8.9, 9.2 to 9.6),
+ * Spec: .kiro/completed/proof-of-demand (Requirements 8.5 to 8.9, 9.2 to 9.6),
  * task 12.3 (R13.3).
  *
  * Implementation under test:

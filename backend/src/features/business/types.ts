@@ -98,7 +98,7 @@ export type BoostDuration = keyof typeof BOOST_PRICING
 
 // ─── Booster Pricing Floor & Audit ──────────────────────────────────────────
 //
-// See `.kiro/specs/booster-pricing-floor-and-audit/`.
+// See `.kiro/completed/booster-pricing-floor-and-audit/`.
 //
 // `BOOST_PRICING` (above) remains the price source-of-truth (R9.2). The
 // `BoostFloor_Row` introduced here only gates the lower bound and is seeded
@@ -270,7 +270,7 @@ export type FloorChangeAuditView = z.infer<typeof floorChangeAuditViewSchema>
 
 // ─── Subscription payments (billing-revenue-integrity) ──────────────────────
 //
-// See `.kiro/specs/billing-revenue-integrity/`. Mirrors the BoosterPurchase
+// See `.kiro/completed/billing-revenue-integrity/`. Mirrors the BoosterPurchase
 // audit choreography: one durable row per successful subscription payment
 // (7-year financial retention, no `ttl`), an idempotency marker keyed on the
 // Yoco checkout id, and an API view that keeps serialize(deserialize(row))

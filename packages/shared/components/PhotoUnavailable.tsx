@@ -6,7 +6,7 @@ import { useEffect } from 'react'
  * present but whose serving URL could not be resolved (`mediaUrl` returned
  * null because `VITE_CDN_URL` is unset). This is a designed visible state, not
  * a silent skip: R5.3 requires photo surfaces to never show
- * success-without-preview. See `.kiro/specs/deployment-parity` and
+ * success-without-preview. See `.kiro/completed/deployment-parity` and
  * `no-fallbacks-no-legacy.md`.
  *
  * Render this only when a key exists but the URL is null. A genuinely absent

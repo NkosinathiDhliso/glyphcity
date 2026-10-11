@@ -14,7 +14,7 @@
  *     so a specific screen can render its own inline state if it chooses to.
  *
  * The wording matches the approved UX contract in
- * `.kiro/specs/ux-completeness-re-audit/requirements.md` (Requirement 7 & 8).
+ * `.kiro/completed/ux-completeness-re-audit/requirements.md` (Requirement 7 & 8).
  */
 export const ERROR_COPY = {
   /** HTTP 500 / 503 - server-side failure the user did nothing to cause. */

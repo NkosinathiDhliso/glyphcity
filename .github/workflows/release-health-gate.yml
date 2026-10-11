@@ -4,7 +4,7 @@ name: Release Health Gate
 # Sleeps 30 minutes, then evaluates CloudWatch signals for the post-deploy
 # window and rolls back the API Lambda alias if the release looks unhealthy.
 #
-# Signals (see .kiro/specs/release-quality-and-ops-hygiene, R2):
+# Signals (see .kiro/completed/release-quality-and-ops-hygiene, R2):
 #   - RUM_Signal: for each of the four CloudWatch RUM app monitors (web,
 #     business, staff, admin) the frontend JS error rate (JsErrorCount /
 #     SessionCount) for the post-deploy window vs the trailing 7-day baseline.
@@ -17,7 +17,7 @@ name: Release Health Gate
 # (property-tested; see the spec's Property 2). Missing or unreadable data is a
 # distinct, loud job failure, never a silent pass (R2.4).
 #
-# See .kiro/specs/churn-defences/ Requirement 5 for the original rationale and
+# See .kiro/completed/churn-defences/ Requirement 5 for the original rationale and
 # §1.5 of docs/CHURN_DEFENSES.md (Starbucks app outages and crashes).
 
 on:

@@ -25,6 +25,14 @@ are alive and full of their kind of crowd, not toward whatever is closest. See
 `discovery-dna-vibe-over-convenience.md` and `honest-presence.md` for the
 binding rules behind that promise.
 
+## North star
+
+GlyphCity is the live map of which rooms are actually busy. This is the only
+north star. A feature earns its place by doing one of two things: making the
+map more truthful about who is in the room, or letting a venue pay for
+arrivals it can verify. A feature that does neither is a gimmick and is not
+built, whatever else it promises.
+
 ## Platform focus
 
 - Consumer web + mobile: mobile-first, 375px baseline, real touch targets.

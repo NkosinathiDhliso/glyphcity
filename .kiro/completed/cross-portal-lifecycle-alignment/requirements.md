@@ -54,7 +54,7 @@ path is covered), and any new discovery surface.
 ## Glossary
 
 - **Tier_Resolver**, **Paid_Until**, **Grace_Window**, **Lapse_Sweep**: as
-  defined in `.kiro/specs/billing-revenue-integrity/requirements.md`.
+  defined in `.kiro/completed/billing-revenue-integrity/requirements.md`.
 - **Comp_Window**: an admin-granted entitlement window. Implemented as the
   admin writing Paid_Until directly (with a mandatory reason, audit-logged),
   so a comp is just a paid window whose payment is Area Code goodwill. No new

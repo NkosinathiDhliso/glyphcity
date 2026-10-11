@@ -138,7 +138,7 @@ Each phase ships independently. None introduce always-on infra. None violate the
       8-char token via `POST /v1/staff/first-get/:rewardId/confirm`, no phone, no
       preview. `backend/src/features/staff/__tests__/staff-surface.test.ts` pins the
       phone-preview route ABSENT. See `.kiro/steering/no-sms-no-phone-auth.md` and
-      `.kiro/specs/cross-portal-lifecycle-alignment` R3.4.
+      `.kiro/completed/cross-portal-lifecycle-alignment` R3.4.
 
 ### Task 19: Conversion on signup
 
@@ -149,7 +149,7 @@ Each phase ships independently. None introduce always-on infra. None violate the
       email/password and Google OAuth (`.kiro/steering/no-sms-no-phone-auth.md`), and
       the casual-customer path is the 8-char token exchanged on first launch, not a
       phone lookup. Guest-claim conversion is keyed on the token, not a phone number.
-      See `.kiro/specs/cross-portal-lifecycle-alignment` R3.4.
+      See `.kiro/completed/cross-portal-lifecycle-alignment` R3.4.
 
 ### Task 20: Leaderboard integration
 

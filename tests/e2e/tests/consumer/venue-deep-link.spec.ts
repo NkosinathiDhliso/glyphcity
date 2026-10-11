@@ -1,7 +1,7 @@
 /**
  * Venue deep-link arrival — `/node/{slug}` and `/map?venue={slug}&src=…`
  *
- * Spec: .kiro/specs/proof-of-demand (Requirements 1.1, 1.7), task 1.7
+ * Spec: .kiro/completed/proof-of-demand (Requirements 1.1, 1.7), task 1.7
  *
  * Implementation under test:
  *   - `apps/web/src/lib/venueArrival.ts` — parses both link shapes, stashes

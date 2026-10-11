@@ -1,7 +1,7 @@
 /**
  * The owner's proof of demand — Receipt, checklist, Going, scoreboard, Tonight.
  *
- * Spec: .kiro/specs/proof-of-demand (Requirements 4, 5, 6, 7, 8, 9.4, 9.5),
+ * Spec: .kiro/completed/proof-of-demand (Requirements 4, 5, 6, 7, 8, 9.4, 9.5),
  * task 12.3 (R13.3).
  *
  * Implementation under test:

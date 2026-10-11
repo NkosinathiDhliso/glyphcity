@@ -5,7 +5,7 @@
 # Usage:
 #   ./scripts/go-live-check.ps1 -Environment prod
 #
-# Spec: .kiro/specs/go-live-readiness
+# Spec: .kiro/completed/go-live-readiness
 # PowerShell 5.1 constraints (binding): no &&/||, no ternary, TLS 1.2 set
 # before any HTTPS call, AWS CLI parsed via --output json + ConvertFrom-Json,
 # native stderr is not redirected with 2>&1.

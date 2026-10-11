@@ -37,6 +37,14 @@ are alive and full of their kind of crowd, not toward whatever is closest. See
 `discovery-dna-vibe-over-convenience.md` and `honest-presence.md` for the
 binding rules behind that promise.
 
+## North star
+
+GlyphCity is the live map of which rooms are actually busy. This is the only
+north star. A feature earns its place by doing one of two things: making the
+map more truthful about who is in the room, or letting a venue pay for
+arrivals it can verify. A feature that does neither is a gimmick and is not
+built, whatever else it promises.
+
 ## Platform focus
 
 - Consumer web + mobile: mobile-first, 375px baseline, real touch targets.
@@ -597,7 +605,7 @@ If you are about to "clean up" any of these, the right answer is **don't**. Leav
 For the full architecture and rationale, read in this order:
 
 1. `docs/CHURN_DEFENSES.md` (sections 1.4 and 1.6 in particular)
-2. `.kiro/specs/churn-defences/requirements.md` Requirement 6
+2. `.kiro/completed/churn-defences/requirements.md` Requirement 6
 3. `docs/PILOT_LAUNCH_CHECKLIST.md` §1 blocker 2
 
 ---
@@ -874,7 +882,7 @@ Always. If your ranking can ever produce the opposite, it is wrong.
   6. **Venue ID** (deterministic tiebreaker)
 
   Proximity is structurally incapable of outranking any higher signal.
-  Spec: `.kiro/specs/vibe-ranked-browse/requirements.md`
+  Spec: `.kiro/completed/vibe-ranked-browse/requirements.md`
 
 - **Constellation mode (country zoom).** Below `MIN_MARKER_ZOOM`, venues
   render as pulse-driven sky beams, not hidden markers. Beam brightness =
@@ -1030,7 +1038,7 @@ Read this before touching marker presentation, cold open, country zoom, beam
 visuals, map play interactions, or browse scope while `zoom < MIN_MARKER_ZOOM`.
 
 Supersedes the old **Globe_Zoom = hidden** rule in
-`.kiro/specs/map-discovery-experience/requirements.md` Req 12.3. Country zoom
+`.kiro/completed/map-discovery-experience/requirements.md` Req 12.3. Country zoom
 is not empty space. It is a designed discovery mode.
 
 ## The principle

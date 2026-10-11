@@ -7,6 +7,12 @@
       "runtimeArgs": ["--filter", "@area-code/web", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "areacode-site",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "C:/Users/nathi/OneDrive/Documents/Projects/areacode", "dev", "--port", "4321"],
+      "port": 4321
     }
   ]
 }

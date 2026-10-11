@@ -92,7 +92,7 @@ Always. If your ranking can ever produce the opposite, it is wrong.
   6. **Venue ID** (deterministic tiebreaker)
 
   Proximity is structurally incapable of outranking any higher signal.
-  Spec: `.kiro/specs/vibe-ranked-browse/requirements.md`
+  Spec: `.kiro/completed/vibe-ranked-browse/requirements.md`
 
 - **Constellation mode (country zoom).** Below `MIN_MARKER_ZOOM`, venues
   render as pulse-driven sky beams, not hidden markers. Beam brightness =
