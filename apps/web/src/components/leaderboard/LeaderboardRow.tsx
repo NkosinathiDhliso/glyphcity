@@ -63,7 +63,7 @@ export function LeaderboardRow({ entry, onVenueStreakTap }: LeaderboardRowProps)
         <p data-testid="leaderboard-rooms" className="text-[var(--text-primary)] text-sm font-medium">
           {t('leaderboard.rooms', { count: entry.venueCount, defaultValue: `${entry.venueCount} rooms` })}
         </p>
-        <p className="text-[var(--text-muted)] text-[11px]">
+        <p className="text-[var(--text-secondary)] text-[11px]">
           {t('leaderboard.checkIns', { count: entry.checkInCount, defaultValue: `${entry.checkInCount} check-ins` })}
         </p>
       </div>

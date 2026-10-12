@@ -74,7 +74,10 @@ export const BROAD_IAM_ALLOWLIST = new Map([
   ],
   ['websocket', 'Shared policy grants all tables; $connect identity resolution sets USERS/BUSINESSES/APP_DATA only.'],
   ['presence_expiry', 'Shared policy grants all tables; sweep sets USERS/NODES/APP_DATA/PRESENCE.'],
-  ['streak_reminder', 'Shared policy grants all tables; reminder sets USERS/CHECKINS/APP_DATA.'],
+  [
+    'tonight_known_venue_reminder',
+    'Shared policy grants all tables; reminder sets USERS/CHECKINS/APP_DATA/NODES/MUSIC_SCHEDULES/REWARDS.',
+  ],
 ])
 
 /**

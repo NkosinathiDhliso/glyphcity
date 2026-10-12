@@ -791,7 +791,7 @@ describe('13. Notifications', () => {
       method: 'PATCH',
       url: '/v1/users/me/notification-preferences',
       headers: consumerAuth(),
-      payload: { streakAtRisk: true },
+      payload: { tonightAtKnownVenue: true },
     })
     expect([200, 500]).toContain(res.statusCode)
   })

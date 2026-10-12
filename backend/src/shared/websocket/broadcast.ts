@@ -164,7 +164,7 @@ async function queryAllConnections(
   return connections
 }
 
-// Push-only Lambdas (streak-reminder, pulse-decay style) deliberately get no
+// Push-only Lambdas (tonight-known-venue-reminder, pulse-decay style) deliberately get no
 // WEBSOCKET_ENDPOINT and no connections-table/execute-api IAM; their Terraform
 // blocks document "falls back to push, by design". Skipping BEFORE the
 // connections Query keeps that designed no-op from surfacing as an

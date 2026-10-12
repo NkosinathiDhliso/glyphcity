@@ -302,7 +302,7 @@ describe('Schema validation: invalid data is always rejected', () => {
 
   it('notification prefs rejects extra fields (strict mode)', () => {
     const result = notificationPrefsSchema.safeParse({
-      streakAtRisk: true,
+      tonightAtKnownVenue: true,
       unknownPref: true,
     })
     expect(result.success).toBe(false)

@@ -17,7 +17,7 @@ import type { NotificationPreferences } from '../types'
 export const NOTIFICATION_PREFERENCE_KEYS = [
   'rewardClaimedPush',
   'rewardActivated',
-  'streakAtRisk',
+  'tonightAtKnownVenue',
   'leaderboardPrewarning',
   'followedUserCheckin',
   'tonightReminder',
@@ -34,7 +34,7 @@ export type NotificationPreferenceKey = (typeof NOTIFICATION_PREFERENCE_KEYS)[nu
  * marking Going does not turn it on, only the explicit "remind me" tap does.
  */
 export const NOTIFICATION_PREFERENCE_DEFAULTS: NotificationPreferences = {
-  streakAtRisk: false,
+  tonightAtKnownVenue: false,
   rewardActivated: false,
   rewardClaimedPush: true,
   leaderboardPrewarning: false,

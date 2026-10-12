@@ -756,24 +756,28 @@ resource "aws_iam_role_policy" "presence_expiry_websocket" {
   })
 }
 
-# Streak-at-risk reminder — arm64 Lambda on an EventBridge daily SAST-evening
-# schedule (churn-defences). Scans streak-holders and pushes the "your streak is
-# about to break" nudge to opted-in users who have not checked in today. Not in
-# VPC: it only calls public AWS endpoints (DynamoDB) and web-push/Expo over
-# HTTPS, matching presence-expiry.
-module "lambda_streak_reminder" {
+# "Tonight at a place you know" reminder: arm64 Lambda on the EventBridge
+# SAST-evening schedule the streak reminder used (north-star-alignment R3).
+# Names one venue an opted-in guest has been to that has a Tonight. Reads the
+# Tonight through the shared reader, so it also needs NODES, MUSIC_SCHEDULES and
+# REWARDS. Not in VPC: it only calls public AWS endpoints (DynamoDB) and
+# web-push/Expo over HTTPS, matching presence-expiry.
+module "lambda_tonight_known_venue_reminder" {
   source        = "../../modules/lambda"
   env           = local.env
-  function_name = "streak-reminder"
+  function_name = "tonight-known-venue-reminder"
   timeout       = 120
   memory_size   = 256
   # Dev has no VAPID keys configured, so web push is a no-op here (sendWebPush
   # returns early); the reminder still writes to the notification center.
   environment_variables = {
-    AREA_CODE_ENV  = local.env
-    USERS_TABLE    = aws_dynamodb_table.users.name
-    CHECKINS_TABLE = aws_dynamodb_table.checkins.name
-    APP_DATA_TABLE = aws_dynamodb_table.app_data.name
+    AREA_CODE_ENV         = local.env
+    USERS_TABLE           = aws_dynamodb_table.users.name
+    CHECKINS_TABLE        = aws_dynamodb_table.checkins.name
+    APP_DATA_TABLE        = aws_dynamodb_table.app_data.name
+    NODES_TABLE           = aws_dynamodb_table.nodes.name
+    MUSIC_SCHEDULES_TABLE = aws_dynamodb_table.music_schedules.name
+    REWARDS_TABLE         = aws_dynamodb_table.rewards.name
   }
 }
 
@@ -1011,14 +1015,14 @@ module "lambda_websocket" {
 
 resource "aws_iam_role_policy" "lambda_dynamodb" {
   for_each = {
-    api               = module.lambda_api.role_name
-    pulse_decay       = module.lambda_pulse_decay.role_name
-    reward_evaluator  = module.lambda_reward_evaluator.role_name
-    leaderboard_reset = module.lambda_leaderboard_reset.role_name
-    cleanup           = module.lambda_cleanup.role_name
-    websocket         = module.lambda_websocket.role_name
-    presence_expiry   = module.lambda_presence_expiry.role_name
-    streak_reminder   = module.lambda_streak_reminder.role_name
+    api                          = module.lambda_api.role_name
+    pulse_decay                  = module.lambda_pulse_decay.role_name
+    reward_evaluator             = module.lambda_reward_evaluator.role_name
+    leaderboard_reset            = module.lambda_leaderboard_reset.role_name
+    cleanup                      = module.lambda_cleanup.role_name
+    websocket                    = module.lambda_websocket.role_name
+    presence_expiry              = module.lambda_presence_expiry.role_name
+    tonight_known_venue_reminder = module.lambda_tonight_known_venue_reminder.role_name
   }
 
   name = "dynamodb-access"
@@ -1489,11 +1493,11 @@ module "eventbridge_schedules" {
       lambda_arn           = module.lambda_presence_expiry.function_arn
       lambda_function_name = module.lambda_presence_expiry.function_name
     }
-    streak-reminder = {
-      description          = "Streak-at-risk reminder daily 18:00 SAST (16:00 UTC)"
+    tonight-known-venue-reminder = {
+      description          = "Tonight at a place you know, daily 18:00 SAST (16:00 UTC)"
       schedule_expression  = "cron(0 16 * * ? *)"
-      lambda_arn           = module.lambda_streak_reminder.function_arn
-      lambda_function_name = module.lambda_streak_reminder.function_name
+      lambda_arn           = module.lambda_tonight_known_venue_reminder.function_arn
+      lambda_function_name = module.lambda_tonight_known_venue_reminder.function_name
     }
     leaderboard-reset = {
       description          = "Weekly leaderboard reset Monday 00:00 SAST (Sunday 22:00 UTC)"

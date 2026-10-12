@@ -301,7 +301,7 @@ export async function processCheckIn(userId: string, input: CheckInInput): Promi
 
   const incrementResult = await repo.incrementTotalCheckIns(userId)
   const newTier = incrementResult.tier
-  const streakValue = await repo.updateStreak(userId)
+  await repo.updateStreak(userId)
 
   // The venue's lifetime total, maintained on the node row so the owner's live
   // panel reads one number instead of scanning the venue's whole history

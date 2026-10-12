@@ -81,26 +81,29 @@ runs, block-statement predicates, tagged
         confirmed empty (R4.3)
     - _Requirements: 4.2_
 
-- [ ] 5. Tonight at a place you know (R3)
-  - [ ] 5.1 Remove `streakAtRisk` and `streak_at_risk` from every home
+- [x] 5. Tonight at a place you know (R3)
+  - [x] 5.1 Remove `streakAtRisk` and `streak_at_risk` from every home
         listed in R3.1, including the `notifications/service.ts` map and
         the four fixture files; delete `workers/streak-reminder.ts`
     - _Requirements: 3.1_
-  - [ ] 5.2 Add `tonightAtKnownVenue` preference and
+  - [x] 5.2 Add `tonightAtKnownVenue` preference and
         `tonight_at_known_venue` type; Settings label "Tonight at a place
         you know"
     - _Requirements: 3.2, 3.4_
-  - [ ] 5.3 `workers/tonight-known-venue-reminder.ts` per design; pure
+  - [x] 5.3 `workers/tonight-known-venue-reminder.ts` per design; pure
         `pickTonightVenue`; 200 check-ins, 10 venues, both range bounds
         passed to `getCheckInsByUser`
     - _Requirements: 3.2, 3.3_
-  - [ ] 5.4 Property 2 on the picker
+  - [x] 5.4 Property 2 on the picker
     - _Requirements: 3.2, 3.3_
-  - [ ] 5.5 Terraform: rename the Lambda module and schedule entry in both
+  - [x] 5.5 Terraform: rename the Lambda module and schedule entry in both
         environments, same cron; env gains `NODES_TABLE`,
         `MUSIC_SCHEDULES_TABLE`, `REWARDS_TABLE`; rename and extend the
         `BROAD_IAM_ALLOWLIST` entry; update `docs/RUNBOOK.md` and the
-        go-live check log-group name
+        go-live check log-group name. `RUNBOOK.md` never named the streak
+        reminder, so it needed no change. `isStreakAtRisk` and
+        `sastDateForOffset` had no other importer and went with the worker.
+        `terraform plan` not run here (no Terraform in this environment)
     - _Requirements: 3.2, 3.4a_
 
 - [ ] 6. Removals, release A (R8.2 release A, R8.3)

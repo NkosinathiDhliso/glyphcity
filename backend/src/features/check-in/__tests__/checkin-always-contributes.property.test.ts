@@ -267,7 +267,9 @@ describe('Feature: North star alignment, Property 1: a flagged check-in never ch
         } else {
           expect(h.incrementLeaderboard).not.toHaveBeenCalled()
         }
-        const pulseWrites = h.kvSet.mock.calls.filter((c) => String(c[0]).startsWith(`pulse:${s.cityId}:`))
+        const pulseWrites = (h.kvSet.mock.calls as unknown[][]).filter((c) =>
+          String(c[0]).startsWith(`pulse:${s.cityId}:`),
+        )
         expect(pulseWrites).toHaveLength(1)
       }),
       { numRuns: 120 },

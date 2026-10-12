@@ -8,7 +8,7 @@ export const pushTokenBodySchema = z.object({
 
 export const notificationPrefsSchema = z
   .object({
-    streakAtRisk: z.boolean().optional(),
+    tonightAtKnownVenue: z.boolean().optional(),
     rewardActivated: z.boolean().optional(),
     rewardClaimedPush: z.boolean().optional(),
     leaderboardPrewarning: z.boolean().optional(),

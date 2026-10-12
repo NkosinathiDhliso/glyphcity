@@ -41,26 +41,26 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
   const USER = 'user-1'
 
   it('uses an UpdateCommand, never a full-item PutCommand', async () => {
-    await upsertNotificationPreferences(USER, { streakAtRisk: true })
+    await upsertNotificationPreferences(USER, { tonightAtKnownVenue: true })
     const command = sendMock.mock.calls.at(-1)![0]
     expect(command).toBeInstanceOf(UpdateCommand)
     expect(command).not.toBeInstanceOf(PutCommand)
   })
 
   it('targets the single-item preferences key', async () => {
-    await upsertNotificationPreferences(USER, { streakAtRisk: true })
+    await upsertNotificationPreferences(USER, { tonightAtKnownVenue: true })
     const input = lastCommandInput()
     expect(input.Key).toEqual({ pk: `NOTIF_PREFS#${USER}`, sk: `NOTIF_PREFS#${USER}` })
     expect(input.TableName).toBe('app-data')
   })
 
   it('SETs only the provided key plus userId and updatedAt', async () => {
-    await upsertNotificationPreferences(USER, { streakAtRisk: true })
+    await upsertNotificationPreferences(USER, { tonightAtKnownVenue: true })
     const input = lastCommandInput()
 
     // The provided key is written, with its real boolean value.
-    expect(input.ExpressionAttributeNames).toMatchObject({ '#streakAtRisk': 'streakAtRisk' })
-    expect(input.ExpressionAttributeValues).toMatchObject({ ':streakAtRisk': true, ':userId': USER })
+    expect(input.ExpressionAttributeNames).toMatchObject({ '#tonightAtKnownVenue': 'tonightAtKnownVenue' })
+    expect(input.ExpressionAttributeValues).toMatchObject({ ':tonightAtKnownVenue': true, ':userId': USER })
 
     // No OTHER preference key leaks into the write — that is the overwrite bug.
     const names = Object.values(input.ExpressionAttributeNames ?? {})
@@ -72,7 +72,7 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
 
   it('does not reference an earlier toggle when a later, different toggle is written', async () => {
     // First toggle
-    await upsertNotificationPreferences(USER, { streakAtRisk: true })
+    await upsertNotificationPreferences(USER, { tonightAtKnownVenue: true })
     // Second, independent toggle
     await upsertNotificationPreferences(USER, { leaderboardPrewarning: true })
 
@@ -81,7 +81,7 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
     // The second write must not carry the first key — proving one toggle
     // cannot clobber another. Under the old PutCommand it would have.
     expect(names).toContain('leaderboardPrewarning')
-    expect(names).not.toContain('streakAtRisk')
+    expect(names).not.toContain('tonightAtKnownVenue')
   })
 
   it('preserves an explicit false (opt-out is honoured, not dropped)', async () => {
@@ -92,7 +92,7 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
 
   it('writes every key when a full preference object is supplied', async () => {
     await upsertNotificationPreferences(USER, {
-      streakAtRisk: true,
+      tonightAtKnownVenue: true,
       rewardActivated: false,
       rewardClaimedPush: false,
       leaderboardPrewarning: true,
@@ -101,7 +101,7 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
     const input = lastCommandInput()
     const names = Object.values(input.ExpressionAttributeNames ?? {})
     for (const key of [
-      'streakAtRisk',
+      'tonightAtKnownVenue',
       'rewardActivated',
       'rewardClaimedPush',
       'leaderboardPrewarning',
@@ -114,10 +114,10 @@ describe('upsertNotificationPreferences — partial merge (no overwrite)', () =>
   })
 
   it('ignores undefined keys (does not write a null/undefined attribute)', async () => {
-    await upsertNotificationPreferences(USER, { streakAtRisk: true, rewardActivated: undefined })
+    await upsertNotificationPreferences(USER, { tonightAtKnownVenue: true, rewardActivated: undefined })
     const input = lastCommandInput()
     const names = Object.values(input.ExpressionAttributeNames ?? {})
-    expect(names).toContain('streakAtRisk')
+    expect(names).toContain('tonightAtKnownVenue')
     expect(names).not.toContain('rewardActivated')
   })
 })

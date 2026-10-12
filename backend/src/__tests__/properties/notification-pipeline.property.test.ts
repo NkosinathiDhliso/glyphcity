@@ -17,7 +17,7 @@ const ALL_TIERS = ['local', 'regular', 'fixture', 'institution', 'legend'] as co
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- value defines the shape consumed by `keyof typeof` below
 const NOTIFICATION_DEFAULTS = {
-  streakAtRisk: false,
+  tonightAtKnownVenue: false,
   rewardActivated: false,
   rewardClaimedPush: true,
   leaderboardPrewarning: false,
@@ -27,7 +27,7 @@ const NOTIFICATION_DEFAULTS = {
 const NOTIFICATION_TYPE_TO_PREF: Record<string, keyof typeof NOTIFICATION_DEFAULTS> = {
   reward_new: 'rewardActivated',
   reward_code: 'rewardClaimedPush',
-  streak_at_risk: 'streakAtRisk',
+  tonight_at_known_venue: 'tonightAtKnownVenue',
   leaderboard_reset: 'leaderboardPrewarning',
   friend_checkin: 'followedUserCheckin',
 }
@@ -50,7 +50,7 @@ const checkInRecordArb = fc.record({
 
 /** Notification preference object */
 const notificationPrefsArb = fc.record({
-  streakAtRisk: fc.boolean(),
+  tonightAtKnownVenue: fc.boolean(),
   rewardActivated: fc.boolean(),
   rewardClaimedPush: fc.boolean(),
   leaderboardPrewarning: fc.boolean(),
@@ -61,7 +61,7 @@ const notificationPrefsArb = fc.record({
 const notificationTypeWithPrefArb = fc.constantFrom(
   'reward_new',
   'reward_code',
-  'streak_at_risk',
+  'tonight_at_known_venue',
   'leaderboard_reset',
   'friend_checkin',
 )
@@ -300,7 +300,7 @@ describe('Property 14: Notification preference enforcement', () => {
       fc.property(alwaysSendNotificationTypeArb, notificationPrefsArb, (notificationType, _prefs) => {
         // Even with all preferences disabled, these types should always send
         const allDisabled = {
-          streakAtRisk: false,
+          tonightAtKnownVenue: false,
           rewardActivated: false,
           rewardClaimedPush: false,
           leaderboardPrewarning: false,

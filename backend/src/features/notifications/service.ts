@@ -17,7 +17,7 @@ import * as repo from './repository.js'
 const NOTIFICATION_TYPE_TO_PREF: Record<string, NotificationPreferenceKey> = {
   reward_new: 'rewardActivated',
   reward_code: 'rewardClaimedPush',
-  streak_at_risk: 'streakAtRisk',
+  tonight_at_known_venue: 'tonightAtKnownVenue',
   leaderboard_reset: 'leaderboardPrewarning',
   friend_checkin: 'followedUserCheckin',
   // Tonight_Reminder (proof-of-demand R9.6, R9.7): gated on the explicit opt-in

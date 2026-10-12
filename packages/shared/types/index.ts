@@ -735,7 +735,8 @@ export interface City {
 }
 
 export interface NotificationPreferences {
-  streakAtRisk: boolean
+  /** "Tonight at a place you know" (north-star-alignment R3.2). Default false. */
+  tonightAtKnownVenue: boolean
   rewardActivated: boolean
   rewardClaimedPush: boolean
   leaderboardPrewarning: boolean

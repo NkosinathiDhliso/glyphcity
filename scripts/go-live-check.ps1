@@ -1124,7 +1124,7 @@ function Get-FunctionLastModifiedMs {
 # than 7 days ago proves it has never run = FAIL (Req 5.3). SQS-triggered
 # workers legitimately stay quiet when no message ever arrives, so a missing
 # log group there stays WARN however old the deploy is. Scheduled: presence-
-# expiry, pulse-decay, streak-reminder. SQS: reward-evaluator, campaign-sender,
+# expiry, pulse-decay, tonight-known-venue-reminder. SQS: reward-evaluator, campaign-sender,
 # report-generator (see infra/environments/prod/main.tf eventbridge schedules
 # vs SQS event source mappings).
 $workerLogGroups = @(
@@ -1133,7 +1133,7 @@ $workerLogGroups = @(
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-pulse-decay"; Scheduled = $true },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-campaign-sender"; Scheduled = $false },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-report-generator"; Scheduled = $false },
-    [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-streak-reminder"; Scheduled = $true }
+    [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-tonight-known-venue-reminder"; Scheduled = $true }
 )
 
 foreach ($worker in $workerLogGroups) {

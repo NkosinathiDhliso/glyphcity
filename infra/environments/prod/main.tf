@@ -1219,7 +1219,7 @@ module "lambda_api" {
 # gateway endpoint, so an in-VPC Lambda has no route to DynamoDB or the public
 # web-push/Expo endpoints - every invocation hung to timeout (found 2026-07-05
 # redriving the reward-eval DLQ). All working Lambdas (api, presence-expiry,
-# campaign-sender, streak-reminder) run outside the VPC; workers match that.
+# campaign-sender, tonight-known-venue-reminder) run outside the VPC; workers match that.
 module "lambda_reward_evaluator" {
   source        = "../../modules/lambda"
   env           = local.env
@@ -1351,22 +1351,26 @@ resource "aws_iam_role_policy" "presence_expiry_websocket" {
   })
 }
 
-# Streak-at-risk reminder — arm64 Lambda on an EventBridge daily SAST-evening
-# schedule (churn-defences). Scans streak-holders and pushes the "your streak is
-# about to break" nudge to opted-in users who have not checked in today. Not in
-# VPC: it only calls public AWS endpoints (DynamoDB) and web-push/Expo over
-# HTTPS, matching presence-expiry.
-module "lambda_streak_reminder" {
+# "Tonight at a place you know" reminder: arm64 Lambda on the EventBridge
+# SAST-evening schedule the streak reminder used (north-star-alignment R3).
+# Names one venue an opted-in guest has been to that has a Tonight. Reads the
+# Tonight through the shared reader, so it also needs NODES, MUSIC_SCHEDULES and
+# REWARDS. Not in VPC: it only calls public AWS endpoints (DynamoDB) and
+# web-push/Expo over HTTPS, matching presence-expiry.
+module "lambda_tonight_known_venue_reminder" {
   source        = "../../modules/lambda"
   env           = local.env
-  function_name = "streak-reminder"
+  function_name = "tonight-known-venue-reminder"
   timeout       = 120
   memory_size   = 256
   environment_variables = {
-    AREA_CODE_ENV  = local.env
-    USERS_TABLE    = aws_dynamodb_table.users.name
-    CHECKINS_TABLE = aws_dynamodb_table.checkins.name
-    APP_DATA_TABLE = aws_dynamodb_table.app_data.name
+    AREA_CODE_ENV         = local.env
+    USERS_TABLE           = aws_dynamodb_table.users.name
+    CHECKINS_TABLE        = aws_dynamodb_table.checkins.name
+    APP_DATA_TABLE        = aws_dynamodb_table.app_data.name
+    NODES_TABLE           = aws_dynamodb_table.nodes.name
+    MUSIC_SCHEDULES_TABLE = aws_dynamodb_table.music_schedules.name
+    REWARDS_TABLE         = aws_dynamodb_table.rewards.name
     # sendNotification (notifications/service) pulls in the broadcast helper,
     # which reads CONNECTIONS_TABLE at module load, so it must be set or the
     # worker crashes at cold start in prod. Delivery falls back to push.
@@ -1611,14 +1615,14 @@ resource "aws_iam_role_policy" "schedule_transition_tick_websocket" {
 # --- Lambda DynamoDB IAM permissions ---
 resource "aws_iam_role_policy" "lambda_dynamodb" {
   for_each = {
-    api               = module.lambda_api.role_name
-    pulse_decay       = module.lambda_pulse_decay.role_name
-    reward_evaluator  = module.lambda_reward_evaluator.role_name
-    leaderboard_reset = module.lambda_leaderboard_reset.role_name
-    cleanup           = module.lambda_cleanup.role_name
-    websocket         = module.lambda_websocket.role_name
-    presence_expiry   = module.lambda_presence_expiry.role_name
-    streak_reminder   = module.lambda_streak_reminder.role_name
+    api                          = module.lambda_api.role_name
+    pulse_decay                  = module.lambda_pulse_decay.role_name
+    reward_evaluator             = module.lambda_reward_evaluator.role_name
+    leaderboard_reset            = module.lambda_leaderboard_reset.role_name
+    cleanup                      = module.lambda_cleanup.role_name
+    websocket                    = module.lambda_websocket.role_name
+    presence_expiry              = module.lambda_presence_expiry.role_name
+    tonight_known_venue_reminder = module.lambda_tonight_known_venue_reminder.role_name
   }
 
   name = "dynamodb-access"
@@ -2096,11 +2100,11 @@ module "eventbridge_schedules" {
       lambda_arn           = module.lambda_presence_expiry.function_arn
       lambda_function_name = module.lambda_presence_expiry.function_name
     }
-    streak-reminder = {
-      description          = "Streak-at-risk reminder daily 18:00 SAST (16:00 UTC)"
+    tonight-known-venue-reminder = {
+      description          = "Tonight at a place you know, daily 18:00 SAST (16:00 UTC)"
       schedule_expression  = "cron(0 16 * * ? *)"
-      lambda_arn           = module.lambda_streak_reminder.function_arn
-      lambda_function_name = module.lambda_streak_reminder.function_name
+      lambda_arn           = module.lambda_tonight_known_venue_reminder.function_arn
+      lambda_function_name = module.lambda_tonight_known_venue_reminder.function_name
     }
     leaderboard-reset = {
       description          = "Weekly leaderboard reset Monday 00:00 SAST"
