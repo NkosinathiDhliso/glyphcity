@@ -18,6 +18,7 @@ import {
   type DigestDeltas,
   type DigestSuppressibleName,
 } from '../digest'
+import { buildReportReadyCopy } from '../../../shared/email/report-ready-copy'
 import { RECEIPT_METRIC_NAMES, type Receipt, type ReceiptBySource, type ReceiptMetricName } from '../receipt'
 import { buildReceiptCopy, type ReceiptWindowLabel } from '../receipt-copy'
 import { SUPPRESSION_FLOOR } from '../suppression'
@@ -706,6 +707,19 @@ describe('Feature: Proof of demand, Property 3: Honest copy (business marketing,
 
     expect(offenders, `marketing copy belongs in ${BUSINESS_COPY_PATH} only, never as an inline t() default`).toEqual(
       [],
+    )
+  })
+})
+
+describe('Feature: North star alignment, Property 6: Honest copy (report-ready email, R7.3)', () => {
+  it('renders no banned verb and no forbidden word in any report-ready sentence, for any period', () => {
+    fc.assert(
+      fc.property(fc.oneof(fc.constantFrom('weekly', 'monthly'), fc.string()), (periodType) => {
+        for (const sentence of Object.values(buildReportReadyCopy(periodType))) {
+          expectHonestSentence(sentence)
+        }
+      }),
+      { numRuns: 100 },
     )
   })
 })

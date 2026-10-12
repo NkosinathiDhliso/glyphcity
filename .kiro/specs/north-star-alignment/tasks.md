@@ -24,18 +24,19 @@ runs, block-statement predicates, tagged
         `|` absent from h1, value lines, About
     - _Requirements: 1.4, 9.2_
 
-- [ ] 2. Rewards, reports and music guards (R5, R6, R7)
-  - [ ] 2.1 `nearMeQuerySchema.strict()`; route test 400 on `sort`;
+- [x] 2. Rewards, reports and music guards (R5, R6, R7)
+  - [x] 2.1 `nearMeQuerySchema.strict()`; route test 400 on `sort`;
         Property 4 value invariance
     - _Requirements: 5.2_
-  - [ ] 2.2 Move `sendReportReadyEmail` strings to an importable copy
+  - [x] 2.2 Move `sendReportReadyEmail` strings to an importable copy
         object; extend the honest-copy property test (Property 6)
     - _Requirements: 7.3_
-  - [ ] 2.3 Grep test over `biz.plans.`, `biz.onboarding.`, `biz.landing.`
+  - [x] 2.3 Grep test over `biz.plans.`, `biz.onboarding.`, `biz.landing.`
         and the trial and renewal builders: no "intelligence" or "insight"
     - _Requirements: 7.2_
-  - [ ] 2.4 Property 5: `clearUserMusicData` attribute names; type-level
-        assertions on `computeReceipt` input and `markerBeam` input
+  - [x] 2.4 Property 5: `clearUserMusicData` attribute names; type-level
+        assertions on `computeReceipt` input and `markerBeam` input. The web
+        tsconfig excludes tests, so the beam test also asserts at runtime
     - _Requirements: 6.3_
 
 - [ ] 3. Leaderboard (R2)

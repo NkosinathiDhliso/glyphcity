@@ -4,6 +4,8 @@ import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2'
 import { AWS_REGION, businessBaseUrl, fromEmail } from '../config/env.js'
 import { escapeHtml } from '../html/escape.js'
 
+import { buildReportReadyCopy } from './report-ready-copy.js'
+
 const ses = new SESv2Client({ region: AWS_REGION })
 
 /** Outdoor_Palette hex for email HTML, which cannot read CSS variables.
@@ -207,20 +209,20 @@ export async function sendReportReadyEmail(
   periodType: string,
 ): Promise<void> {
   const reportsUrl = `${businessBaseUrl()}/reports`
-  const periodLabel = periodType === 'monthly' ? 'monthly' : 'weekly'
+  const copy = buildReportReadyCopy(periodType)
   await ses.send(
     new SendEmailCommand({
       FromEmailAddress: fromEmail(),
       Destination: { ToAddresses: [to] },
       Content: {
         Simple: {
-          Subject: { Data: `Your ${APP_NAME} report is ready` },
+          Subject: { Data: copy.subject },
           Body: {
             Text: {
-              Data: `Hi ${businessName},\n\nYour ${periodLabel} ${APP_NAME} intelligence report is ready.\n\nOpen the Reports panel to see your latest crowd insights:\n${reportsUrl}\n\nReport reference: ${reportId}`,
+              Data: `Hi ${businessName},\n\n${copy.textIntro}\n\n${copy.textCta}\n${reportsUrl}\n\n${copy.referenceLabel} ${reportId}`,
             },
             Html: {
-              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">Your report is ready</h2><p style="color:#444;font-size:15px;line-height:1.5">Hi ${escapeHtml(businessName)}, your ${periodLabel} ${APP_NAME} intelligence report is ready with your latest crowd insights.</p><p style="margin:24px 0"><a href="${escapeHtml(reportsUrl)}" style="background:${EMAIL_PALETTE.ink};color:${EMAIL_PALETTE.ground};text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">Open Reports</a></p><p style="color:#999;font-size:12px;margin-top:24px">Report reference: ${escapeHtml(reportId)}</p></div>`,
+              Data: `<div style="font-family:sans-serif;max-width:440px;margin:0 auto;padding:24px"><h2 style="color:#333">${copy.heading}</h2><p style="color:#444;font-size:15px;line-height:1.5">Hi ${escapeHtml(businessName)}, ${copy.htmlIntro}</p><p style="margin:24px 0"><a href="${escapeHtml(reportsUrl)}" style="background:${EMAIL_PALETTE.ink};color:${EMAIL_PALETTE.ground};text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:600;display:inline-block">${copy.button}</a></p><p style="color:#999;font-size:12px;margin-top:24px">${copy.referenceLabel} ${escapeHtml(reportId)}</p></div>`,
             },
           },
         },

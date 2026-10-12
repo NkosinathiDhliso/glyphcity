@@ -218,10 +218,14 @@ export const redeemBodySchema = z.object({
   code: z.string().length(8),
 })
 
-export const nearMeQuerySchema = z.object({
-  lat: z.coerce.number().min(-90).max(90),
-  lng: z.coerce.number().min(-180).max(180),
-})
+// Strict: an unknown key such as `sort` is a 400, so no client can ask the one
+// consumer discovery read to order gets by value (north-star-alignment R5.2).
+export const nearMeQuerySchema = z
+  .object({
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180),
+  })
+  .strict()
 
 // ============================================================================
 // DynamoDB Entity Types
