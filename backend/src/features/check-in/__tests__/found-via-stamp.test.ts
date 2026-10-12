@@ -56,7 +56,7 @@ const h = vi.hoisted(() => ({
   recordPresenceSample: vi.fn(async () => null),
   getMutualFollowIds: vi.fn(async () => new Set<string>()),
   getFollowingIds: vi.fn(async () => [] as string[]),
-  runAbuseChecks: vi.fn(async () => undefined),
+  runAbuseChecks: vi.fn(async () => ({ flags: [] as Array<{ type: string; evidence: Record<string, unknown> }> })),
   getUserCheckInCountAtNode: vi.fn(async () => 1),
   incrementLeaderboard: vi.fn(async () => undefined),
   incrementNodeCheckInTotal: vi.fn(async () => 1),

@@ -2,6 +2,7 @@
 import { QueryCommand, PutCommand, DeleteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 
 import { getNotificationPreferences } from '../features/notifications/repository.js'
+import { rankLeaderboard, toLeaderboardRow } from '../features/social/leaderboard-rank.js'
 import { documentClient, TableNames } from '../shared/db/dynamodb.js'
 
 async function getCities() {
@@ -13,12 +14,6 @@ async function getCities() {
     }),
   )
   return (result.Items || []).map((c) => ({ id: (c['cityId'] ?? c['pk']) as string, slug: c['slug'] as string }))
-}
-
-interface RankedLeaderboardEntry {
-  userId: string
-  checkInCount: number
-  rank: number
 }
 
 /**
@@ -44,19 +39,9 @@ async function readAllLeaderboardItems(cityId: string): Promise<Record<string, u
   return items
 }
 
-/**
- * Rank raw leaderboard items by checkInCount desc with a deterministic userId
- * tiebreak, assigning 1-based ranks. Shared by the reset and pre-reset paths so
- * the ranked users a pre-reset notification warns match what the reset archives.
- */
-function rankLeaderboardEntries(items: Record<string, unknown>[]): RankedLeaderboardEntry[] {
-  return items
-    .map((item) => ({
-      userId: item['userId'] as string,
-      checkInCount: (item['checkInCount'] as number) ?? 0,
-    }))
-    .sort((a, b) => b.checkInCount - a.checkInCount || a.userId.localeCompare(b.userId))
-    .map((e, i) => ({ ...e, rank: i + 1 }))
+/** One ranking for the reset and the pre-reset toast, shared with the Ranks read. */
+function rankLeaderboardEntries(items: Record<string, unknown>[]) {
+  return rankLeaderboard(items.map(toLeaderboardRow))
 }
 
 /**
@@ -87,13 +72,15 @@ export async function handler() {
             weekEnding,
             userId: e.userId,
             rank: e.rank,
+            // The room count, not the node ids: history keeps no location trail.
+            venueCount: e.venueCount,
             checkInCount: e.checkInCount,
           },
         }),
       )
     }
 
-    // 3. Delete every current leaderboard entry.
+    // 3. Delete every current leaderboard entry, which clears venues and checkInCount.
     for (const item of items) {
       await documentClient.send(
         new DeleteCommand({
@@ -132,7 +119,7 @@ export async function preResetHandler() {
         const { emitToast } = await import('../shared/socket/events.js')
         await emitToast(city.slug, {
           type: 'leaderboard',
-          message: `Ranks reset tonight! You're #${entry.rank} with ${entry.checkInCount} check-ins.`,
+          message: `Ranks reset tonight. You're #${entry.rank} with ${entry.venueCount} ${entry.venueCount === 1 ? 'room' : 'rooms'} this week.`,
           nodeId: '',
         })
         sent++

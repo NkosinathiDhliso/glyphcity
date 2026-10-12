@@ -721,6 +721,8 @@ export interface LeaderboardEntry {
   avatarUrl: string | null
   tier: Tier
   rank: number
+  /** Distinct venues this week, the board's lead statistic. */
+  venueCount: number
   checkInCount: number
   isFriend: boolean
 }

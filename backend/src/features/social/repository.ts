@@ -6,6 +6,8 @@ import { getUserById } from '../auth/dynamodb-repository.js'
 import { getCheckInsByNode } from '../check-in/dynamodb-repository.js'
 import { getNodeById } from '../nodes/dynamodb-repository.js'
 
+import { rankLeaderboard, toLeaderboardRow } from './leaderboard-rank.js'
+
 // ─── Follows ────────────────────────────────────────────────────────────────
 
 export async function followUser(followerId: string, followingId: string) {
@@ -221,9 +223,9 @@ export async function getCityBySlug(slug: string) {
 // assigned across the FULL sorted set, so callers get exact ranks even outside the top 50.
 async function readRankedLeaderboard(cityId: string, archetypeId?: string) {
   // Canonical leaderboard key (must match the incrementer exactly):
-  //   pk = LEADERBOARD#{cityId}, sk = USER#{userId}, attribute checkInCount.
-  // The sort key is USER#{userId}, so DynamoDB cannot order by checkInCount. Read the
-  // full partition (paginated) and sort by checkInCount desc in memory.
+  //   pk = LEADERBOARD#{cityId}, sk = USER#{userId}, attributes venues, checkInCount.
+  // The sort key is USER#{userId}, so DynamoDB cannot order the rows. Read the full
+  // partition (paginated) and rank in memory through `rankLeaderboard`.
   const items: Record<string, unknown>[] = []
   let lastEvaluatedKey: Record<string, unknown> | undefined
 
@@ -244,19 +246,7 @@ async function readRankedLeaderboard(cityId: string, archetypeId?: string) {
   // stored on entries; otherwise the board is city-wide (behavior consistent with before).
   const scoped = archetypeId ? items.filter((item) => item['archetypeId'] === archetypeId) : items
 
-  return (
-    scoped
-      .map((item) => ({
-        userId: item['userId'] as string,
-        checkInCount: (item['checkInCount'] as number) ?? 0,
-        archetypeId: (item['archetypeId'] as string) ?? undefined,
-        topVenueId: (item['topVenueId'] as string) ?? undefined,
-        topVenueName: (item['topVenueName'] as string) ?? undefined,
-      }))
-      // Sort desc by checkInCount; deterministic tiebreak by userId (ascending).
-      .sort((a, b) => b.checkInCount - a.checkInCount || a.userId.localeCompare(b.userId))
-      .map((entry, i) => ({ ...entry, rank: i + 1 }))
-  )
+  return rankLeaderboard(scoped.map(toLeaderboardRow))
 }
 
 export async function getLeaderboardTop50(cityId: string, archetypeId?: string) {
@@ -270,7 +260,7 @@ export async function getUserLeaderboardRank(cityId: string, userId: string) {
   const ranked = await readRankedLeaderboard(cityId)
   const entry = ranked.find((e) => e.userId === userId)
   if (!entry) return null
-  return { rank: entry.rank, checkInCount: entry.checkInCount }
+  return { rank: entry.rank, venueCount: entry.venueCount, checkInCount: entry.checkInCount }
 }
 
 export async function getUserProfiles(userIds: string[]) {

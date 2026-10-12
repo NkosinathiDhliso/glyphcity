@@ -53,7 +53,7 @@ const h = vi.hoisted(() => ({
   recordPresenceSample: vi.fn(async () => null),
   getMutualFollowIds: vi.fn(async () => new Set<string>()),
   getFollowingIds: vi.fn(async () => [] as string[]),
-  runAbuseChecks: vi.fn(async () => undefined),
+  runAbuseChecks: vi.fn(async () => ({ flags: [] as Array<{ type: string; evidence: Record<string, unknown> }> })),
   getUserCheckInCountAtNode: vi.fn(async () => 0),
   incrementLeaderboard: vi.fn(async () => undefined),
   incrementNodeCheckInTotal: vi.fn(async () => 1),
@@ -228,6 +228,54 @@ describe('Feature: tiered-visibility, Property 1: Check-in always contributes', 
         const [room, payload] = h.emitPulseUpdate.mock.calls[0]! as [string, { nodeId: string }]
         expect(room).toBe(s.citySlug)
         expect(payload.nodeId).toBe(s.nodeId)
+      }),
+      { numRuns: 120 },
+    )
+  })
+})
+
+const flagsArb = fc.array(
+  fc.record({
+    type: fc.constantFrom('device_velocity', 'new_account_velocity'),
+    evidence: fc.constant({} as Record<string, unknown>),
+  }),
+  { maxLength: 2 },
+)
+
+describe('Feature: North star alignment, Property 1: a flagged check-in never changes a board row', () => {
+  it('increments the leaderboard only when runAbuseChecks returns no flags, and still refreshes pulse', async () => {
+    await fc.assert(
+      fc.asyncProperty(scenarioArb, flagsArb, async (s, flags) => {
+        for (const fn of Object.values(h)) (fn as ReturnType<typeof vi.fn>).mockClear?.()
+
+        h.runAbuseChecks.mockResolvedValue({ flags })
+        h.kvGet.mockResolvedValue(null)
+        h.kvIncr.mockResolvedValue(s.dailyCount)
+        h.canEmitIdentity.mockResolvedValue(s.canEmitIdentity)
+        h.canEmitToFriends.mockResolvedValue(s.canEmitToFriends)
+        h.getMutualFollowIds.mockResolvedValue(new Set<string>())
+        h.getUserById.mockResolvedValue({ id: s.userId, tier: 'local', isDisabled: false, privacy: s.privacy })
+        h.getNodeWithCity.mockResolvedValue({
+          id: s.nodeId,
+          lat: NODE_LAT,
+          lng: NODE_LNG,
+          name: 'The Venue',
+          cityId: s.cityId,
+          qrCheckinEnabled: false,
+          businessId: null,
+          city: { id: s.cityId, slug: s.citySlug },
+        })
+
+        const res = await processCheckIn(s.userId, { nodeId: s.nodeId, type: s.type, lat: NODE_LAT, lng: NODE_LNG })
+
+        expect(res.success).toBe(true)
+        if (flags.length === 0) {
+          expect(h.incrementLeaderboard).toHaveBeenCalledWith(s.cityId, s.userId, s.nodeId)
+        } else {
+          expect(h.incrementLeaderboard).not.toHaveBeenCalled()
+        }
+        const pulseWrites = h.kvSet.mock.calls.filter((c) => String(c[0]).startsWith(`pulse:${s.cityId}:`))
+        expect(pulseWrites).toHaveLength(1)
       }),
       { numRuns: 120 },
     )

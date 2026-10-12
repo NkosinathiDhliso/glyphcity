@@ -8,6 +8,7 @@ import type { OnboardingStatus } from '@area-code/shared/types'
 import * as fc from 'fast-check'
 import { describe, it, expect } from 'vitest'
 
+import { buildReportReadyCopy } from '../../../shared/email/report-ready-copy'
 import {
   buildDigestCopy,
   BANNED_CAUSAL_VERBS,
@@ -18,7 +19,6 @@ import {
   type DigestDeltas,
   type DigestSuppressibleName,
 } from '../digest'
-import { buildReportReadyCopy } from '../../../shared/email/report-ready-copy'
 import { RECEIPT_METRIC_NAMES, type Receipt, type ReceiptBySource, type ReceiptMetricName } from '../receipt'
 import { buildReceiptCopy, type ReceiptWindowLabel } from '../receipt-copy'
 import { SUPPRESSION_FLOOR } from '../suppression'

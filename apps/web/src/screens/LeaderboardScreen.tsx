@@ -1,30 +1,20 @@
-import { Avatar } from '@area-code/shared/components/Avatar'
 import { Skeleton } from '@area-code/shared/components/Skeleton'
-import { TierBadge } from '@area-code/shared/components/TierBadge'
-import { TierProgressNudge } from '@area-code/shared/components/TierProgressNudge'
-import { APP_NAME } from '@area-code/shared/constants/brand'
 import { api } from '@area-code/shared/lib/api'
 import { useMapStore } from '@area-code/shared/stores/mapStore'
 import { useUserStore } from '@area-code/shared/stores/userStore'
-import type { LeaderboardEntry, Tier, User } from '@area-code/shared/types'
 import { useQuery } from '@tanstack/react-query'
-import { Share2 } from 'lucide-react'
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { LeaderboardRow, type CityRankEntry } from '../components/leaderboard/LeaderboardRow'
+import { YourRankCard } from '../components/leaderboard/YourRankCard'
+import { OpenMapButton } from '../components/OpenMapButton'
 import { resolveArchetypeDisplayName } from '../lib/archetypeDisplay'
-import { buildShareCardData, generateShareCard, shareOrCopy } from '../lib/shareCard'
 import type { AppRoute } from '../types'
-
-interface CityRankEntry extends LeaderboardEntry {
-  topVenueId?: string
-  topVenueName?: string
-  archetypeId?: string
-}
 
 interface LeaderboardResponse {
   entries: CityRankEntry[]
-  userRank: { rank: number; checkInCount: number } | null
+  userRank: { rank: number; venueCount: number; checkInCount: number } | null
   segment: 'archetype' | 'city-wide'
 }
 
@@ -156,151 +146,36 @@ export function LeaderboardScreen({ onNavigate }: LeaderboardScreenProps) {
       ) : data?.entries && data.entries.length > 0 ? (
         <div className="flex flex-col gap-2">
           {data.entries.map((entry) => (
-            <LeaderboardRow key={entry.userId} entry={entry} onVenueStreakTap={handleVenueStreakTap} t={t} />
+            <LeaderboardRow key={entry.userId} entry={entry} onVenueStreakTap={handleVenueStreakTap} />
           ))}
 
-          {/* Consumer's own rank card with tier-progress nudge (R10.4) and
-              share affordance (R10.3). Always shown when the user has a rank,
-              whether or not they are inside the top 50. */}
-          {user && (data.userRank || data.entries.find((e) => e.userId === user.id)) && (
+          {/* The viewer's own row: their standing when they have a check-in this
+              week, otherwise one pointer to the map (R2.4). */}
+          {user && (
             <YourRankCard
               user={user}
-              rank={data.userRank?.rank ?? data.entries.find((e) => e.userId === user.id)?.rank ?? 0}
-              checkInCount={
-                data.userRank?.checkInCount ?? data.entries.find((e) => e.userId === user.id)?.checkInCount ?? 0
-              }
+              standing={viewerStanding(data, user.id)}
               topVenueName={data.entries.find((e) => e.userId === user.id)?.topVenueName ?? null}
-              t={t}
+              onOpenMap={() => onNavigate('map')}
             />
           )}
         </div>
       ) : (
-        <p className="text-[var(--text-secondary)] text-sm text-center py-8">{t('leaderboard.noData')}</p>
+        <div data-testid="leaderboard-empty" className="flex flex-col items-center gap-3 py-8">
+          <p className="text-[var(--text-secondary)] text-sm text-center">{t('leaderboard.noData')}</p>
+          <OpenMapButton onOpenMap={() => onNavigate('map')} />
+        </div>
       )}
     </div>
   )
 }
 
-// ─── Your Rank Card ─────────────────────────────────────────────────────────
-
-interface YourRankCardProps {
-  user: User
-  rank: number
-  checkInCount: number
-  topVenueName: string | null
-  t: ReturnType<typeof useTranslation>['t']
-}
-
-/**
- * The consumer's own rank card: rank, check-in count, a tier-progression nudge
- * (R10.4), and a Share button (R10.3). The share card is generated client-side
- * and contains only the consumer's own data (R10.3.4 / Property 9).
- */
-function YourRankCard({ user, rank, checkInCount, topVenueName, t }: YourRankCardProps) {
-  const [sharing, setSharing] = useState(false)
-
-  const handleShare = useCallback(async () => {
-    setSharing(true)
-    try {
-      const cardData = buildShareCardData({
-        rank,
-        archetypeId: user.archetypeId ?? null,
-        tier: user.tier,
-        weeklyCheckInCount: checkInCount,
-        topVenueName,
-        displayName: user.displayName,
-      })
-      const blob = await generateShareCard(cardData)
-      const text = t('leaderboard.shareText', {
-        rank,
-        defaultValue: `I'm #{{rank}} this week on {{appName}}`,
-      })
-      await shareOrCopy(blob, typeof text === 'string' ? text : `I'm #${rank} this week on ${APP_NAME}`)
-    } catch {
-      // Best-effort: a failed render or dismissed share sheet is a no-op.
-    } finally {
-      setSharing(false)
-    }
-  }, [user, rank, checkInCount, topVenueName, t])
-
-  return (
-    <>
-      <div className="border-t border-[var(--border)] my-2" />
-      <div className="flex flex-row items-center gap-3 bg-[var(--bg-raised)] border border-[var(--accent)] rounded-2xl px-4 py-3">
-        <span className="text-[var(--accent)] text-sm font-medium w-6 text-right shrink-0">{rank}</span>
-        <div className="flex-1 min-w-0">
-          <p className="text-[var(--text-primary)] text-sm font-medium">{t('leaderboard.you')}</p>
-          <TierProgressNudge checkInCount={checkInCount} />
-        </div>
-        <span className="text-[var(--text-secondary)] text-sm font-medium shrink-0">{checkInCount}</span>
-        <button
-          type="button"
-          onClick={() => void handleShare()}
-          disabled={sharing}
-          aria-label={t('leaderboard.shareRank', 'Share my rank')}
-          className="shrink-0 p-2 rounded-xl text-[var(--accent)] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:opacity-50"
-        >
-          <Share2 size={18} strokeWidth={1.75} />
-        </button>
-      </div>
-    </>
-  )
-}
-
-// ─── Leaderboard Row ────────────────────────────────────────────────────────
-
-interface LeaderboardRowProps {
-  entry: CityRankEntry
-  onVenueStreakTap: (nodeId: string) => void
-  t: ReturnType<typeof useTranslation>['t']
-}
-
-function LeaderboardRow({ entry, onVenueStreakTap, t }: LeaderboardRowProps) {
-  const displayName = entry.isFriend
-    ? entry.displayName || entry.username || t('leaderboard.anonymousExplorer')
-    : t('leaderboard.anonymousExplorer')
-
-  return (
-    <div className="flex flex-row items-center gap-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl px-4 py-3">
-      {/* Rank position */}
-      <span className="text-[var(--text-secondary)] text-sm font-medium w-6 text-right shrink-0">{entry.rank}</span>
-
-      {/* Avatar or tier badge */}
-      {entry.isFriend ? (
-        <Avatar
-          url={entry.avatarUrl}
-          displayName={typeof displayName === 'string' ? displayName : ''}
-          size="sm"
-          tier={entry.tier as Tier}
-        />
-      ) : (
-        <div className="w-8 h-8 rounded-full bg-[var(--bg-raised)] flex items-center justify-center shrink-0">
-          <TierBadge tier={entry.tier as Tier} />
-        </div>
-      )}
-
-      {/* Name + venue streak */}
-      <div className="flex-1 min-w-0">
-        <p className="text-[var(--text-primary)] text-sm font-medium truncate">{displayName}</p>
-        {entry.topVenueName && entry.topVenueId && (
-          <button
-            onClick={() => onVenueStreakTap(entry.topVenueId!)}
-            className="text-[var(--text-secondary)] text-xs truncate hover:text-[var(--accent)] transition-colors text-left"
-            aria-label={t('leaderboard.venueStreakLabel', {
-              venue: entry.topVenueName,
-              defaultValue: 'Go to {{venue}}',
-            })}
-          >
-            {entry.topVenueName}
-          </button>
-        )}
-      </div>
-
-      {/* Tier badge */}
-      <TierBadge tier={entry.tier as Tier} />
-
-      {/* Weekly check-in count */}
-      <span className="text-[var(--text-secondary)] text-sm font-medium ml-1 shrink-0">{entry.checkInCount}</span>
-    </div>
-  )
+/** The viewer's rank, rooms and check-ins: from their top-50 row, else from `userRank`. */
+function viewerStanding(
+  data: LeaderboardResponse,
+  userId: string,
+): { rank: number; venueCount: number; checkInCount: number } | null {
+  const row = data.entries.find((e) => e.userId === userId)
+  if (row) return { rank: row.rank, venueCount: row.venueCount, checkInCount: row.checkInCount }
+  return data.userRank
 }

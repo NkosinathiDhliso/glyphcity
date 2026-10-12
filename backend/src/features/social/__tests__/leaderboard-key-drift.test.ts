@@ -64,7 +64,7 @@ beforeEach(() => {
 
 describe('leaderboard canonical key (H6 regression guard)', () => {
   it('incrementer writes LEADERBOARD#{cityId} / USER#{userId} with an atomic ADD (task 1.3)', async () => {
-    await incrementLeaderboard('johannesburg', 'user-1')
+    await incrementLeaderboard('johannesburg', 'user-1', 'node-1')
 
     const input = mocks.state.lastUpdateInput
     expect(input).toBeTruthy()
@@ -73,12 +73,15 @@ describe('leaderboard canonical key (H6 regression guard)', () => {
     expect(String(input!['UpdateExpression'])).toContain('ADD checkInCount')
     const eav = input!['ExpressionAttributeValues'] as Record<string, unknown>
     expect(eav[':one']).toBe(1)
+    // The venue joins a string set, so the row counts distinct rooms (R2.2).
+    expect(String(input!['UpdateExpression'])).toContain('venues :node')
+    expect(eav[':node']).toEqual(new Set(['node-1']))
   })
 
   it('read queries the SAME partition key the incrementer writes (task 5 key-drift)', async () => {
     const city = 'cape-town'
 
-    await incrementLeaderboard(city, 'user-1')
+    await incrementLeaderboard(city, 'user-1', 'node-1')
     const writePk = (mocks.state.lastUpdateInput!['Key'] as { pk: string }).pk
 
     await getLeaderboardTop50(city)

@@ -241,8 +241,9 @@ export async function processCheckIn(userId: string, input: CheckInInput): Promi
     }
   }
 
-  // 2b. Abuse checks (after proximity, before DB insert)
-  await runAbuseChecks(
+  // 2b. Abuse checks (after proximity, before DB insert). Advisory for the
+  // check-in; a flagged check-in does not count on the board (R2.3).
+  const abuse = await runAbuseChecks(
     userId,
     input.nodeId,
     input.fingerprintHash,
@@ -463,7 +464,7 @@ export async function processCheckIn(userId: string, input: CheckInInput): Promi
     // pattern as the other check-in fan-outs so a leaderboard write failure
     // never blocks or fails the check-in response.
     try {
-      await incrementLeaderboard(cityId, userId)
+      if (abuse.flags.length === 0) await incrementLeaderboard(cityId, userId, input.nodeId)
     } catch (err) {
       console.warn(`[check-in] leaderboard increment failed: ${String(err)}`)
     }

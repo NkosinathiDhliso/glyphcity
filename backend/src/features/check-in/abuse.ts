@@ -5,7 +5,7 @@ import { generateId } from '../../shared/db/entities.js'
 import { kvIncr } from '../../shared/kv/dynamodb-kv.js'
 import { getUserById } from '../auth/dynamodb-repository.js'
 
-interface AbuseCheckResult {
+export interface AbuseCheckResult {
   flags: Array<{ type: string; evidence: Record<string, unknown> }>
 }
 

@@ -215,7 +215,7 @@
   "search.noResults": "No results found",
   "rewards.noneNearby": "No gets nearby right now",
   "rewards.expiredHeading": "Expired",
-  "leaderboard.noData": "No ranks data yet",
+  "leaderboard.noData": "No ranks yet. Open the map.",
   "leaderboard.anonymousExplorer": "{{appName}} Explorer",
   "leaderboard.you": "You",
   "feed.emptyState": "No activity yet | follow friends to fill this up",
@@ -315,5 +315,11 @@
   "landing.trendingNow": "Trending Now",
   "landing.live": "Live",
   "landing.checkIns_one": "{{count}} check-in",
-  "landing.checkIns_other": "{{count}} check-ins"
+  "landing.checkIns_other": "{{count}} check-ins",
+  "leaderboard.youEmpty": "Not on the board yet. Open the map.",
+  "leaderboard.rooms_one": "{{count}} room",
+  "leaderboard.rooms_other": "{{count}} rooms",
+  "leaderboard.checkIns_one": "{{count}} check-in",
+  "leaderboard.checkIns_other": "{{count}} check-ins",
+  "common.openMap": "Map"
 }

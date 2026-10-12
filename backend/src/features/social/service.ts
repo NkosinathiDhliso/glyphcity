@@ -306,6 +306,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         avatarUrl: null,
         tier: 'trailblazer',
         rank: 1,
+        venueCount: 9,
         checkInCount: 142,
         isFriend: true,
         archetypeId: archetypeId ?? 'archetype-nomad',
@@ -319,6 +320,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         avatarUrl: null,
         tier: 'explorer',
         rank: 2,
+        venueCount: 7,
         checkInCount: 98,
         isFriend: false,
         archetypeId: archetypeId ?? 'archetype-nomad',
@@ -332,6 +334,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         avatarUrl: null,
         tier: 'explorer',
         rank: 3,
+        venueCount: 6,
         checkInCount: 76,
         isFriend: false,
         archetypeId: archetypeId ?? 'archetype-eclectic',
@@ -345,6 +348,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         avatarUrl: null,
         tier: 'local',
         rank: 4,
+        venueCount: 5,
         checkInCount: 54,
         isFriend: true,
         archetypeId: archetypeId ?? 'archetype-eclectic',
@@ -358,6 +362,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         avatarUrl: null,
         tier: 'local',
         rank: 5,
+        venueCount: 4,
         checkInCount: 41,
         isFriend: false,
         archetypeId: archetypeId ?? 'archetype-nomad',
@@ -365,7 +370,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
         topVenueName: undefined,
       },
     ]
-    return { entries, userRank: viewerId ? { rank: 12, checkInCount: 8 } : null, segment }
+    return { entries, userRank: viewerId ? { rank: 12, venueCount: 3, checkInCount: 8 } : null, segment }
   }
 
   const city = await repo.getCityBySlug(citySlug)
@@ -375,7 +380,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
   const userIds = top50.map((e) => e.userId)
 
   // Include requesting user if not in top 50
-  let userRank: { rank: number; checkInCount: number } | null = null
+  let userRank: { rank: number; venueCount: number; checkInCount: number } | null = null
   if (viewerId && !userIds.includes(viewerId)) {
     userRank = await repo.getUserLeaderboardRank(city.id, viewerId)
     if (userRank) userIds.push(viewerId)
@@ -426,6 +431,7 @@ export async function getCityLeaderboard(citySlug: string, viewerId?: string, ar
       avatarUrl: profile?.avatarUrl ?? null,
       tier: profile?.tier ?? 'local',
       rank: e.rank,
+      venueCount: e.venueCount,
       checkInCount: e.checkInCount,
       archetypeId: e.archetypeId,
       topVenueId: e.topVenueId,

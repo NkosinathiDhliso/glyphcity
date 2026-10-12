@@ -312,19 +312,22 @@ export async function getUserCheckInCount(userId: string): Promise<number> {
  * `getLeaderboardTop50` and the weekly reset worker so the three call sites can
  * never drift): pk = LEADERBOARD#{cityId}, sk = USER#{userId}.
  *
- * A single atomic `ADD checkInCount :one` keeps the hot check-in path to one
- * conditional-free write (no read-modify-write), and creates the row on first
- * check-in. The weekly reset worker clears the partition, so no week is encoded
- * in the key and no TTL is set here.
+ * A single atomic `ADD checkInCount :one, venues :node` keeps the hot check-in
+ * path to one conditional-free write (no read-modify-write), and creates the
+ * row on first check-in. `venues` is a string set of node ids, so its size is
+ * the distinct rooms this week, the board's lead statistic
+ * (north-star-alignment R2.2). The weekly reset worker clears the partition, so
+ * no week is encoded in the key and no TTL is set here.
  */
-export async function incrementLeaderboard(cityId: string, userId: string): Promise<void> {
+export async function incrementLeaderboard(cityId: string, userId: string, nodeId: string): Promise<void> {
   await documentClient.send(
     new UpdateCommand({
       TableName: TableNames.appData,
       Key: { pk: `LEADERBOARD#${cityId}`, sk: `USER#${userId}` },
-      UpdateExpression: 'ADD checkInCount :one SET userId = :u, updatedAt = :t',
+      UpdateExpression: 'ADD checkInCount :one, venues :node SET userId = :u, updatedAt = :t',
       ExpressionAttributeValues: {
         ':one': 1,
+        ':node': new Set([nodeId]),
         ':u': userId,
         ':t': new Date().toISOString(),
       },

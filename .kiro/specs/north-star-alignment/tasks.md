@@ -39,21 +39,23 @@ runs, block-statement predicates, tagged
         tsconfig excludes tests, so the beam test also asserts at runtime
     - _Requirements: 6.3_
 
-- [ ] 3. Leaderboard (R2)
-  - [ ] 3.1 Export `AbuseCheckResult`; capture the result in
+- [x] 3. Leaderboard (R2)
+  - [x] 3.1 Export `AbuseCheckResult`; capture the result in
         `processCheckIn`; gate the increment on `flags.length === 0`;
         update the two mocks to return `{ flags: [] }`
     - _Requirements: 2.3_
-  - [ ] 3.2 `incrementLeaderboard(cityId, userId, nodeId)` ADDs to a
+  - [x] 3.2 `incrementLeaderboard(cityId, userId, nodeId)` ADDs to a
         `venues` set; update `leaderboard-key-drift.test.ts`
     - _Requirements: 2.2_
-  - [ ] 3.3 Read sorts by venue count, check-ins, user id; response gains
+  - [x] 3.3 Read sorts by venue count, check-ins, user id; response gains
         `venueCount`; reset worker archives and clears both; pre-reset
-        toast says rooms
+        toast says rooms. History archives `venueCount`, not the node ids, so
+        it keeps no location trail (`honest-presence.md` rule 6). The read
+        and the worker now share one pure ranker, `social/leaderboard-rank.ts`
     - _Requirements: 2.2, 2.5_
-  - [ ] 3.4 Property 1
+  - [x] 3.4 Property 1
     - _Requirements: 2.2, 2.3_
-  - [ ] 3.5 `LeaderboardRow` rooms first; zero-week "you" state with a Map
+  - [x] 3.5 `LeaderboardRow` rooms first; zero-week "you" state with a Map
         button and no share button; delete `TierProgressNudge.tsx` and its
         import; empty board "No ranks yet. Open the map."; component tests
     - _Requirements: 2.4_
