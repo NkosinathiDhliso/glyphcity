@@ -57,9 +57,9 @@ const HOW_IT_WORKS = [
   {
     Icon: Sparkles,
     titleKey: 'landing.step3Title',
-    titleFallback: 'Earn rewards',
+    titleFallback: 'A reward from the room',
     bodyKey: 'landing.step3Body',
-    bodyFallback: 'Unlock perks. Climb the board.',
+    bodyFallback: 'Earned when you arrive.',
   },
 ] as const
 
@@ -117,17 +117,17 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
         </SkyHeader>
 
         {/* Hero */}
-        <h1 className="font-display text-3xl font-semibold leading-tight tracking-[-0.01em]">
+        <h1 data-testid="landing-hero" className="font-display text-3xl font-semibold leading-tight tracking-[-0.01em]">
           {t('landing.heroLine1', 'Find the spots')}
           <span className="block text-[var(--accent-bright)]">{t('landing.heroLine2', 'buzzing right now.')}</span>
         </h1>
         <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed max-w-xs">
-          {t('landing.subtitle', 'See which bars, cafés and clubs are alive near you | right now.')}
+          {t('landing.subtitle', 'See which bars, cafés and clubs are alive near you right now.')}
         </p>
 
         {/* How it works: the quick idea, before we ask for anything. The deeper
             "About" and live "Trending" sections below are the drill-down. */}
-        <div className="mt-6 flex flex-col gap-3">
+        <div data-testid="landing-value-lines" className="mt-6 flex flex-col gap-3">
           {HOW_IT_WORKS.map(({ Icon, titleKey, titleFallback, bodyKey, bodyFallback }) => (
             <div key={titleKey} className="flex items-start gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/15 ring-1 ring-[var(--border)]">
@@ -179,17 +179,27 @@ export function AuthLanding({ onNavigate }: AuthLandingProps) {
           explain the purpose of your app" and "home page is behind a login page".
           Do not remove unless replacing with equivalent prose.
         */}
-        <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-4">
+        <section
+          data-testid="landing-about"
+          className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-4"
+        >
           <h2 className="font-display text-base font-bold mb-2">About {APP_NAME}</h2>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-            {APP_NAME} is a real-time venue discovery and rewards app for South Africa. It shows a live map of cafes,
-            restaurants, bars, and nightlife in Johannesburg, Cape Town, and Durban, with each venue&apos;s status (from
-            quiet to very busy) updated as customers check in.
+            {t('landing.aboutP1', {
+              appName: APP_NAME,
+              defaultValue:
+                '{{appName}} is a real-time venue discovery and rewards app for South Africa. It shows a live map of ' +
+                'cafes, restaurants, bars, and nightlife in Johannesburg, Cape Town, and Durban, with each ' +
+                "venue's status (from quiet to very busy) updated as customers check in.",
+            })}
           </p>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed mt-2">
-            Customers check in when they arrive at a venue to earn rewards from that venue, climb local leaderboards,
-            and discover places that match their taste. Sign in with Google or with email and password. No phone number
-            required.
+            {t('landing.aboutP2', {
+              defaultValue:
+                'Customers check in when they arrive at a venue, earn a reward from that venue, and find places ' +
+                'that match their taste. Sign in with Google or with email and password. No phone number ' +
+                'required. Local leaderboards count the rooms each person has checked in to.',
+            })}
           </p>
         </section>
 

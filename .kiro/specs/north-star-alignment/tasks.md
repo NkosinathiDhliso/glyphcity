@@ -11,16 +11,16 @@ runs, block-statement predicates, tagged
 
 ## Tasks
 
-- [ ] 1. North-star test and landing copy (R1, R9)
-  - [ ] 1.1 `packages/shared/lib/__tests__/north-star.test.ts` reads
+- [x] 1. North-star test and landing copy (R1, R9)
+  - [x] 1.1 `packages/shared/lib/__tests__/north-star.test.ts` reads
         `rules/product.md` and asserts the heading and both sentences
     - _Requirements: 9.1_
-  - [ ] 1.2 Add the `landing.*` keys `AuthLanding.tsx` reads to `en.json`;
+  - [x] 1.2 Add the `landing.*` keys `AuthLanding.tsx` reads to `en.json`;
         remove orphaned `auth.landing.*` keys after a grep; subtitle one
         sentence; third line "A reward from the room" / "Earned when you
         arrive."; About block as two keys naming leaderboards once, last
     - _Requirements: 1.1, 1.2, 1.3, 1.5_
-  - [ ] 1.3 Playwright `consumer/landing-copy.spec.ts`: banned words and
+  - [x] 1.3 Playwright `consumer/landing-copy.spec.ts`: banned words and
         `|` absent from h1, value lines, About
     - _Requirements: 1.4, 9.2_
 
