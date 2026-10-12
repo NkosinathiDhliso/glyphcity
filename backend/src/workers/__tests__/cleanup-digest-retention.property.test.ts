@@ -106,7 +106,7 @@ describe('weekly-attribution-digest: Digest_Row retention boundary', () => {
  * Feature: proof-of-demand (R7.2), supporting property: the closed-window
  * Boost_Scoreboard cache row shares the Digest_Row 12-month horizon.
  *
- * The cache row is written by `boost-scoreboard-read.ts` through `kvSet`,
+ * The cache row was written by the retired boost scoreboard read through `kvSet`,
  * which stamps `updatedAt` and deliberately no `ttl`, so the cleanup worker
  * owns its expiry. Same strict greater-than boundary, and the digest
  * predicate must not fire on it (it has no `createdAt`), so the two sweeps

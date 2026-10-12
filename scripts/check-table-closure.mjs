@@ -10,7 +10,7 @@
 //     (which of those `*_TABLE` vars it SETS) and every `aws_iam_role_policy`
 //     that grants DynamoDB table ARNs (the shared `lambda_dynamodb` for_each
 //     members plus the inline per-Lambda policies like
-//     schedule-transition-tick and the campaign/report workers).
+//     schedule-transition-tick and the report workers).
 //
 // The invariant it FAILS on (the real July-2026 runtime failure mode, e.g. the
 // MusicSchedules AccessDenied):

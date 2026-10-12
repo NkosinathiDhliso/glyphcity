@@ -1,8 +1,6 @@
-import { APP_DOMAIN } from '@area-code/shared/constants/brand'
 import type { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 
-import { getVerifiedEmailBySub } from '../../shared/cognito/client.js'
 import { AppError } from '../../shared/errors/AppError.js'
 import { requireAuth, getAuth } from '../../shared/middleware/auth.js'
 import { requireBusinessPermission, getBusinessRole } from '../../shared/middleware/business-role.js'
@@ -10,14 +8,12 @@ import { rateLimitMiddleware } from '../../shared/middleware/rate-limit.js'
 import { validate } from '../../shared/middleware/validation.js'
 import { getRedemptionsByStaffId } from '../rewards/repository.js'
 
-import { getBoostScoreboard } from './boost-scoreboard-read.js'
 import { RECEIPT_WINDOW_NAMES } from './receipt-window.js'
 import { MalformedCursorError } from './repository.js'
 import * as service from './service.js'
 import {
   checkoutBodySchema,
   trialStartBodySchema,
-  boostBodySchema,
   staffInviteBodySchema,
   staffInviteTokenParamsSchema,
   staffIdParamsSchema,
@@ -43,17 +39,6 @@ const checkInQuerySchema = z.object({
 // is a 400 before the service runs, so no unlabelled window can be reported.
 const receiptQuerySchema = z.object({ window: z.enum(RECEIPT_WINDOW_NAMES) })
 
-// proof-of-demand R7.1: the Boost_Scoreboard read. `boostId` is the purchase's
-// `yocoCheckoutId`, so the bound is the Idempotency_Marker key's own character
-// set: anything that could never key a marker is 400 before any read runs.
-const boostIdParamsSchema = z.object({
-  boostId: z
-    .string()
-    .min(1)
-    .max(128)
-    .regex(/^[\w-]+$/),
-})
-
 // R6.1–R6.6: operator boost-purchases panel. Path-level `businessId` is
 // matched against the JWT's businessId claim (auth.userId for the business
 // role) to enforce R6.3. Cursor is optional and validated as an opaque
@@ -63,30 +48,6 @@ const businessIdParamsSchema = z.object({ businessId: z.string().min(1).max(64) 
 const boostPurchasesQuerySchema = z.object({
   cursor: z.string().min(1).optional(),
   limit: z.coerce.number().int().positive().max(100).optional(),
-})
-
-// R4.6: the admin floor routes accept `:duration` strictly in {2hr,6hr,24hr};
-// any other value is rejected with 400 by the validate middleware before
-// reaching the service layer. Mirrors the enum on `BoostDuration` in
-// types.ts so a typo here would surface at compile time too.
-const boostFloorDurationParamsSchema = z.object({
-  duration: z.enum(['2hr', '6hr', '24hr']),
-})
-
-// R4.3: floor-update body. `floorCents` must be a positive integer in
-// [1, 1_000_000] (0.01–10 000.00 ZAR); `changeReason` is an optional free-text
-// field bounded at 280 chars. Anything outside these ranges yields 400 from
-// the validate middleware and never touches DynamoDB.
-const boostFloorUpdateBodySchema = z.object({
-  floorCents: z.number().int().min(1).max(1_000_000),
-  changeReason: z.string().min(1).max(280).optional(),
-})
-
-// R5.5 / R4.7: the audit-history endpoint paginates with an opaque cursor;
-// 25 rows per page is implicit (the service-layer default). We validate only
-// that the cursor, when supplied, is a non-empty string.
-const boostFloorAuditQuerySchema = z.object({
-  cursor: z.string().min(1).optional(),
 })
 
 export async function businessRoutes(app: FastifyInstance) {
@@ -253,46 +214,6 @@ export async function businessRoutes(app: FastifyInstance) {
       const auth = getAuth(request)
       const body = request.body as z.infer<typeof trialStartBodySchema>
       return service.startTrial(auth.userId, body.plan)
-    },
-  )
-
-  // POST /v1/business/boost
-  app.post(
-    '/v1/business/boost',
-    {
-      preHandler: [requireAuth('business', 'staff'), validate({ body: boostBodySchema })],
-    },
-    async (request) => {
-      const auth = getAuth(request)
-      const body = request.body as z.infer<typeof boostBodySchema>
-      return service.purchaseBoost(auth.userId, body.nodeId, body.duration)
-    },
-  )
-
-  // GET /v1/business/boosts/:boostId/scoreboard
-  //
-  // What one Boost_Window recorded, next to the same clock window seven days
-  // earlier (proof-of-demand R7.1, R7.2). Owner-only on the same gate as the
-  // Receipt read: a boost is a billing decision, so `manage_billing` is the
-  // permission, and a manager never reads it. The business scope comes from the
-  // JWT, never the path, so the only thing the client names is which of its own
-  // purchases it is asking about.
-  app.get(
-    '/v1/business/boosts/:boostId/scoreboard',
-    {
-      preHandler: [
-        requireAuth('business', 'staff'),
-        requireBusinessPermission('manage_billing'),
-        validate({ params: boostIdParamsSchema }),
-        // The purchases list renders one scoreboard per row (R7.4), so a page of
-        // 25 purchases is 25 reads. Sized for several pages a minute.
-        rateLimitMiddleware({ key: 'business-boost-scoreboard', max: 120, windowSeconds: 60 }),
-      ],
-    },
-    async (request) => {
-      const { businessId } = getBusinessRole(request)
-      const params = request.params as z.infer<typeof boostIdParamsSchema>
-      return getBoostScoreboard(businessId, params.boostId)
     },
   )
 
@@ -647,104 +568,6 @@ export async function businessRoutes(app: FastifyInstance) {
       const { businessId } = getBusinessRole(request)
       const body = request.body as z.infer<typeof businessSettingsBodySchema>
       return service.updateDigestOptOut(businessId, body.digestEmailOptOut)
-    },
-  )
-
-  // ─── Admin Boost Floor routes (R4, R5) ──────────────────────────────────
-  //
-  // Per the booster-pricing-floor-and-audit spec (Task 7.2), the admin
-  // floor-editor lives in the existing business-handler Lambda alongside the
-  // operator boost-purchases route. All three routes below require an admin
-  // JWT via `requireAuth('admin')`; non-admin tokens are rejected with 401
-  // by the middleware itself (the requested role doesn't match), satisfying
-  // R4.5 in practice — for explicit coverage, see the role check used by
-  // analogous admin endpoints in features/admin/handler.ts. Audit-write
-  // failures inside `service.updateBoostFloor` propagate to the global
-  // error handler in app.ts which maps non-AppError throws to 500 (R5.3).
-
-  // GET /v1/admin/boost-floors — return the three BoostFloorView entries
-  // (one per duration) including default-fallback rows for un-edited
-  // durations (R4.2, R4.8).
-  app.get('/v1/admin/boost-floors', { preHandler: [requireAuth('admin')] }, async () => {
-    const items = await service.getBoostFloors()
-    return { items }
-  })
-
-  // PUT /v1/admin/boost-floors/:duration — admin updates one floor. The
-  // validate middleware enforces R4.6 (duration enum) and R4.3 (floorCents
-  // integer in [1, 1_000_000], changeReason optional 1..280 chars) and
-  // returns 400 on parse failure. The service writes the audit row before
-  // the floor row; if the audit write fails the thrown error reaches the
-  // global error handler as a 500 (R5.3).
-  app.put(
-    '/v1/admin/boost-floors/:duration',
-    {
-      preHandler: [
-        requireAuth('admin'),
-        validate({
-          params: boostFloorDurationParamsSchema,
-          body: boostFloorUpdateBodySchema,
-        }),
-      ],
-    },
-    async (request) => {
-      const auth = getAuth(request)
-      const params = request.params as z.infer<typeof boostFloorDurationParamsSchema>
-      const body = request.body as z.infer<typeof boostFloorUpdateBodySchema>
-
-      // R5.1: the audit row records `changedBy` (Cognito sub) and
-      // `changedByEmail`. The access token usually carries `email` for
-      // federated/native admin sessions; if it doesn't, fall back to
-      // reading the verified attribute from the admin Cognito pool. As a
-      // last resort use a non-routable placeholder so the audit row still
-      // satisfies the 3..254-char schema constraint and the change is not
-      // silently dropped. The Cognito sub in `changedBy` remains the
-      // authoritative identifier.
-      let email = auth.email
-      if (!email) {
-        email = await getVerifiedEmailBySub('admin', auth.cognitoSub)
-      }
-      if (!email) {
-        email = `<admin-no-email>@${APP_DOMAIN}`
-      }
-
-      return service.updateBoostFloor(params.duration, body.floorCents, body.changeReason ?? null, {
-        sub: auth.cognitoSub,
-        email,
-      })
-    },
-  )
-
-  // GET /v1/admin/boost-floors/:duration/audit — paginated, newest-first
-  // history of floor changes for one duration (R4.7, R5.5). The service
-  // layer defaults `limit` to 25, which is the page size required by R5.5.
-  app.get(
-    '/v1/admin/boost-floors/:duration/audit',
-    {
-      preHandler: [
-        requireAuth('admin'),
-        validate({
-          params: boostFloorDurationParamsSchema,
-          query: boostFloorAuditQuerySchema,
-        }),
-      ],
-    },
-    async (request) => {
-      const params = request.params as z.infer<typeof boostFloorDurationParamsSchema>
-      const query = request.query as z.infer<typeof boostFloorAuditQuerySchema>
-      const cursor = query.cursor ?? null
-
-      try {
-        return await service.listFloorChangeAudit(params.duration, cursor)
-      } catch (err) {
-        // A malformed cursor is the only client-facing failure mode beyond
-        // those caught by validate(); map it to 400 with the same code the
-        // operator panel uses so admins see a consistent error shape.
-        if (err instanceof MalformedCursorError) {
-          throw new AppError(400, 'INVALID_CURSOR', 'Invalid pagination cursor')
-        }
-        throw err
-      }
     },
   )
 

@@ -1,7 +1,6 @@
 import { api } from '@area-code/shared/lib/api'
 import { describeApiError } from '@area-code/shared/lib/apiError'
 import { formatRelativeTime } from '@area-code/shared/lib/formatters'
-import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import { useErrorStore } from '@area-code/shared/stores/errorStore'
 import type { GetCategory, GetLifecycle, Node, RepeatPolicy, Reward } from '@area-code/shared/types'
 import { useEffect, useState } from 'react'
@@ -34,37 +33,12 @@ function LifecycleBadge({ lifecycle }: { lifecycle: GetLifecycle }) {
 }
 
 /**
- * Non-blocking prompt that links a `live`/`upcoming` event/offer get to the
- * existing boost purchase flow (R6.4). It only NAVIGATES the operator to the
- * boost panel via the same `useBusinessStore.setPanel` mechanism the dashboard
- * nav uses - it never POSTs to `/v1/business/boost` and never auto-purchases or
- * auto-applies a boost (R5.5, R6.4). The copy points to the PAID boost and adds
- * no implication of free city-wide promotion (R6.5).
- *
- * NOTE: R6.4 says to suppress this prompt when the node already has an active
- * boost. No active-boost signal (e.g. `boostedUntil`/`activeBoost`/`isBoosted`)
- * is exposed to this surface today - the `Node` type carries no boost state and
- * the only boost data reachable here is the historical `BoosterPurchase` list
- * (`GET /v1/business/{businessId}/boost-purchases`), which has no live-status
- * field. Inventing a new backend boost-status endpoint is out of scope for this
- * task, so we fall back to the safe default of R6.4: always prompt for
- * `live`/`upcoming` event/offer gets. Once a node-level active-boost signal is
- * exposed, gate the render on it here.
+ * Where the boost prompt was (north-star-alignment R8.5): one line naming what
+ * replaces it, in measurement language. No button: there is nothing to buy here.
  */
-function BoostPromptBanner() {
-  const setPanel = useBusinessStore((s) => s.setPanel)
-  return (
-    <div className="mt-3 flex flex-row items-center justify-between gap-3 bg-[var(--bg-raised)] border border-[var(--border)] rounded-xl px-4 py-3">
-      <span className="text-[var(--text-secondary)] text-xs flex-1">Boost this so people across the city see it</span>
-      <button
-        type="button"
-        onClick={() => setPanel('boost')}
-        className="flex-shrink-0 bg-[var(--accent)] text-[var(--on-accent)] text-xs font-semibold rounded-lg px-3 py-1.5 active:scale-95"
-      >
-        Boost
-      </button>
-    </div>
-  )
+function ArrivalsLine() {
+  const { t } = useTranslation()
+  return <p className="mt-3 text-[var(--text-secondary)] text-xs">{t('biz.plans.arrivalsLine')}</p>
 }
 
 export function RewardsPanel() {
@@ -197,7 +171,7 @@ export function RewardsPanel() {
                   </span>
                 </div>
                 {isEventOrOffer(r.getCategory) && (r.lifecycle === 'live' || r.lifecycle === 'upcoming') && (
-                  <BoostPromptBanner />
+                  <ArrivalsLine />
                 )}
               </>
             )}

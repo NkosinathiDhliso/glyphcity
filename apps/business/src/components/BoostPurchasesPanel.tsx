@@ -4,8 +4,6 @@ import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { BoostScoreboardCard } from './BoostScoreboardCard'
-
 // Operator-facing recent BoosterPurchase view (R6.6 - server already strips
 // `tierSnapshot`, `neighbourhoodIdSnapshot`, `floorAtPurchaseCents`). We do
 // not import the backend Zod schema here to avoid a backend → frontend
@@ -99,21 +97,18 @@ export function BoostPurchasesPanel() {
     return nodes.find((n) => n.id === nodeId)?.name ?? nodeId
   }
 
+  // Boosts are no longer sold (north-star-alignment R8.2), so a business that
+  // never bought one sees nothing here; the rows stay readable for those who did.
+  if (loaded && !error && items.length === 0) return null
+
   return (
     <div className="flex flex-col gap-3 mt-4">
       <h3 className="text-[var(--text-primary)] font-bold text-base font-display">
-        {t('biz.boost.purchases.title', 'Recent purchases')}
+        {t('biz.boost.purchases.title', 'Past boost purchases')}
       </h3>
 
       {!loaded && loading && (
         <div className="text-[var(--text-secondary)] text-sm">{t('common.loading', 'Loading...')}</div>
-      )}
-
-      {/* R6.8 - empty-state copy when the response has zero items. */}
-      {loaded && !error && items.length === 0 && (
-        <div className="text-[var(--text-secondary)] text-sm">
-          {t('biz.boost.purchases.empty', 'No booster purchases yet.')}
-        </div>
       )}
 
       {items.length > 0 && (
@@ -134,9 +129,6 @@ export function BoostPurchasesPanel() {
                 </div>
                 <span className="text-[var(--accent)] font-bold text-sm">{formatAmountCents(row.amountCents)}</span>
               </div>
-
-              {/* R7.4 - what this purchase's window recorded, per purchase. */}
-              <BoostScoreboardCard boostId={row.yocoCheckoutId} />
             </div>
           ))}
         </div>

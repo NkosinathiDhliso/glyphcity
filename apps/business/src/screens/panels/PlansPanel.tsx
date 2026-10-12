@@ -4,6 +4,7 @@ import type { ReceiptWindowName } from '@area-code/shared/types'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { BoostPurchasesPanel } from '../../components/BoostPurchasesPanel'
 import { SubscriptionHistoryPanel } from '../../components/SubscriptionHistoryPanel'
 
 import { BillingStatusBanner } from './BillingStatusBanner'
@@ -348,6 +349,10 @@ export function PlansPanel() {
 
       {/* Past subscription payments (R7.5). Self-handles its own empty state. */}
       <SubscriptionHistoryPanel />
+
+      {/* Past boost purchases, read-only now that boosts are retired. Renders
+          nothing for a business that never bought one. */}
+      <BoostPurchasesPanel />
 
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-5">

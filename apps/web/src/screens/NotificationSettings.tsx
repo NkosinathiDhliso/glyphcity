@@ -4,7 +4,6 @@ import {
   NOTIFICATION_PREFERENCE_DEFAULTS as DEFAULTS,
   type NotificationPreferenceKey,
 } from '@area-code/shared/constants/notification-preferences'
-import { api } from '@area-code/shared/lib/api'
 import {
   readNotificationPreferences,
   updateNotificationPreferences,
@@ -41,39 +40,6 @@ export function NotificationSettings() {
     } catch {
       setPrefs(previous)
       useErrorStore.getState().showError(t('notif.settings.saveFailed'))
-    }
-  }
-
-  // Marketing (win-back campaign) opt-out. Separate from the transactional
-  // preferences above; controls the global campaign opt-out for this consumer
-  // across every business (POPIA, reversible).
-  const [marketingOptedOut, setMarketingOptedOut] = useState(false)
-  const [marketingBusy, setMarketingBusy] = useState(false)
-
-  useQuery({
-    queryKey: ['campaign-optout'],
-    queryFn: async () => {
-      const res = await api.get<{ optedOut: boolean }>('/v1/users/me/campaign-optout')
-      setMarketingOptedOut(res.optedOut)
-      return res
-    },
-    staleTime: 60_000,
-  })
-
-  async function toggleMarketing() {
-    if (marketingBusy) return
-    // The switch reads "receive marketing offers": ON = not opted out.
-    const currentlyOptedOut = marketingOptedOut
-    setMarketingBusy(true)
-    setMarketingOptedOut(!currentlyOptedOut)
-    try {
-      // optOut:true opts out, optOut:false opts back in. Global scope (no businessId).
-      await api.post('/v1/users/me/campaign-optout', { optOut: !currentlyOptedOut })
-    } catch {
-      setMarketingOptedOut(currentlyOptedOut)
-      useErrorStore.getState().showError(t('notif.settings.saveFailed'))
-    } finally {
-      setMarketingBusy(false)
     }
   }
 
@@ -127,38 +93,6 @@ export function NotificationSettings() {
               </span>
             </button>
           ))}
-
-          {/* Marketing opt-out (win-back campaigns). ON = receiving. */}
-          <button
-            onClick={() => void toggleMarketing()}
-            disabled={marketingBusy}
-            className="flex flex-row items-center justify-between bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl px-4 py-3 text-left mt-2"
-          >
-            <div className="flex-1 min-w-0 pr-3">
-              <p className="text-[var(--text-primary)] text-sm font-medium">
-                {t('notif.settings.marketing', 'Win-back offers')}
-              </p>
-              <p className="text-[var(--text-secondary)] text-xs mt-0.5">
-                {t(
-                  'notif.settings.marketingDesc',
-                  'Let venues you have visited send you occasional offers to come back.',
-                )}
-              </p>
-            </div>
-            <span
-              className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${
-                !marketingOptedOut ? 'bg-[var(--accent)]' : 'bg-[var(--bg-raised)] border border-[var(--border)]'
-              }`}
-              role="switch"
-              aria-checked={!marketingOptedOut}
-            >
-              <span
-                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                  !marketingOptedOut ? 'translate-x-5' : 'translate-x-0.5'
-                }`}
-              />
-            </span>
-          </button>
         </div>
       )}
     </div>

@@ -17,7 +17,6 @@ import { OnboardingChecklistCard } from './panels/OnboardingChecklistCard'
 const LivePanel = lazy(() => import('./panels/LivePanel').then((m) => ({ default: m.LivePanel })))
 const RewardsPanel = lazy(() => import('./panels/RewardsPanel').then((m) => ({ default: m.RewardsPanel })))
 const AudiencePanel = lazy(() => import('./panels/AudiencePanel').then((m) => ({ default: m.AudiencePanel })))
-const BoostPanel = lazy(() => import('./panels/BoostPanel').then((m) => ({ default: m.BoostPanel })))
 const PlansPanel = lazy(() => import('./panels/PlansPanel').then((m) => ({ default: m.PlansPanel })))
 const SettingsPanel = lazy(() => import('./panels/SettingsPanel').then((m) => ({ default: m.SettingsPanel })))
 const CheckInDetailPanel = lazy(() =>
@@ -35,7 +34,6 @@ const StaffLeaderboardPanel = lazy(() =>
 const ReportsPanel = lazy(() => import('./panels/ReportsPanel').then((m) => ({ default: m.ReportsPanel })))
 const DigestCard = lazy(() => import('./panels/DigestCard').then((m) => ({ default: m.DigestCard })))
 const DigestHistory = lazy(() => import('./panels/DigestHistory').then((m) => ({ default: m.DigestHistory })))
-const CampaignsPanel = lazy(() => import('./panels/CampaignsPanel').then((m) => ({ default: m.CampaignsPanel })))
 const MusicSchedulePanel = lazy(() => import('./MusicSchedulePanel').then((m) => ({ default: m.MusicSchedulePanel })))
 const TonightForm = lazy(() => import('./panels/TonightForm').then((m) => ({ default: m.TonightForm })))
 
@@ -45,13 +43,11 @@ const PANELS: DashboardPanel[] = [
   'rewards',
   'reward-metrics',
   'audience',
-  'boost',
   'tonight',
   'music-schedule',
   'staff-leaderboard',
   'staff-redemptions',
   'reports',
-  'campaigns',
   'plans',
   'settings',
 ]
@@ -62,13 +58,11 @@ const PANEL_LABELS: Record<DashboardPanel, string> = {
   rewards: 'biz.panel.rewards',
   'reward-metrics': 'biz.panel.rewardMetrics',
   audience: 'biz.panel.audience',
-  boost: 'biz.panel.boost',
   tonight: 'biz.panel.tonight',
   'music-schedule': 'biz.panel.musicSchedule',
   'staff-leaderboard': 'biz.panel.staffLeaderboard',
   'staff-redemptions': 'biz.panel.staffRedemptions',
   reports: 'biz.panel.reports',
-  campaigns: 'biz.panel.campaigns',
   plans: 'biz.panel.plans',
   settings: 'biz.panel.settings',
 }
@@ -81,7 +75,6 @@ const PANEL_PERMISSIONS: Record<DashboardPanel, string> = {
   rewards: 'view_rewards',
   'reward-metrics': 'view_metrics',
   audience: 'view_audience',
-  boost: 'manage_boost',
   // Tonight edits the same Music_Schedule the weekly grid does, so it rides the
   // same permission.
   tonight: 'view_settings',
@@ -89,7 +82,6 @@ const PANEL_PERMISSIONS: Record<DashboardPanel, string> = {
   'staff-leaderboard': 'view_staff',
   'staff-redemptions': 'view_staff',
   reports: 'view_reports',
-  campaigns: 'manage_campaigns',
   plans: 'view_plans',
   settings: 'view_settings',
 }
@@ -204,8 +196,6 @@ export function BusinessDashboard() {
         return <RewardMetricsPanel />
       case 'audience':
         return <AudiencePanel />
-      case 'boost':
-        return <BoostPanel />
       case 'staff-redemptions':
         return <StaffRedemptionPanel />
       case 'staff-leaderboard':
@@ -220,8 +210,6 @@ export function BusinessDashboard() {
             <ReportsPanel />
           </>
         )
-      case 'campaigns':
-        return <CampaignsPanel />
       case 'tonight':
         return <TonightForm />
       case 'music-schedule':

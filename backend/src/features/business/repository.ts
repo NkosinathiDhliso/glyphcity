@@ -38,20 +38,16 @@ import {
   boostFloorRowSchema,
   boosterCheckoutMarkerRowSchema,
   boosterPurchaseRowSchema,
-  floorChangeAuditRowSchema,
   subscriptionPaymentRowSchema,
   subCheckoutMarkerRowSchema,
   type BoostDuration,
   type BoostFloorRow,
   type BoosterCheckoutMarkerRow,
   type BoosterPurchaseRow,
-  type FloorChangeAuditRow,
   type PaidInterval,
   type SubscriptionPaymentRow,
   type SubCheckoutMarkerRow,
 } from './types.js'
-
-const BOOST_DURATIONS: readonly BoostDuration[] = ['2hr', '6hr', '24hr'] as const
 
 export async function findBusinessById(id: string) {
   return getBusinessDynamo(id)
@@ -1186,7 +1182,7 @@ export async function putBoosterPurchaseWithMarker(args: {
 // We Zod-parse every read result so a malformed row in DynamoDB does not
 // crash callers. A parse failure is logged via `console.warn` and treated
 // as missing (`null` for `getBoostFloor`, omitted for `listBoostFloors`)
-// so the service-layer `BOOST_FLOOR_DEFAULTS` fallback path takes over.
+// so the webhook snapshots the `BOOST_PRICING` list price instead.
 
 export async function getBoostFloor(duration: BoostDuration): Promise<BoostFloorRow | null> {
   const result = await documentClient.send(
@@ -1203,32 +1199,6 @@ export async function getBoostFloor(duration: BoostDuration): Promise<BoostFloor
     return null
   }
   return parsed.data
-}
-
-export async function listBoostFloors(): Promise<BoostFloorRow[]> {
-  const result = await documentClient.send(
-    new BatchGetCommand({
-      RequestItems: {
-        [TableNames.appData]: {
-          Keys: BOOST_DURATIONS.map((duration) => ({ pk: 'BOOST_FLOOR', sk: duration })),
-        },
-      },
-    }),
-  )
-
-  const items = result.Responses?.[TableNames.appData] ?? []
-  const rows: BoostFloorRow[] = []
-  for (const item of items) {
-    const parsed = boostFloorRowSchema.safeParse(item)
-    if (!parsed.success) {
-      console.warn(
-        `[business] listBoostFloors: skipping malformed BoostFloor_Row sk=${String(item['sk'])}: ${parsed.error.message}`,
-      )
-      continue
-    }
-    rows.push(parsed.data)
-  }
-  return rows
 }
 
 // ─── Cursor parsing ─────────────────────────────────────────────────────────
@@ -1262,84 +1232,6 @@ function decodeCursor(cursor: string): Record<string, unknown> {
 function encodeCursor(key: Record<string, unknown> | undefined): string | null {
   if (!key) return null
   return Buffer.from(JSON.stringify(key)).toString('base64url')
-}
-
-// ─── Floor audit write & query ──────────────────────────────────────────────
-//
-// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 3.
-//
-// Audit-first ordering for floor updates (R5.2): the
-// `Floor_Change_Audit_Row` is written *before* the `BoostFloor_Row` is
-// updated so no reader can observe a new floor before its audit row is
-// durable. If the audit write fails, the floor row is left untouched
-// (R5.3) and the error propagates so the handler returns 500.
-//
-// `BoostFloor_Row` `PutItem` is unconditional — overwrite is the intended
-// semantic for an admin update; `updatedAt` / `updatedBy` are already on
-// the `next` row passed in by the caller.
-//
-// `Floor_Change_Audit_Row` `PutItem` is also unconditional: the unique
-// `sk` includes a UUID v4 `changeId` so collisions are vanishingly
-// unlikely, and a duplicate audit row is preferable to a missing one.
-
-export async function writeFloorAuditThenUpdateFloor(args: {
-  audit: FloorChangeAuditRow
-  next: BoostFloorRow
-}): Promise<void> {
-  const { audit, next } = args
-
-  // Step 1: write the audit row first. If this fails, propagate without
-  // touching the floor row so the BoostFloor_Row stays unchanged (R5.3).
-  await documentClient.send(
-    new PutCommand({
-      TableName: TableNames.appData,
-      Item: audit,
-    }),
-  )
-
-  // Step 2: only on audit-write success do we update the floor row.
-  // Overwrite semantics — this is an admin-driven update path.
-  await documentClient.send(
-    new PutCommand({
-      TableName: TableNames.appData,
-      Item: next,
-    }),
-  )
-}
-
-export async function queryFloorChangeAudit(
-  duration: BoostDuration,
-  cursor: string | null,
-  limit: number,
-): Promise<{ items: FloorChangeAuditRow[]; nextCursor: string | null }> {
-  const params: Record<string, unknown> = {
-    TableName: TableNames.appData,
-    KeyConditionExpression: 'pk = :pk',
-    ExpressionAttributeValues: { ':pk': `BOOST_FLOOR_AUDIT#${duration}` },
-    ScanIndexForward: false, // newest-first (R5.5)
-    Limit: limit,
-  }
-  if (cursor) {
-    ;(params as { ExclusiveStartKey?: Record<string, unknown> }).ExclusiveStartKey = decodeCursor(cursor)
-  }
-
-  const result = await documentClient.send(new QueryCommand(params as any))
-  const items: FloorChangeAuditRow[] = []
-  for (const item of result.Items ?? []) {
-    const parsed = floorChangeAuditRowSchema.safeParse(item)
-    if (!parsed.success) {
-      console.warn(
-        `[business] queryFloorChangeAudit: skipping malformed Floor_Change_Audit_Row sk=${String(item['sk'])}: ${parsed.error.message}`,
-      )
-      continue
-    }
-    items.push(parsed.data)
-  }
-
-  return {
-    items,
-    nextCursor: encodeCursor(result.LastEvaluatedKey as Record<string, unknown> | undefined),
-  }
 }
 
 // ─── BoosterPurchase reads ──────────────────────────────────────────────────

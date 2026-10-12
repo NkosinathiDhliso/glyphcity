@@ -316,7 +316,6 @@ function Invoke-AwsJson {
 # verify), not FAIL; a resolved non-zero depth is a FAIL naming the observed count.
 $dlqNames = @(
     "area-code-prod-reward-eval-dlq",
-    "area-code-prod-campaign-send-dlq",
     "area-code-prod-report-generation-dlq"
 )
 
@@ -1110,9 +1109,7 @@ function Get-FunctionLastModifiedMs {
 # 9.3 Worker error scan: an ERROR filter looped over the worker log groups,
 # scoped to the deploy-aware window below. Lambda function names differ from
 # some SQS queue names, so the log-group names use the real Lambda names: the
-# campaign worker Lambda is `campaign-sender` (queue: campaign-send) and the
-# report worker Lambda is
-# `report-generator` (queue: report-generation). There is no push-sender worker
+# report worker Lambda is `report-generator` (queue: report-generation). There is no push-sender worker
 # Lambda or push-sender SQS queue: the queue was deleted (report-ready now
 # delivers via SES + WebSocket), so no `area-code-prod-push-sender` log group
 # exists and none is scanned.
@@ -1124,14 +1121,13 @@ function Get-FunctionLastModifiedMs {
 # than 7 days ago proves it has never run = FAIL (Req 5.3). SQS-triggered
 # workers legitimately stay quiet when no message ever arrives, so a missing
 # log group there stays WARN however old the deploy is. Scheduled: presence-
-# expiry, pulse-decay, tonight-known-venue-reminder. SQS: reward-evaluator, campaign-sender,
+# expiry, pulse-decay, tonight-known-venue-reminder. SQS: reward-evaluator,
 # report-generator (see infra/environments/prod/main.tf eventbridge schedules
 # vs SQS event source mappings).
 $workerLogGroups = @(
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-reward-evaluator"; Scheduled = $false },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-presence-expiry"; Scheduled = $true },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-pulse-decay"; Scheduled = $true },
-    [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-campaign-sender"; Scheduled = $false },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-report-generator"; Scheduled = $false },
     [pscustomobject]@{ LogGroup = "/aws/lambda/area-code-prod-tonight-known-venue-reminder"; Scheduled = $true }
 )

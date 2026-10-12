@@ -34,7 +34,7 @@ interface BoostPurchasesResponse {
 
 const PAGE_LIMIT = 25
 
-// Format `cents` as `R<X>.<YY>` - same convention used in BoostFloorEditor and
+// Format `cents` as `R<X>.<YY>` - same convention used in
 // the operator BoostPurchasesPanel so admins read amounts consistently across
 // the platform (R7.6).
 function formatAmountCents(cents: number): string {

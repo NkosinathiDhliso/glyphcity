@@ -106,25 +106,40 @@ runs, block-statement predicates, tagged
         `terraform plan` not run here (no Terraform in this environment)
     - _Requirements: 3.2, 3.4a_
 
-- [ ] 6. Removals, release A (R8.2 release A, R8.3)
-  - [ ] 6.1 Boost sale: delete every item in the R8.2 release A list;
+- [x] 6. Removals, release A (R8.2 release A, R8.3)
+  - [x] 6.1 Boost sale: delete every item in the R8.2 release A list;
         keep every item in the release A keep list; Plans copy loses boost
-        lines; grep for each deleted symbol returns nothing
+        lines; grep for each deleted symbol returns nothing.
+        Deviations: `BoostPurchasesPanel` lost its only home with `BoostPanel`,
+        so it moved to the Plans panel (renders nothing for a business that
+        never bought a boost), without the scoreboard card. Its no-leak test
+        `operator-boost-render.property.test.tsx` is kept, because the panel
+        it guards still renders. `manage_boost` left the role permissions.
+        `boost-floors` editor-only repository functions and audit types went
+        with the routes; `getBoostFloor` stays for the webhook snapshot.
+        The proof-of-demand rehearsal drops its boost-scoreboard act
     - _Requirements: 8.2_
-  - [ ] 6.2 Campaigns: delete every item in the R8.3 removed list; keep the
+  - [x] 6.2 Campaigns: delete every item in the R8.3 removed list; keep the
         kept list; `campaigns/handler.ts` down to list, get, unsubscribe;
-        grep for each deleted symbol returns nothing
+        grep for each deleted symbol returns nothing. Campaign detail now
+        returns the stored counts, like the list: live return-visit
+        attribution needed `anonymize.ts` and the send records, both retired.
+        `sendCampaignEmail` had no other caller and went too
     - _Requirements: 8.3_
-  - [ ] 6.3 Terraform both environments: remove dispatcher and sender
+  - [x] 6.3 Terraform both environments: remove dispatcher and sender
         modules, `campaign-send` queue and DLQ, the API invoke statement,
-        the two env vars; `terraform plan` shows only those removals
+        the two env vars; `terraform plan` shows only those removals.
+        Removed by hand and the closure checks pass; `terraform plan` not run
+        here (no Terraform in this environment). The two env vars were never in
+        `shared/config/env.ts`
     - _Requirements: 8.3_
-  - [ ] 6.4 `rules/tech.md`, `shared/config/env.ts`,
+  - [x] 6.4 `rules/tech.md`, `shared/config/env.ts`,
         `check-table-closure.mjs`, `go-live-check.ps1`,
         `check-brand-strings.mjs` updated; `pnpm sync:rules`
     - _Requirements: 8.3_
-  - [ ] 6.5 Owner copy where the controls were: "Be on the map. Pay for
-        arrivals." under the honest-copy test
+  - [x] 6.5 Owner copy where the controls were: "Be on the map. Pay for
+        arrivals." under the honest-copy test. One line, `biz.plans.arrivalsLine`,
+        where the boost prompt sat on live and upcoming event/offer gets
     - _Requirements: 8.5_
 
 - [ ] 7. Boost release B (R8.2 release B), at least 7 days after 6 is live

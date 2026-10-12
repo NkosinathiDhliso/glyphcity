@@ -10,7 +10,6 @@ import { AbuseFlagDashboard } from './AbuseFlagDashboard'
 import { AcquisitionFunnel } from './AcquisitionFunnel'
 import { AdminIAM } from './AdminIAM'
 import { AuditTrailViewer } from './AuditTrailViewer'
-import { BoostFloorEditor } from './BoostFloorEditor'
 import { BoostPurchaseReport } from './BoostPurchaseReport'
 import { BusinessManagement } from './BusinessManagement'
 import { ConsentAudit } from './ConsentAudit'
@@ -35,7 +34,6 @@ type Tab =
   | 'audit-trail'
   | 'consent'
   | 'archetypes'
-  | 'boost-floors'
   | 'boost-purchases'
   | 'subscription-payments'
   | 'genre-weights'
@@ -54,7 +52,6 @@ const TAB_LABELS: Record<Tab, string> = {
   'audit-trail': 'admin.nav.auditTrail',
   consent: 'admin.nav.consent',
   archetypes: 'admin.nav.archetypes',
-  'boost-floors': 'admin.nav.boostFloors',
   'boost-purchases': 'admin.nav.boostPurchases',
   'subscription-payments': 'admin.nav.subscriptionPayments',
   'genre-weights': 'admin.nav.genreWeights',
@@ -77,7 +74,6 @@ function getVisibleTabs(role: string | null): Tab[] {
         'audit-trail',
         'consent',
         'archetypes',
-        'boost-floors',
         'boost-purchases',
         'subscription-payments',
         'genre-weights',
@@ -169,7 +165,6 @@ export function AdminDashboard() {
         {activeTab === 'audit-trail' && <AuditTrailViewer />}
         {activeTab === 'consent' && <ConsentAudit />}
         {activeTab === 'archetypes' && <ArchetypeManagement />}
-        {activeTab === 'boost-floors' && <BoostFloorEditor />}
         {activeTab === 'boost-purchases' && <BoostPurchaseReport />}
         {activeTab === 'subscription-payments' && <SubscriptionPaymentsReport />}
         {activeTab === 'genre-weights' && <GenreWeightEditor />}

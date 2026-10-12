@@ -7,7 +7,6 @@ type DashboardPanel =
   | 'live'
   | 'rewards'
   | 'audience'
-  | 'boost'
   | 'plans'
   | 'settings'
   | 'check-ins'
@@ -15,35 +14,18 @@ type DashboardPanel =
   | 'staff-redemptions'
   | 'staff-leaderboard'
   | 'reports'
-  | 'campaigns'
   // One night at a time (proof-of-demand R8.3). `music-schedule` stays for the
   // weekly grid; this is the dated Tonight form.
   | 'tonight'
   | 'music-schedule'
 
-/**
- * One-tap win-back prefill: the Reports panel writes this when a retention
- * recommendation's "Create win-back campaign" CTA is tapped, then switches to
- * the campaigns panel. The Campaigns panel consumes it once to seed the
- * composer, then clears it.
- */
-export interface CampaignPrefill {
-  segment: 'lapsed' | 'first_timers' | 'regulars' | 'all_past_visitors'
-  nodeIds: string[]
-  title: string
-  body: string
-  reportId?: string
-}
-
 interface BusinessState {
   business: BusinessAccount | null
   nodes: Node[]
   currentPanel: DashboardPanel
-  campaignPrefill: CampaignPrefill | null
   setBusiness: (business: BusinessAccount) => void
   setNodes: (nodes: Node[]) => void
   setPanel: (panel: DashboardPanel) => void
-  setCampaignPrefill: (prefill: CampaignPrefill | null) => void
   clearBusiness: () => void
 }
 
@@ -52,7 +34,6 @@ export const useBusinessStore = create<BusinessState>()(
     business: null,
     nodes: [],
     currentPanel: 'live',
-    campaignPrefill: null,
     setBusiness: (business) =>
       set((state) => {
         state.business = business
@@ -65,16 +46,11 @@ export const useBusinessStore = create<BusinessState>()(
       set((state) => {
         state.currentPanel = panel
       }),
-    setCampaignPrefill: (prefill) =>
-      set((state) => {
-        state.campaignPrefill = prefill
-      }),
     clearBusiness: () =>
       set((state) => {
         state.business = null
         state.nodes = []
         state.currentPanel = 'live'
-        state.campaignPrefill = null
       }),
   })),
 )

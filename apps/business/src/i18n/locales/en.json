@@ -23,7 +23,6 @@
   "biz.panel.rewards": "Gets",
   "biz.panel.audience": "Audience",
   "biz.panel.node": "Node",
-  "biz.panel.boost": "Boost",
   "biz.panel.plans": "Plans",
   "biz.panel.settings": "Settings",
   "biz.plans.title": "Plans & Pricing",
@@ -57,7 +56,6 @@
   "biz.audience.title": "Audience Insights",
   "biz.audience.minUsers": "Minimum 20 unique visitors required",
   "biz.audience.notEnoughData": "Not enough data yet",
-  "biz.boost.title": "Boost Your Node",
   "biz.settings.title": "Settings",
   "biz.settings.subscription": "Subscription",
   "biz.settings.staff": "Staff",
@@ -82,7 +80,6 @@
   "biz.panel.staffRedemptions": "Staff",
   "biz.panel.staffLeaderboard": "Leaderboard",
   "biz.panel.reports": "Reports",
-  "biz.panel.campaigns": "Campaigns",
   "biz.panel.tonight": "Tonight",
   "biz.panel.musicSchedule": "Music Schedule",
   "biz.tonight.title": "Tonight",
@@ -162,12 +159,12 @@
   "biz.onboarding.row.reward": "Publish one get so a first-timer has a reason to walk in",
   "biz.onboarding.row.staff": "Invite a staff member to validate redemptions",
   "biz.onboarding.row.qr": "Turn on QR check-in and put the code where customers order",
-
   "biz.marketing.reach.title": "How people find you",
   "biz.marketing.reach.intro": "Four ways someone who has never been in sees your venue on {{appName}}. Each one is recorded, so your check-in numbers show what it did.",
   "biz.marketing.reach.map": "On the map. Your venue is ranked by how alive it is right now and how well its crowd matches the person looking, not by how near it is.",
   "biz.marketing.reach.tonight": "Tonight on your card. What is on and when it starts reads as one line on your venue card, so someone deciding where to go sees it.",
   "biz.marketing.reach.shares": "WhatsApp shares. Your venue link previews the room as it is right now, so a customer who forwards it shows friends a live snapshot.",
   "biz.marketing.reach.friends": "Friends. A check-in is visible to that customer's friends, which puts your venue in front of their circle.",
-  "biz.marketing.reach.measured": "Every check-in is recorded as found you on {{appName}} or already in the room. You read both counts, and we claim nothing we have not measured."
+  "biz.marketing.reach.measured": "Every check-in is recorded as found you on {{appName}} or already in the room. You read both counts, and we claim nothing we have not measured.",
+  "biz.plans.arrivalsLine": "Be on the map. Pay for arrivals."
 }

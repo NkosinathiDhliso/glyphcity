@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from 'node:crypto'
+import { createHmac } from 'node:crypto'
 
 import { APP_DOMAIN } from '@area-code/shared/constants/brand'
 import type {
@@ -23,15 +23,11 @@ import { getLatestDigest, queryDigestHistory } from '../reports/repository.js'
 import type { DigestRow } from '../reports/types.js'
 import { classifyLifecycle, type Lifecycle } from '../rewards/lifecycle.js'
 
-import { decideBoostFloorWithMetric, type BoostMetricInput } from './floor-decision.js'
 import { resolveReceiptWindow, type SubscriptionWindowFacts } from './receipt-window.js'
 import * as repo from './repository.js'
 import {
   BUSINESS_PLANS,
   BOOST_PRICING,
-  BOOST_FLOOR_DEFAULTS,
-  BOOST_FLOOR_MAX_CENTS,
-  BOOST_FLOOR_MIN_CENTS,
   ADMIN_BOOST_REPORT_MAX_RANGE_DAYS,
   PAID_INTERVALS,
   SUBSCRIPTION_GRACE_DAYS,
@@ -41,14 +37,11 @@ import {
   boostWindowEnd,
   type AdminBoosterPurchaseView,
   type BoostDuration,
-  type BoostFloorRow,
-  type BoostFloorView,
   type BoosterCheckoutMarkerRow,
   type BoosterPurchaseRow,
   type BoosterPurchaseView,
   type BOOST_LOG_BRANCHES,
-  type FloorChangeAuditRow,
-  type FloorChangeAuditView,
+  type BoostMetricInput,
   type PaidInterval,
   type SubscriptionPaymentRow,
   type SubscriptionPaymentView,
@@ -74,43 +67,18 @@ import {
 // "single-line JSON to stdout" convention so CloudWatch log-metric filters
 // can pick the fields up.
 //
-// `floor_loaded_from_const_fallback` and `floor_violation_rejected` log at
-// `warn` level (operator-actionable signals); the rest log at `info`.
-
-const BOOST_BRANCHES_AT_WARN_LEVEL: ReadonlySet<BOOST_LOG_BRANCHES> = new Set([
-  'floor_loaded_from_const_fallback',
-  'floor_violation_rejected',
-])
+// The sale path is retired (north-star-alignment R8.2 release A); these
+// branches cover the webhook audit write that stays until release B.
 
 function logBoostBranch(branch: BOOST_LOG_BRANCHES, fields: Record<string, unknown> = {}): void {
-  const line = JSON.stringify({
-    feature: 'business',
-    operation: 'purchaseBoost',
-    branch,
-    ...fields,
-  })
-  if (BOOST_BRANCHES_AT_WARN_LEVEL.has(branch)) {
-    console.warn(line)
-  } else {
-    console.info(line)
-  }
+  console.info(JSON.stringify({ feature: 'business', operation: 'persistBoosterPurchase', branch, ...fields }))
 }
 
-// ─── BoostFloorViolation CloudWatch metric adapter ──────────────────────────
+// ─── Booster CloudWatch metric adapter ──────────────────────────────────────
 //
-// R9.5: a `BoostFloorViolation` metric is emitted with dimensions
-// `{ duration, businessId }` whenever a checkout is rejected for being below
-// the floor. The metric is emitted only on actual violations — no zero-count
-// heartbeat. The CloudWatch client is constructed lazily so cold-starts that
-// never reject a booster pay no SDK init cost, and a single instance is
-// reused across invocations of the same Lambda container (one client per
-// cold start, arm64-friendly).
-//
-// `decideBoostFloorWithMetric` (in `./floor-decision.ts`) already encodes the
-// "metric-emission failure must not block rejection" contract — it swallows
-// any throw from `putMetric` and still returns the reject decision. We adapt
-// the SDK to that helper's `PutMetricFn` shape rather than duplicating the
-// try/catch here.
+// R9.6: the webhook emits `BoostPurchaseAuditMissing` when the audit write
+// fails. The CloudWatch client is constructed lazily so a cold start that never
+// emits pays no SDK init cost.
 
 async function putBoostMetric(input: BoostMetricInput): Promise<void> {
   const { PutMetricDataCommand } = await import('@aws-sdk/client-cloudwatch')
@@ -129,40 +97,6 @@ async function putBoostMetric(input: BoostMetricInput): Promise<void> {
       ],
     }),
   )
-}
-
-// ─── Const-fallback warn-log cold-start guard ───────────────────────────────
-//
-// R3.2 / R9.3: when any BoostFloor_Row is missing, fall back to
-// `BOOST_PRICING[duration]` and emit a single `warn`-level log per cold start
-// with `branch=floor_loaded_from_const_fallback`. The flag is module-scoped
-// and reset by the Lambda runtime on every cold start.
-
-let floorFallbackLoggedThisColdStart = false
-
-// ─── Booster Floor Check (pure) ─────────────────────────────────────────────
-
-/**
- * Pure decision function for the booster price-floor check.
- *
- * Used by both `purchaseBoost` (which integrates this into the checkout-creation
- * path in task 3.3) and the property test in
- * `__tests__/floor-check.property.test.ts`. Observably pure: no I/O, no
- * `Date.now()`, no globals — so the property test can run it 100+ times against
- * arbitrary inputs and rely on the result depending only on its arguments.
- *
- * Returns `accept` if and only if `computedPriceCents >= floorCents`.
- *
- * Validates: Requirements 3.3, 3.4, 10.1
- */
-export function checkBoostFloor(
-  computedPriceCents: number,
-  floorCents: number,
-): { decision: 'accept' } | { decision: 'reject'; code: 'BOOST_BELOW_FLOOR' } {
-  if (computedPriceCents >= floorCents) {
-    return { decision: 'accept' }
-  }
-  return { decision: 'reject', code: 'BOOST_BELOW_FLOOR' }
 }
 
 // ─── Onboarding Status ──────────────────────────────────────────────────────
@@ -289,11 +223,6 @@ export function getPlans() {
       maxRewards: BUSINESS_PLANS.payg.maxRewards,
       maxStaff: BUSINESS_PLANS.payg.maxStaff,
     },
-    boost: {
-      '2hr': BOOST_PRICING['2hr'],
-      '6hr': BOOST_PRICING['6hr'],
-      '24hr': BOOST_PRICING['24hr'],
-    },
   }
 }
 
@@ -378,80 +307,6 @@ export async function createCheckoutSession(businessId: string, plan: 'growth' |
 
   const metadata = { businessId, plan, interval: interval ?? '', type: 'subscription' }
   const { id, redirectUrl } = await createYocoCheckout(amountCents, metadata, '/plans')
-
-  return {
-    checkoutUrl: redirectUrl,
-    checkoutId: id,
-    amountCents,
-    currency: 'ZAR',
-    metadata,
-  }
-}
-
-// ─── Boost ──────────────────────────────────────────────────────────────────
-
-export async function purchaseBoost(businessId: string, nodeId: string, duration: BoostDuration) {
-  if (DEV_MODE) {
-    const amountCents = BOOST_PRICING[duration]
-    return {
-      checkoutUrl: '#dev-boost',
-      amountCents,
-      currency: 'ZAR',
-      metadata: { businessId, nodeId, duration, type: 'boost' },
-    }
-  }
-  const node = await repo.getNodeForBusiness(nodeId, businessId)
-  if (!node) throw AppError.forbidden('You do not own this node')
-
-  const amountCents = BOOST_PRICING[duration]
-
-  // ── Floor enforcement (R3.1, R3.2, R3.3, R3.4, R9.1–R9.5) ────────────────
-  //
-  // Resolve the effective floor, preferring the persisted `BoostFloor_Row` and
-  // falling back to `BOOST_PRICING[duration]` (which equals
-  // `BOOST_FLOOR_DEFAULTS[duration]` by construction) when the row is missing.
-  // The fallback warn-log fires once per cold start so an operator can answer
-  // "why did the rejection branch never fire" without re-running the request
-  // locally.
-  const floorRow = await repo.getBoostFloor(duration)
-  let effectiveFloor: number
-  if (floorRow !== null) {
-    effectiveFloor = floorRow.floorCents
-    logBoostBranch('floor_loaded_from_dynamo', {
-      businessId,
-      duration,
-      effectiveFloor,
-    })
-  } else {
-    effectiveFloor = BOOST_PRICING[duration]
-    if (!floorFallbackLoggedThisColdStart) {
-      floorFallbackLoggedThisColdStart = true
-      logBoostBranch('floor_loaded_from_const_fallback', {
-        duration,
-        effectiveFloor,
-        reason: 'BoostFloor_Row missing; falling back to BOOST_PRICING const',
-      })
-    }
-  }
-
-  // `decideBoostFloorWithMetric` (task 3.2) encodes the
-  // "metric-emission failure must not block rejection" contract from R9.5 —
-  // it swallows any throw from `putBoostMetric` and still returns the reject
-  // decision. We rely on that here rather than duplicating the try/catch.
-  const decision = await decideBoostFloorWithMetric(amountCents, effectiveFloor, duration, businessId, putBoostMetric)
-
-  if (decision.decision === 'reject') {
-    logBoostBranch('floor_violation_rejected', {
-      businessId,
-      duration,
-      amountCents,
-      effectiveFloor,
-    })
-    throw new AppError(400, 'BOOST_BELOW_FLOOR', 'Booster price is below the configured floor for this duration')
-  }
-
-  const metadata = { businessId, nodeId, duration, type: 'boost' }
-  const { id, redirectUrl } = await createYocoCheckout(amountCents, metadata, '/boost')
 
   return {
     checkoutUrl: redirectUrl,
@@ -865,9 +720,8 @@ async function persistBoosterPurchase(payload: Record<string, unknown>): Promise
   const neighbourhoodIdSnapshot =
     nodeRec && typeof nodeRec['neighbourhoodId'] === 'string' ? (nodeRec['neighbourhoodId'] as string) : null
 
-  // R1.2: snapshot the effective floor at write time using the same fallback
-  // semantics as `purchaseBoost` so the value persisted on the row reflects
-  // the floor that was in force when the payment landed.
+  // R1.2: snapshot the floor in force when the payment landed: the stored
+  // BoostFloor_Row, else the list price it was seeded from.
   const floorRow = await repo.getBoostFloor(validDuration)
   const floorAtPurchaseCents = floorRow?.floorCents ?? BOOST_PRICING[validDuration]
 
@@ -1761,188 +1615,6 @@ export async function getDigestHistoryView(
   return { items: items.map(toDigestView), nextCursor: nextCursor ?? null }
 }
 
-// ─── Admin Boost Floor Management (R4, R5) ──────────────────────────────────
-//
-// See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Flow 3
-// (audit-row-first floor update). The three functions below back the admin
-// portal Floor_Editor: `getBoostFloors` returns the three floors merged with
-// their `BOOST_FLOOR_DEFAULTS` fallback (R4.8), `updateBoostFloor` writes the
-// `Floor_Change_Audit_Row` before the `BoostFloor_Row` so no reader observes
-// a new floor before its audit row is durable (R5.2/R5.3), and
-// `listFloorChangeAudit` thin-wraps the repo for the per-duration history
-// list rendered next to each floor card (R4.7, R5.5).
-//
-// All three live inside the existing `business-handler` Lambda. No new
-// always-on resources, no SMS, no phone-OTP — consistent with the workspace
-// steering rules.
-
-/**
- * Return one `BoostFloorView` per duration (`2hr`, `6hr`, `24hr`).
- *
- * For any duration whose `BoostFloor_Row` is missing from `AppData_Table`,
- * synthesise a view populated from `BOOST_FLOOR_DEFAULTS[duration]` flagged
- * `isDefault: true` so the editor can render the "default — never edited"
- * label (R4.8). For present rows, set `isDefault: false`, populate
- * `updatedAt` / `updatedBy` from the row, and stamp `currency: 'ZAR'`.
- *
- * Validates: Requirements 4.1, 4.2, 4.8
- */
-export async function getBoostFloors(): Promise<BoostFloorView[]> {
-  const rows = await repo.listBoostFloors()
-  const byDuration = new Map<BoostDuration, BoostFloorRow>()
-  for (const row of rows) byDuration.set(row.duration, row)
-
-  const durations: readonly BoostDuration[] = ['2hr', '6hr', '24hr']
-  return durations.map((duration) => {
-    const row = byDuration.get(duration)
-    if (row) {
-      return {
-        duration,
-        floorCents: row.floorCents,
-        currency: 'ZAR',
-        updatedAt: row.updatedAt,
-        updatedBy: row.updatedBy,
-        isDefault: false,
-      }
-    }
-    return {
-      duration,
-      floorCents: BOOST_FLOOR_DEFAULTS[duration],
-      currency: 'ZAR',
-      updatedAt: null,
-      updatedBy: null,
-      isDefault: true,
-    }
-  })
-}
-
-/**
- * Update the `BoostFloor_Row` for one duration. Writes the
- * `Floor_Change_Audit_Row` first (audit-first ordering, R5.2); if the audit
- * write fails the error propagates so the handler returns 500 with no floor
- * change (R5.3).
- *
- * Validates input per R4.3 (`floorCents` integer in
- * `[BOOST_FLOOR_MIN_CENTS, BOOST_FLOOR_MAX_CENTS]`), R4.6 (`duration ∈
- * {'2hr','6hr','24hr'}`), and R5.1 (`changeReason` is `null` or 1-280 chars).
- *
- * Validates: Requirements 4.1, 4.3, 4.4, 4.6, 5.1, 5.2, 5.3
- */
-export async function updateBoostFloor(
-  duration: BoostDuration,
-  floorCents: number,
-  changeReason: string | null,
-  admin: { sub: string; email: string },
-): Promise<BoostFloorView> {
-  // R4.6: validate duration. The handler also validates this but the service
-  // layer does its own check so a direct call (e.g. from a test) cannot
-  // bypass it.
-  if (!BOOST_DURATIONS_SET.has(duration as BoostDuration)) {
-    throw new AppError(400, 'INVALID_DURATION', `Invalid boost duration: ${String(duration)}`)
-  }
-
-  // R4.3: integer in [BOOST_FLOOR_MIN_CENTS, BOOST_FLOOR_MAX_CENTS].
-  if (
-    typeof floorCents !== 'number' ||
-    !Number.isInteger(floorCents) ||
-    floorCents < BOOST_FLOOR_MIN_CENTS ||
-    floorCents > BOOST_FLOOR_MAX_CENTS
-  ) {
-    throw new AppError(
-      400,
-      'INVALID_FLOOR_CENTS',
-      `floorCents must be an integer in [${BOOST_FLOOR_MIN_CENTS}, ${BOOST_FLOOR_MAX_CENTS}]`,
-    )
-  }
-
-  // R5.1: `changeReason` is `null` or 1-280 chars.
-  if (changeReason !== null) {
-    if (typeof changeReason !== 'string' || changeReason.length < 1 || changeReason.length > 280) {
-      throw new AppError(400, 'INVALID_CHANGE_REASON', 'changeReason must be null or a string of 1-280 characters')
-    }
-  }
-
-  // R5.1: read the previous floor (if any) to populate
-  // `previousFloorCents` on the audit row. `null` on the first set.
-  const previous = await repo.getBoostFloor(duration)
-  const previousFloorCents = previous ? previous.floorCents : null
-
-  const changedAtIso = new Date().toISOString()
-  const changeId = randomUUID()
-
-  const audit: FloorChangeAuditRow = {
-    pk: `BOOST_FLOOR_AUDIT#${duration}`,
-    sk: `${changedAtIso}#${changeId}`,
-    duration,
-    previousFloorCents,
-    newFloorCents: floorCents,
-    currency: 'ZAR',
-    changedBy: admin.sub,
-    changedByEmail: admin.email,
-    changedAt: changedAtIso,
-    changeReason,
-  }
-
-  const next: BoostFloorRow = {
-    pk: 'BOOST_FLOOR',
-    sk: duration,
-    duration,
-    floorCents,
-    currency: 'ZAR',
-    updatedAt: changedAtIso,
-    updatedBy: admin.sub,
-  }
-
-  // R5.2/R5.3: audit-first ordering. `writeFloorAuditThenUpdateFloor` writes
-  // the audit row before the floor row; on audit-write failure the error
-  // propagates and the floor row is not touched. Do NOT catch it here — the
-  // handler maps a thrown error to a 500.
-  await repo.writeFloorAuditThenUpdateFloor({ audit, next })
-
-  return {
-    duration,
-    floorCents,
-    currency: 'ZAR',
-    updatedAt: changedAtIso,
-    updatedBy: admin.sub,
-    isDefault: false,
-  }
-}
-
-/**
- * Return the most recent `Floor_Change_Audit_Row`s for one duration,
- * newest-first, paginated. Thin-wraps `repo.queryFloorChangeAudit` and
- * projects rows to `FloorChangeAuditView` (drops `pk`/`sk`, keeps the rest).
- *
- * The repo's `MalformedCursorError` propagates as-is so the handler can map
- * to 400 (R6.4-style cursor handling).
- *
- * Validates: Requirements 4.6, 4.7, 5.5
- */
-export async function listFloorChangeAudit(
-  duration: BoostDuration,
-  cursor: string | null,
-  limit: number = 25,
-): Promise<{ items: FloorChangeAuditView[]; nextCursor: string | null }> {
-  if (!BOOST_DURATIONS_SET.has(duration as BoostDuration)) {
-    throw new AppError(400, 'INVALID_DURATION', `Invalid boost duration: ${String(duration)}`)
-  }
-
-  const { items, nextCursor } = await repo.queryFloorChangeAudit(duration, cursor, limit)
-
-  const views: FloorChangeAuditView[] = items.map((row) => ({
-    duration: row.duration,
-    previousFloorCents: row.previousFloorCents,
-    newFloorCents: row.newFloorCents,
-    currency: 'ZAR',
-    changedBy: row.changedBy,
-    changedByEmail: row.changedByEmail,
-    changedAt: row.changedAt,
-    changeReason: row.changeReason,
-  }))
-
-  return { items: views, nextCursor }
-}
 // ─── Operator Booster Purchase Queries (R6) ─────────────────────────────────
 //
 // See `.kiro/completed/booster-pricing-floor-and-audit/design.md` Operator

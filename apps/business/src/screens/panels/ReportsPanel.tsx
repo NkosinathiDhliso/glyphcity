@@ -2,7 +2,6 @@ import { PLAIN_SCALE_EN, stateLabelKey, toNodeState } from '@area-code/shared/co
 import { getTierLabel } from '@area-code/shared/constants/tier-levels'
 import { api } from '@area-code/shared/lib/api'
 import { formatSastDate } from '@area-code/shared/lib/sast'
-import { useBusinessStore } from '@area-code/shared/stores/businessStore'
 import type { Tier } from '@area-code/shared/types'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useMemo } from 'react'
@@ -563,20 +562,6 @@ function TeaserView({ report }: { report: TeaserReport }) {
 /* ------------------------------------------------------------------ */
 
 function FullReportView({ report }: { report: FullReport }) {
-  const setPanel = useBusinessStore((s) => s.setPanel)
-  const setCampaignPrefill = useBusinessStore((s) => s.setCampaignPrefill)
-
-  function startWinBack(recommendationText: string) {
-    setCampaignPrefill({
-      segment: 'lapsed',
-      nodeIds: [],
-      title: 'We miss you',
-      body: recommendationText,
-      reportId: report.reportId,
-    })
-    setPanel('campaigns')
-  }
-
   return (
     <div className="flex flex-col gap-4">
       {/* Summary cards */}
@@ -606,14 +591,6 @@ function FullReportView({ report }: { report: FullReport }) {
                   </span>
                   <span className="text-[var(--text-primary)] text-sm">{rec.text}</span>
                 </div>
-                {rec.type === 'retention' && (
-                  <button
-                    onClick={() => startWinBack(rec.text)}
-                    className="self-start ml-7 text-xs font-medium text-[var(--accent)] border border-[var(--accent)]/30 rounded-lg px-3 py-1.5 transition-all active:scale-95"
-                  >
-                    Create win-back campaign →
-                  </button>
-                )}
               </li>
             ))}
           </ol>

@@ -117,6 +117,16 @@ async function remindOne(userId: string, nowMs: number): Promise<boolean> {
   return true
 }
 
+/** One guest; a failure is logged and skipped so one bad row never aborts the sweep. */
+async function remindSafely(userId: string, nowMs: number): Promise<boolean> {
+  try {
+    return await remindOne(userId, nowMs)
+  } catch (err) {
+    console.warn(`[tonight-known-venue-reminder] skipped user ${userId}: ${String(err)}`)
+    return false
+  }
+}
+
 /**
  * Scan every consumer and message the opted-in ones who know a room with a
  * Tonight. Lock rows (email and sub locks) carry `lockType` and are skipped.
@@ -141,13 +151,8 @@ export async function handler() {
     )
 
     for (const item of result.Items || []) {
-      const userId = item['userId'] as string
       scanned++
-      try {
-        if (await remindOne(userId, nowMs)) reminded++
-      } catch (err) {
-        console.warn(`[tonight-known-venue-reminder] skipped user ${userId}: ${String(err)}`)
-      }
+      if (await remindSafely(item['userId'] as string, nowMs)) reminded++
     }
 
     lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined

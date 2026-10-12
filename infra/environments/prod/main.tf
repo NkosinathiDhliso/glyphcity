@@ -1180,8 +1180,6 @@ module "lambda_api" {
     # Sender and business portal origin for owner emails (shared/email/ses.ts).
     AREA_CODE_FROM_EMAIL   = local.from_email
     AREA_CODE_BUSINESS_URL = local.business_url
-    # Win-back campaigns: the API async-invokes this dispatcher on send-now.
-    AREA_CODE_CAMPAIGN_DISPATCHER_FUNCTION = module.lambda_campaign_dispatcher.function_name
     # HMAC secret used for QR codes AND Spotify OAuth state signing
     AREA_CODE_QR_HMAC_SECRET = data.aws_secretsmanager_secret_version.qr_hmac.secret_string
     # Spotify OAuth — supplied via TF variables (terraform.tfvars or TF_VAR_*)
@@ -1219,7 +1217,7 @@ module "lambda_api" {
 # gateway endpoint, so an in-VPC Lambda has no route to DynamoDB or the public
 # web-push/Expo endpoints - every invocation hung to timeout (found 2026-07-05
 # redriving the reward-eval DLQ). All working Lambdas (api, presence-expiry,
-# campaign-sender, tonight-known-venue-reminder) run outside the VPC; workers match that.
+# tonight-known-venue-reminder) run outside the VPC; workers match that.
 module "lambda_reward_evaluator" {
   source        = "../../modules/lambda"
   env           = local.env
@@ -1484,48 +1482,6 @@ module "lambda_report_generator" {
   }
 }
 
-# Win-back campaign dispatcher Lambda — async-invoked by the API on send-now;
-# resolves the segment, applies consent/opt-out + frequency-cap + quota filters,
-# then fans batches of <=100 recipients out to the campaign-send queue.
-module "lambda_campaign_dispatcher" {
-  source        = "../../modules/lambda"
-  env           = local.env
-  function_name = "campaign-dispatcher"
-  timeout       = 60
-  memory_size   = 512
-  environment_variables = {
-    AREA_CODE_ENV                     = local.env
-    USERS_TABLE                       = aws_dynamodb_table.users.name
-    NODES_TABLE                       = aws_dynamodb_table.nodes.name
-    CHECKINS_TABLE                    = aws_dynamodb_table.checkins.name
-    BUSINESSES_TABLE                  = aws_dynamodb_table.businesses.name
-    APP_DATA_TABLE                    = aws_dynamodb_table.app_data.name
-    AREA_CODE_CAMPAIGN_SEND_QUEUE_URL = module.sqs_campaign_send.queue_url
-  }
-}
-
-# Win-back campaign sender Lambda — SQS-triggered worker; delivers one batch via
-# email (SES), writing one anonymized send record per recipient. Shares the QR
-# HMAC secret so the unsubscribe tokens it signs verify against the API's
-# unsubscribe route.
-module "lambda_campaign_sender" {
-  source        = "../../modules/lambda"
-  env           = local.env
-  function_name = "campaign-sender"
-  timeout       = 120
-  memory_size   = 512
-  environment_variables = {
-    AREA_CODE_ENV            = local.env
-    USERS_TABLE              = aws_dynamodb_table.users.name
-    BUSINESSES_TABLE         = aws_dynamodb_table.businesses.name
-    APP_DATA_TABLE           = aws_dynamodb_table.app_data.name
-    AREA_CODE_API_BASE_URL   = local.api_url
-    AREA_CODE_QR_HMAC_SECRET = data.aws_secretsmanager_secret_version.qr_hmac.secret_string
-    AREA_CODE_FROM_EMAIL     = local.from_email
-    AREA_CODE_BUSINESS_URL   = local.business_url
-  }
-}
-
 # Live_Vibe_on_Map: schedule-transition-tick worker.
 #
 # Invoked every minute by EventBridge. Queries the `MusicSchedules`
@@ -1731,17 +1687,6 @@ module "sqs_report_generation" {
   enable_lambda_mapping = true
 }
 
-# Win-back campaign-send queue — dispatcher publishes batches, sender consumes.
-module "sqs_campaign_send" {
-  source                = "../../modules/sqs"
-  env                   = local.env
-  queue_name            = "campaign-send"
-  visibility_timeout    = 150
-  max_receive_count     = 2
-  lambda_function_arn   = module.lambda_campaign_sender.function_arn
-  enable_lambda_mapping = true
-}
-
 # --- Lambda IAM: API + check-in -> SQS send ---
 resource "aws_iam_role_policy" "api_sqs_send" {
   name = "sqs-send"
@@ -1782,7 +1727,7 @@ resource "aws_iam_role_policy" "api_s3_media" {
 
 # --- Lambda IAM: API -> SES (transactional email) ---
 # Powers email verification, password-reset codes, trial-expiry notices and
-# win-back campaigns (backend/src/shared/email/ses.ts). Without this the SESv2
+# owner digests (backend/src/shared/email/ses.ts). Without this the SESv2
 # SendEmail calls are denied with AccessDenied. Sends as the glyphcity.com SES
 # identity defined in the domain section.
 resource "aws_iam_role_policy" "api_ses_send" {
@@ -1816,128 +1761,6 @@ resource "aws_iam_role_policy" "api_cloudwatch_read" {
       Effect   = "Allow"
       Action   = ["cloudwatch:GetMetricData"]
       Resource = "*"
-    }]
-  })
-}
-
-# --- Lambda IAM: campaign-dispatcher -> DynamoDB + SQS send ---
-resource "aws_iam_role_policy" "campaign_dispatcher_dynamodb" {
-  name = "dynamodb-access"
-  role = module.lambda_campaign_dispatcher.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        # campaigns/repository.ts BatchGets recipient user rows during segment
-        # resolution (campaign_sender already grants this on the same path).
-        "dynamodb:BatchGetItem"
-      ]
-      Resource = [
-        aws_dynamodb_table.users.arn,
-        "${aws_dynamodb_table.users.arn}/index/*",
-        aws_dynamodb_table.nodes.arn,
-        "${aws_dynamodb_table.nodes.arn}/index/*",
-        aws_dynamodb_table.checkins.arn,
-        "${aws_dynamodb_table.checkins.arn}/index/*",
-        aws_dynamodb_table.businesses.arn,
-        "${aws_dynamodb_table.businesses.arn}/index/*",
-        aws_dynamodb_table.app_data.arn,
-        "${aws_dynamodb_table.app_data.arn}/index/*"
-      ]
-    }]
-  })
-}
-
-resource "aws_iam_role_policy" "campaign_dispatcher_sqs_send" {
-  name = "sqs-send"
-  role = module.lambda_campaign_dispatcher.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["sqs:SendMessage"]
-      Resource = [module.sqs_campaign_send.queue_arn]
-    }]
-  })
-}
-
-# --- Lambda IAM: campaign-sender -> DynamoDB + SQS + SES ---
-resource "aws_iam_role_policy" "campaign_sender_dynamodb" {
-  name = "dynamodb-access"
-  role = module.lambda_campaign_sender.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:Query",
-        "dynamodb:BatchGetItem"
-      ]
-      Resource = [
-        aws_dynamodb_table.users.arn,
-        "${aws_dynamodb_table.users.arn}/index/*",
-        aws_dynamodb_table.businesses.arn,
-        "${aws_dynamodb_table.businesses.arn}/index/*",
-        aws_dynamodb_table.app_data.arn,
-        "${aws_dynamodb_table.app_data.arn}/index/*"
-      ]
-    }]
-  })
-}
-
-resource "aws_iam_role_policy" "campaign_sender_sqs" {
-  name = "sqs-access"
-  role = module.lambda_campaign_sender.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
-        Resource = [module.sqs_campaign_send.queue_arn]
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "campaign_sender_ses" {
-  name = "ses-send"
-  role = module.lambda_campaign_sender.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["ses:SendEmail", "ses:SendRawEmail"]
-      Resource = "*"
-    }]
-  })
-}
-
-# --- Lambda IAM: API -> campaign-dispatcher async invoke (win-back send-now) ---
-resource "aws_iam_role_policy" "api_invoke_campaign_dispatcher" {
-  name = "invoke-campaign-dispatcher"
-  role = module.lambda_api.role_name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["lambda:InvokeFunction"]
-      Resource = [module.lambda_campaign_dispatcher.function_arn]
     }]
   })
 }

@@ -7,7 +7,7 @@
  *
  * Task 12.2 is "walk the whole loop in dev": a share link that previews and
  * opens, a Found_You check-in and a Walk_In check-in, a Going mark with the
- * reminder at slot start, the live panel's four counts, a boost scoreboard, and
+ * reminder at slot start, the live panel's four counts, and
  * the Monday digest carrying the new lines. Real browsers, a real dev SES inbox,
  * a real Yoco checkout and a real EventBridge tick cannot run inside the
  * automated suite, so this file is the durable, replayable evidence for
@@ -43,10 +43,7 @@
  *      moves past `GOING_PUBLIC_THRESHOLD` and the owner's room is told.
  *   4. Live panel. `getLiveStats` reports the four counts (today's check-ins,
  *      Found_You, Walk_In, Going tonight) and the two Receipt sentences.
- *   5. Boost scoreboard. A booster purchase written through the real
- *      idempotency choreography (the dev checkout, minus Yoco) produces the
- *      window and baseline readings, and a closed window is cached, not
- *      recomputed.
+ *   5. (Retired with the boost sale, north-star-alignment R8.2 release A.)
  *   6. Monday digest, seeded week. One weekly pass per seeded business produces
  *      the documented Receipt lines for all three Receipt branches: clear of the
  *      Suppression_Floor, below it, and zero Found_You.
@@ -69,8 +66,7 @@
  *     rule and the row TTL;
  *   - the schedule repository (including the sparse `ByNextTransition` GSI), the
  *     transition tick's window arithmetic and the Tonight_Reminder claim;
- *   - `computeReceipt`, `buildReceiptCopy`, `computeBoostScoreboard`, the
- *     scoreboard read with its closed-window cache, `getLiveStats`;
+ *   - `computeReceipt`, `buildReceiptCopy`, `getLiveStats`;
  *   - the digest generator, its PII scan and its conditional write;
  *   - the socket emitters and the business room fan-out.
  *
@@ -615,9 +611,6 @@ let nodeShareRoutes: (typeof import('../../nodes/share-routes.js'))['nodeShareRo
 let nodeRoutes: (typeof import('../../nodes/handler.js'))['nodeRoutes']
 let venueOpenKey: (typeof import('../../check-in/venue-open.js'))['venueOpenKey']
 let getLiveStats: (typeof import('../../business/service.js'))['getLiveStats']
-let getBoostScoreboard: (typeof import('../../business/boost-scoreboard-read.js'))['getBoostScoreboard']
-let putBoosterPurchaseWithMarker: (typeof import('../../business/repository.js'))['putBoosterPurchaseWithMarker']
-let boostWindowEnd: (typeof import('../../business/types.js'))['boostWindowEnd']
 let generateReportNow: (typeof import('../generator.js'))['generateReportNow']
 let runTransitionTick: (typeof import('../../../workers/schedule-transition-tick.js'))['runTransitionTick']
 let TableNames: (typeof import('../../../shared/db/dynamodb.js'))['TableNames']
@@ -937,9 +930,6 @@ beforeAll(async () => {
   ;({ nodeRoutes } = await import('../../nodes/handler.js'))
   ;({ venueOpenKey } = await import('../../check-in/venue-open.js'))
   ;({ getLiveStats } = await import('../../business/service.js'))
-  ;({ getBoostScoreboard } = await import('../../business/boost-scoreboard-read.js'))
-  ;({ putBoosterPurchaseWithMarker } = await import('../../business/repository.js'))
-  ;({ boostWindowEnd } = await import('../../business/types.js'))
   ;({ generateReportNow } = await import('../generator.js'))
   ;({ runTransitionTick } = await import('../../../workers/schedule-transition-tick.js'))
   ;({ TableNames } = await import('../../../shared/db/dynamodb.js'))
@@ -1074,70 +1064,6 @@ describe('Proof of demand: end-to-end dev rehearsal (R13.2, R13.6)', () => {
       `${expectedFoundYou} people found you on ${APP_NAME} and checked in today.`,
     )
     expect(stats.receiptToday.walkIn).toBe(`${expectedWalkIns} people who were already in the room also checked in.`)
-  })
-
-  // ── Act 5: the boost scoreboard ─────────────────────────────────────────────
-
-  it('act 5: a boost purchase produces a scoreboard, and a closed window is cached not recomputed', async () => {
-    // The dev checkout, minus Yoco: the same two rows the webhook writes, through
-    // the same idempotency choreography. The seed deliberately leaves no purchase
-    // row, so this is the rehearsal's own.
-    const boostId = 'seed-pod-boost-kudu'
-    const paidAt = new Date(Date.parse('2026-10-13T22:00:00.000Z') + 60 * MINUTE_MS).toISOString()
-    const boostPk = `BOOST#${KUDU.businessId}`
-    const boostSk = `PAID#${paidAt}#${boostId}`
-
-    const written = await putBoosterPurchaseWithMarker({
-      purchase: {
-        pk: boostPk,
-        sk: boostSk,
-        gsi1pk: 'BOOST_BY_TIME',
-        gsi1sk: paidAt,
-        businessId: KUDU.businessId,
-        nodeId: KUDU.nodeId,
-        duration: '2hr',
-        amountCents: 9900,
-        currency: 'ZAR',
-        yocoCheckoutId: boostId,
-        paidAt,
-        tierSnapshot: 'growth',
-        neighbourhoodIdSnapshot: null,
-        floorAtPurchaseCents: 9900,
-        createdAt: paidAt,
-      },
-      marker: {
-        pk: `BOOST_CHECKOUT#${boostId}`,
-        sk: `BOOST_CHECKOUT#${boostId}`,
-        businessId: KUDU.businessId,
-        boostPk,
-        boostSk,
-        createdAt: paidAt,
-      },
-    })
-    expect(written.result).toBe('written')
-
-    const scoreboard = await getBoostScoreboard(KUDU.businessId, boostId, new Date().toISOString())
-    const seededToday = SEED_ACTIVITY.find((activity) => activity.key === 'kudu')!.today
-
-    expect(scoreboard.windowClosed).toBe(true)
-    expect(scoreboard.window.windowEndUtc).toBe(boostWindowEnd(paidAt, '2hr'))
-    // The whole of the seed's early-hours activity falls in the window.
-    expect(scoreboard.window.checkIns).toBe(seededToday.length)
-    expect(scoreboard.window.visitors).toBe(seededToday.length)
-    expect(scoreboard.window.foundYou).toBe(seededToday.filter((entry) => entry.foundVia !== 'walk_in').length)
-    expect(scoreboard.window.walkIns).toBe(seededToday.filter((entry) => entry.foundVia === 'walk_in').length)
-    // The same clock window seven days earlier recorded nothing at this venue.
-    expect(scoreboard.baseline.checkIns).toBe(0)
-    // Below the Suppression_Floor, so the counts render and the comparison does
-    // not (R7.3). Nothing here claims the boost did anything (R7.5).
-    expect(seededToday.length).toBeLessThan(SUPPRESSION_FLOOR)
-    expect(scoreboard.comparable).toBe(false)
-    expect(scoreboard.delta).toBeNull()
-
-    // Closed, so it is history: the second read is the stored copy, verbatim.
-    expect(h.kvRow(`boost:score:${boostPk}:${boostSk}`)).toBeDefined()
-    const reread = await getBoostScoreboard(KUDU.businessId, boostId, new Date().toISOString())
-    expect(reread).toEqual(scoreboard)
   })
 
   // ── Act 6: the Monday digest over the seeded week ────────────────────────────

@@ -6,7 +6,6 @@ import { z } from 'zod'
 // ─── Import all Zod schemas (source of truth for validation) ────────────────
 import { reportActionBodySchema } from '../features/admin/types'
 import { consumerSignupBodySchema, verifyOtpBodySchema, consentBodySchema } from '../features/auth/types'
-import { boostBodySchema } from '../features/business/types'
 import { checkInBodySchema } from '../features/check-in/types'
 import { createNodeBodySchema, reportNodeBodySchema, claimNodeBodySchema } from '../features/nodes/types'
 import { notificationPrefsSchema } from '../features/notifications/types'
@@ -242,22 +241,6 @@ describe('Schema validation: invalid data is always rejected', () => {
         fc.string({ minLength: 1, maxLength: 20 }).filter((s) => !/^\d{4}\/\d{6}\/\d{2}$/.test(s)),
         (regNum) => {
           const result = claimNodeBodySchema.safeParse({ registrationNumber: regNum })
-          expect(result.success).toBe(false)
-        },
-      ),
-      { numRuns: 25 },
-    )
-  })
-
-  it('boost duration must be one of 2hr, 6hr, 24hr', () => {
-    fc.assert(
-      fc.property(
-        fc.string({ minLength: 1, maxLength: 10 }).filter((s) => !['2hr', '6hr', '24hr'].includes(s)),
-        (duration) => {
-          const result = boostBodySchema.safeParse({
-            nodeId: '00000000-0000-0000-0000-000000000001',
-            duration,
-          })
           expect(result.success).toBe(false)
         },
       ),

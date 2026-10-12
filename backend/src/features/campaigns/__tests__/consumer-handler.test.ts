@@ -1,10 +1,10 @@
 /**
- * Unit tests for the Win-Back Campaigns consumer-facing routes (task 8.3):
- *   - POST /v1/users/me/campaign-optout  (consumer auth)
+ * Unit tests for the one Win-Back consumer route that stays after campaigns
+ * were retired (north-star-alignment R8.3):
  *   - GET  /v1/campaigns/unsubscribe?token=...  (signed token, no login)
  *
- * Both routes ultimately write the same `COPTOUT#` rows via `putOptOut`. The
- * tests exercise the handler functions directly with a minimal fake Fastify
+ * A link already in an inbox must keep working. It writes a `COPTOUT#` row via
+ * `putOptOut`. The tests exercise the handler directly with a minimal fake Fastify
  * instance, the repository's `putOptOut` mocked, and the REAL signed-token
  * round-trip (`signUnsubscribeToken` → `verifyUnsubscribeToken`) so we prove an
  * authentic link opts the recipient out and a tampered one is rejected and
@@ -78,55 +78,13 @@ function makeReply() {
 async function getRoutes() {
   const { app, routes } = makeFakeApp()
   await campaignConsumerRoutes(app)
-  const optOut = routes.find((r) => r.url === '/v1/users/me/campaign-optout')!
   const unsubscribe = routes.find((r) => r.url === '/v1/campaigns/unsubscribe')!
-  return { optOut, unsubscribe }
+  return { unsubscribe, urls: routes.map((r) => `${r.method} ${r.url}`) }
 }
 
 beforeEach(() => {
   vi.clearAllMocks()
   mocks.putOptOut.mockResolvedValue(undefined)
-})
-
-// ─── POST /v1/users/me/campaign-optout ────────────────────────────────────────
-
-describe('POST /v1/users/me/campaign-optout', () => {
-  it('writes a GLOBAL opt-out (ALL) when businessId is omitted (R12.1)', async () => {
-    const { optOut } = await getRoutes()
-    const request = { auth: { userId: 'user-1', role: 'consumer', cognitoSub: 's' }, body: {} }
-
-    const result = await optOut.handler(request, makeReply().reply)
-
-    expect(mocks.putOptOut).toHaveBeenCalledTimes(1)
-    expect(mocks.putOptOut).toHaveBeenCalledWith('user-1', 'ALL')
-    expect(result).toEqual({ optedOut: true, scope: 'all' })
-  })
-
-  it('writes a per-business opt-out when businessId is provided (R12.1, R12.3)', async () => {
-    const { optOut } = await getRoutes()
-    const request = {
-      auth: { userId: 'user-1', role: 'consumer', cognitoSub: 's' },
-      body: { businessId: 'biz-42' },
-    }
-
-    const result = await optOut.handler(request, makeReply().reply)
-
-    expect(mocks.putOptOut).toHaveBeenCalledTimes(1)
-    expect(mocks.putOptOut).toHaveBeenCalledWith('user-1', 'biz-42')
-    expect(result).toEqual({ optedOut: true, scope: 'biz-42' })
-  })
-
-  it('uses the authenticated userId, not anything from the body', async () => {
-    const { optOut } = await getRoutes()
-    const request = {
-      auth: { userId: 'real-user', role: 'consumer', cognitoSub: 's' },
-      // a malicious body cannot redirect the opt-out to another user
-      body: { businessId: 'biz-1' },
-    }
-
-    await optOut.handler(request, makeReply().reply)
-    expect(mocks.putOptOut).toHaveBeenCalledWith('real-user', 'biz-1')
-  })
 })
 
 // ─── GET /v1/campaigns/unsubscribe ────────────────────────────────────────────
@@ -184,5 +142,12 @@ describe('GET /v1/campaigns/unsubscribe', () => {
 
     expect(state.statusCode).toBe(200)
     expect(mocks.putOptOut).toHaveBeenCalledWith('user-x', 'biz-x')
+  })
+})
+
+describe('campaign consumer routes after retirement (R8.3)', () => {
+  it('registers only the one-click unsubscribe', async () => {
+    const { urls } = await getRoutes()
+    expect(urls).toEqual(['GET /v1/campaigns/unsubscribe'])
   })
 })

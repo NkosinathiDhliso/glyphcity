@@ -88,7 +88,7 @@ export const SCANNED_FILE_PATTERNS = [
   // Owner-facing email and digest copy builders
   /^backend\/src\/features\/reports\/(digest|receipt|receipt-copy)\.ts$/,
   /^backend\/src\/features\/business\/trial-reminder\.ts$/,
-  /^backend\/src\/features\/campaigns\/(sender|unsubscribe)\.ts$/,
+  /^backend\/src\/features\/campaigns\/unsubscribe\.ts$/,
   // Push notification copy
   /^backend\/src\/features\/notifications\/service\.ts$/,
   // Legal content and the screens that render it

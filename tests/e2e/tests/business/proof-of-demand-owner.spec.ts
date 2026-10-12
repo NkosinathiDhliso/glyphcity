@@ -25,7 +25,7 @@
  *
  * Numbers come from whatever the environment recorded, read through the API, so
  * the assertions hold seeded or not. Where a branch needs data that cannot be
- * manufactured here (a boost purchase, a non-walk-in check-in), the test skips
+ * manufactured here (a non-walk-in check-in), the test skips
  * with a clear reason naming the seed that enables it — the seeded figures are
  * in `docs/UAT_PROOF_OF_DEMAND.md` (`backend/src/scripts/seed-proof-of-demand.ts`).
  */
@@ -76,22 +76,6 @@ interface BusinessProfile {
   id: string
   trialEndsAt?: string | null
   paidUntil?: string | null
-}
-
-interface BoostPeriod {
-  checkIns: number
-  visitors: number
-  foundYou: number
-  walkIns: number
-}
-
-interface BoostScoreboard {
-  boostId: string
-  windowClosed: boolean
-  window: BoostPeriod
-  baseline: BoostPeriod
-  comparable: boolean
-  delta: { checkIns: number; foundYou: number } | null
 }
 
 interface CheckInRow {
@@ -274,53 +258,6 @@ test.describe('Business — the Receipt on the Plans panel', () => {
       )
     }
     await expectNoHorizontalScroll(page, 'business (plans)')
-  })
-})
-
-// ─── Boost_Scoreboard (R7.1, R7.4, R7.5) ────────────────────────────────────
-
-test.describe('Business — the boost scoreboard', () => {
-  test('reports both windows and compares only when the samples allow it', async ({ page, loginAs, apiClient }) => {
-    const api = await apiClient('businessOwner')
-    const profile = await readOrSkip<BusinessProfile>(api, '/v1/business/me')
-    const purchases = await readOrSkip<{ items: Array<{ yocoCheckoutId: string }> }>(
-      api,
-      `/v1/business/${profile.id}/boost-purchases`,
-    )
-
-    const boostId = purchases.items[0]?.yocoCheckoutId
-    if (!boostId) {
-      test.skip(true, 'No boost purchase for this business — the seed gives Kudu Bar an active Boost_Window.')
-      return
-    }
-    const board = await readOrSkip<BoostScoreboard>(api, `/v1/business/boosts/${boostId}/scoreboard`)
-
-    await loginAs('businessOwner', 'business')
-    await openPanel(page, /^boost$/i, 'Boost')
-
-    const card = business.boostScoreboard(page, boostId)
-    await expect(card).toBeVisible({ timeout: 15_000 })
-
-    // Counts always render, for both windows. A window that recorded nothing is
-    // reported as nothing: neither a failure nor a claim.
-    const windowLine = business.boostScoreboardWindow(page, boostId)
-    await expect(windowLine).toContainText(String(board.window.checkIns))
-    await expect(windowLine).toContainText(`${board.window.foundYou} found you`)
-    const baselineLine = business.boostScoreboardBaseline(page, boostId)
-    await expect(baselineLine).toContainText(`${board.baseline.foundYou} found you`)
-    await expect(baselineLine).toContainText(/same hours last week/i)
-
-    // The comparison exists only when the server says both samples support it.
-    if (board.comparable && board.delta) {
-      await expect(business.boostScoreboardDelta(page, boostId)).toBeVisible()
-      await expect(business.boostScoreboardNoCompare(page, boostId)).toHaveCount(0)
-    } else {
-      await expect(business.boostScoreboardDelta(page, boostId)).toHaveCount(0)
-      await expect(business.boostScoreboardNoCompare(page, boostId)).toBeVisible()
-    }
-
-    // Measurement verbs only: the scoreboard never says the boost caused a visit.
-    await expect(card).not.toContainText(/brought|drove|generated|because of/i)
   })
 })
 

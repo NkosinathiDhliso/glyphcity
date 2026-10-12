@@ -16,7 +16,6 @@
     "apps/admin/src/screens/AdminIAM.tsx": 4,
     "apps/admin/src/screens/AdminLogin.tsx": 3,
     "apps/admin/src/screens/AuditTrailViewer.tsx": 9,
-    "apps/admin/src/screens/BoostFloorEditor.tsx": 12,
     "apps/admin/src/screens/BoostPurchaseReport.tsx": 3,
     "apps/admin/src/screens/BusinessManagement.tsx": 6,
     "apps/admin/src/screens/ConsentAudit.tsx": 4,

@@ -158,12 +158,6 @@ export const business = {
   plansReceiptNextStep: (page: Page) => page.getByTestId('plans-receipt-nextstep'),
   plansReceiptLoading: (page: Page) => page.getByTestId('plans-receipt-loading'),
   plansReceiptError: (page: Page) => page.getByTestId('plans-receipt-error'),
-  /** Boost_Scoreboard card for one purchase (R7.4). */
-  boostScoreboard: (page: Page, boostId: string) => page.getByTestId(`boost-scoreboard-${boostId}`),
-  boostScoreboardWindow: (page: Page, boostId: string) => page.getByTestId(`boost-scoreboard-window-${boostId}`),
-  boostScoreboardBaseline: (page: Page, boostId: string) => page.getByTestId(`boost-scoreboard-baseline-${boostId}`),
-  boostScoreboardDelta: (page: Page, boostId: string) => page.getByTestId(`boost-scoreboard-delta-${boostId}`),
-  boostScoreboardNoCompare: (page: Page, boostId: string) => page.getByTestId(`boost-scoreboard-nocompare-${boostId}`),
   /** Found_You source badge on a check-in row (R4.4). Never rendered for a walk-in. */
   foundViaBadge: (page: Page, foundVia: string) => page.getByTestId(`found-via-badge-${foundVia}`),
   /** Tonight publish form (R8.1 to R8.4). */

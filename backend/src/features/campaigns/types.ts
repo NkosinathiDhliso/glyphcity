@@ -27,9 +27,6 @@ export type Segment = 'lapsed' | 'first_timers' | 'regulars' | 'all_past_visitor
 export const CAMPAIGN_CHANNELS = ['push', 'email'] as const
 export type CampaignChannel = (typeof CAMPAIGN_CHANNELS)[number]
 
-/** Per-recipient delivery outcome recorded by the sender. */
-export type ChannelOutcome = 'delivered_push' | 'delivered_email' | 'delivered_both' | 'no_channel' | 'failed'
-
 // ----------------------------------------------------------------------------
 // Aggregate counts (stored on the campaign, never per-consumer identifiers)
 // ----------------------------------------------------------------------------
@@ -109,12 +106,6 @@ export interface Campaign {
 // Service input / output shapes
 // ----------------------------------------------------------------------------
 
-/**
- * Validated input accepted by `createCampaign`. Derived from
- * `createCampaignBodySchema` so the schema is the single source of truth.
- */
-export type CreateCampaignInput = z.infer<typeof createCampaignBodySchema>
-
 /** Aggregated, anonymized analytics for a campaign (Requirement 11). */
 export interface CampaignAnalytics {
   /** Recipients resolved by the segment before filtering. */
@@ -157,81 +148,9 @@ export interface CampaignSummary {
   attributedReturnVisits: number
 }
 
-/**
- * Pre-send estimate of realistic reach after consent + frequency-cap filtering
- * (Requirements 13.2, 13.5).
- */
-export interface RecipientEstimate {
-  /** Raw segment size before eligibility filtering. */
-  segmentSize: number
-  /** Remaining after consent / opt-out filtering. */
-  afterConsentFilter: number
-  /** Remaining after frequency-cap filtering — the realistic reach. */
-  estimatedRecipients: number
-  /** True when a per-node check-in scan cap was hit (Requirement 14.4). */
-  truncated: boolean
-}
-
-// ----------------------------------------------------------------------------
-// Persistence & pipeline message shapes
-// ----------------------------------------------------------------------------
-
-/**
- * A per-recipient delivery record (anonymized).
- *
- * Key structure:
- *   pk:  CSEND#<campaignId>
- *   sk:  CSEND#<recipientToken>
- *   ttl: <sentAt + 120 days>
- *
- * `recipientToken = sha256(userId + campaignId + campaignSalt)`. No userId,
- * email, or phone is ever stored here.
- */
-export interface CampaignSendRecord {
-  recipientToken: string
-  channelOutcome: ChannelOutcome
-  /** ISO 8601 timestamp of the delivery attempt. */
-  attemptedAt: string
-}
-
-/**
- * SQS message consumed by the campaign-sender Lambda. Carries a single batch of
- * at most 100 recipients. `userId` is used transiently to deliver; only `token`
- * is ever persisted in a send record.
- */
-export interface CampaignSendMessage {
-  campaignId: string
-  businessId: string
-  recipients: Array<{ token: string; userId: string }>
-}
-
-/** Event payload that triggers the campaign-dispatcher Lambda. */
-export interface DispatchCampaignEvent {
-  businessId: string
-  campaignId: string
-}
-
 // ============================================================================
 // Zod Schemas
 // ============================================================================
-
-/**
- * Body schema for `POST /v1/business/me/campaigns`.
- *
- * `channels` is an array whose element enum is EXACTLY `['push', 'email']`.
- * Any other value (notably any SMS/phone channel) fails validation — this is
- * the structural enforcement of Constraint C1, not a loosenable runtime check.
- */
-export const createCampaignBodySchema = z.object({
-  segment: z.enum(['lapsed', 'first_timers', 'regulars', 'all_past_visitors']),
-  title: z.string().min(1).max(80),
-  body: z.string().min(1).max(500),
-  channels: z.array(z.enum(CAMPAIGN_CHANNELS)).min(1),
-  nodeIds: z.array(z.string().min(1)).min(1),
-  rewardId: z.string().min(1).optional(),
-  lapsedWindowDays: z.number().int().min(7).max(90).optional(),
-  reportId: z.string().min(1).optional(),
-})
 
 /** Query schema for `GET /v1/business/me/campaigns` (paginated list). */
 export const campaignListQuerySchema = z.object({
@@ -242,24 +161,6 @@ export const campaignListQuerySchema = z.object({
 /** Path-params schema for routes addressing a single campaign. */
 export const campaignIdParamsSchema = z.object({
   campaignId: z.string().min(1),
-})
-
-/**
- * Body schema for `POST /v1/users/me/campaign-optout` (consumer auth).
- *
- * Omitting `businessId` opts the consumer out of ALL campaigns globally;
- * providing one opts them out of that single business only (Requirements 12.1,
- * 12.3). There is no phone/SMS field — the opt-out is purely identity-based on
- * the authenticated consumer (Constraint C1 / Requirement 12.4).
- */
-export const campaignOptOutBodySchema = z.object({
-  businessId: z.string().min(1).optional(),
-  /**
-   * `true` (default) opts out; `false` opts back in by removing the opt-out row
-   * (POPIA: opting out is reversible). Applies to the same scope `businessId`
-   * resolves (a single business, or all businesses when omitted).
-   */
-  optOut: z.boolean().optional().default(true),
 })
 
 /**
@@ -279,5 +180,4 @@ export const unsubscribeQuerySchema = z.object({
 
 export type CampaignListQuery = z.infer<typeof campaignListQuerySchema>
 export type CampaignIdParams = z.infer<typeof campaignIdParamsSchema>
-export type CampaignOptOutBody = z.infer<typeof campaignOptOutBodySchema>
 export type UnsubscribeQuery = z.infer<typeof unsubscribeQuerySchema>

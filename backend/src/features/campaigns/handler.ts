@@ -1,86 +1,27 @@
 import type { FastifyInstance } from 'fastify'
-import { z } from 'zod'
 
-import { requireAuth, getAuth } from '../../shared/middleware/auth.js'
+import { requireAuth } from '../../shared/middleware/auth.js'
 import { requireBusinessPermission, getBusinessRole } from '../../shared/middleware/business-role.js'
 import { validate } from '../../shared/middleware/validation.js'
-import { findBusinessById } from '../business/repository.js'
-import { getEffectiveTier } from '../business/service.js'
 
-import { putOptOut, removeOptOut, getOptOuts } from './repository.js'
-import {
-  createCampaign,
-  listCampaigns,
-  getCampaign,
-  estimateRecipients,
-  sendCampaign,
-  cancelCampaign,
-} from './service.js'
-import { assertCanSendCampaigns } from './tier-gating.js'
-import {
-  createCampaignBodySchema,
-  campaignListQuerySchema,
-  campaignIdParamsSchema,
-  campaignOptOutBodySchema,
-  unsubscribeQuerySchema,
-} from './types.js'
-import type { CampaignListQuery, CampaignIdParams, CampaignOptOutBody, UnsubscribeQuery } from './types.js'
+import { putOptOut } from './repository.js'
+import { listCampaigns, getCampaign } from './service.js'
+import { campaignListQuerySchema, campaignIdParamsSchema, unsubscribeQuerySchema } from './types.js'
+import type { CampaignListQuery, CampaignIdParams, UnsubscribeQuery } from './types.js'
 import { verifyUnsubscribeToken } from './unsubscribe.js'
 
 // ============================================================================
-// Win-Back Campaigns — Campaign API Routes (task 8.2)
+// Win-Back Campaigns — what stays after retirement
 // ----------------------------------------------------------------------------
-// Fastify routes under `/v1/business/me/campaigns`, mirroring the reports
-// feature's handler shape. Every route is protected by:
-//   requireAuth('business','staff')          — owner (business pool) or manager (staff pool)
-//   requireBusinessPermission('manage_campaigns') — only owner/manager hold it (R9.5)
-//   validate({ body|query|params })           — Zod validation of the request
-//
-// businessId resolution: for an owner authenticated via the business pool,
-// `auth.userId` IS the businessId. For a manager authenticated via the staff
-// pool, `auth.userId` is the staffId — `requireBusinessPermission` resolves the
-// real businessId and exposes it via `getBusinessRole(request).businessId`. We
-// therefore read the businessId from the resolved business-role payload so both
-// owners and managers operate on the correct business.
-//
-// Tier gating (Requirements 9.1, 9.2 / Property 13): the SEND route is gated —
-// starter/payg → 402 `upgrade_required`; growth/pro → permitted (then subject
-// to the service's monthly send-quota guard). Create/list/detail/estimate/
-// cancel are intentionally NOT gated so the starter/payg teaser UI can still
-// render campaign history and previews (design intent, Requirement 13.4).
-//
-// Error mapping: the service throws AppError subclasses (CampaignNotFoundError
-// 404, NodeNotOwnedError/RewardNotOwnedError 403, CampaignAlreadySentError 409
-// `already_sent`, CampaignQuotaExceededError 409 `quota_exceeded`+`remaining`,
-// CampaignNotSendableError/CampaignNotCancellableError 409). The global app.ts
-// error handler serializes every AppError (including `remaining`), so routes
-// let them propagate — no re-mapping here.
-//
-// Constraints: C1 (no SMS/phone — channels enum is push/email only, enforced in
-// types.ts) and C2 (serverless — send-now async-invokes the dispatcher Lambda).
+// Campaigns are retired (north-star-alignment R8.3). Two business reads stay so
+// a business can see its own past campaigns, behind the same owner/manager
+// permission, and the one-click unsubscribe stays so a link already in an inbox
+// still works. Nothing here creates, sends or cancels a campaign.
 // ============================================================================
 
 const CAMPAIGN_PERMISSION = 'manage_campaigns'
 
 export async function campaignRoutes(app: FastifyInstance) {
-  // POST /v1/business/me/campaigns — create a draft campaign (Requirement 1.1)
-  app.post(
-    '/v1/business/me/campaigns',
-    {
-      preHandler: [
-        requireAuth('business', 'staff'),
-        requireBusinessPermission(CAMPAIGN_PERMISSION),
-        validate({ body: createCampaignBodySchema }),
-      ],
-    },
-    async (request, reply) => {
-      const { businessId } = getBusinessRole(request)
-      const body = request.body as z.infer<typeof createCampaignBodySchema>
-      const campaign = await createCampaign(businessId, body)
-      return reply.status(201).send(campaign)
-    },
-  )
-
   // GET /v1/business/me/campaigns — paginated list, newest first (Requirement 11.3)
   app.get(
     '/v1/business/me/campaigns',
@@ -114,95 +55,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       return getCampaign(businessId, params.campaignId)
     },
   )
-
-  // POST /v1/business/me/campaigns/:campaignId/estimate — post-filter recipient
-  // estimate (Requirements 13.2, 13.5). Not tier-gated so the teaser can preview.
-  app.post(
-    '/v1/business/me/campaigns/:campaignId/estimate',
-    {
-      preHandler: [
-        requireAuth('business', 'staff'),
-        requireBusinessPermission(CAMPAIGN_PERMISSION),
-        validate({ params: campaignIdParamsSchema }),
-      ],
-    },
-    async (request) => {
-      const { businessId } = getBusinessRole(request)
-      const params = request.params as CampaignIdParams
-      return estimateRecipients(businessId, params.campaignId)
-    },
-  )
-
-  // POST /v1/business/me/campaigns/:campaignId/send — send now
-  // (Requirement 8.2). Tier-gated: starter/payg → 402 upgrade_required (9.2).
-  app.post(
-    '/v1/business/me/campaigns/:campaignId/send',
-    {
-      preHandler: [
-        requireAuth('business', 'staff'),
-        requireBusinessPermission(CAMPAIGN_PERMISSION),
-        validate({ params: campaignIdParamsSchema }),
-      ],
-    },
-    async (request) => {
-      const { businessId } = getBusinessRole(request)
-      const params = request.params as CampaignIdParams
-
-      // Tier gate FIRST — resolve the effective tier (honouring trial expiry,
-      // matching the service's quota guard) and reject starter/payg with a 402
-      // before any send work happens (Requirements 9.1, 9.2 / Property 13).
-      const business = await findBusinessById(businessId)
-      const tier = getEffectiveTier((business ?? {}) as { tier?: string; trialEndsAt?: string | null })
-      assertCanSendCampaigns(tier)
-
-      return sendCampaign(businessId, params.campaignId)
-    },
-  )
-
-  // POST /v1/business/me/campaigns/:campaignId/cancel — cancel draft
-  // (Requirement 8.4).
-  app.post(
-    '/v1/business/me/campaigns/:campaignId/cancel',
-    {
-      preHandler: [
-        requireAuth('business', 'staff'),
-        requireBusinessPermission(CAMPAIGN_PERMISSION),
-        validate({ params: campaignIdParamsSchema }),
-      ],
-    },
-    async (request) => {
-      const { businessId } = getBusinessRole(request)
-      const params = request.params as CampaignIdParams
-      return cancelCampaign(businessId, params.campaignId)
-    },
-  )
 }
 
 // ============================================================================
-// Win-Back Campaigns — Consumer Opt-Out & One-Click Unsubscribe (task 8.3)
+// One-click unsubscribe (Requirement 12.4)
 // ----------------------------------------------------------------------------
-// Two consumer-facing routes that let a consumer stop receiving campaigns,
-// satisfying Requirement 12. Both write the same `COPTOUT#` rows via
-// `putOptOut` in `repository.ts`, which the dispatcher's eligibility filter
-// honours on the next dispatch (Requirement 12.3).
-//
-//   POST /v1/users/me/campaign-optout   (consumer auth)
-//     Body `{ businessId? }`. Omitting `businessId` is a GLOBAL opt-out
-//     (`putOptOut(userId, 'ALL')`); providing one opts out of that single
-//     business (Requirements 12.1, 12.3).
-//
-//   GET  /v1/campaigns/unsubscribe?token=...   (NO auth)
-//     The one-click link embedded in every campaign email. The signed token
-//     (see `unsubscribe.ts`) carries the recipient `userId` and the sending
-//     `businessId`; it is HMAC-verified, then a per-business opt-out is written.
-//     This MUST work without a login and without any phone/SMS re-auth
-//     (Requirement 12.4 / Constraint C1) — it is clicked straight from an inbox
-//     in a browser, so it responds with a small confirmation HTML page.
-//
-// These routes are deliberately registered SEPARATELY from the business-
-// permission-gated `campaignRoutes`: one is consumer auth, the other is
-// unauthenticated, so neither carries the `requireBusinessPermission`
-// preHandlers. No phone number is read, written, or required anywhere here.
+// The link embedded in every campaign email that was sent. The signed token
+// (`unsubscribe.ts`) carries the recipient `userId` and the sending
+// `businessId`; it is HMAC-verified, then a per-business `COPTOUT#` row is
+// written. No login and no phone or SMS re-auth: it is clicked straight from an
+// inbox, so it answers with a small confirmation page.
 // ============================================================================
 
 /** Minimal styled HTML confirmation page returned by the one-click route. */
@@ -237,45 +99,6 @@ function unsubscribePage(title: string, message: string): string {
 }
 
 export async function campaignConsumerRoutes(app: FastifyInstance) {
-  // POST /v1/users/me/campaign-optout — consumer opts out of one business or
-  // all businesses (Requirements 12.1, 12.3).
-  app.post(
-    '/v1/users/me/campaign-optout',
-    {
-      preHandler: [requireAuth('consumer'), validate({ body: campaignOptOutBodySchema })],
-    },
-    async (request) => {
-      const auth = getAuth(request)
-      const body = request.body as CampaignOptOutBody
-
-      const scope = body.businessId ?? 'ALL'
-
-      // optOut:false opts the consumer back in (removes the row); the default
-      // optOut:true writes the opt-out. Both honour the resolved scope.
-      if (body.optOut === false) {
-        await removeOptOut(auth.userId, scope)
-        return { optedOut: false, scope: body.businessId ?? ('all' as const) }
-      }
-
-      await putOptOut(auth.userId, scope)
-      return { optedOut: true, scope: body.businessId ?? ('all' as const) }
-    },
-  )
-
-  // GET /v1/users/me/campaign-optout — read the consumer's global opt-out
-  // status so the in-app preference toggle can reflect the persisted state.
-  app.get(
-    '/v1/users/me/campaign-optout',
-    {
-      preHandler: [requireAuth('consumer')],
-    },
-    async (request) => {
-      const auth = getAuth(request)
-      const state = await getOptOuts(auth.userId)
-      return { optedOut: state.global, businessIds: state.businessIds }
-    },
-  )
-
   // GET /v1/campaigns/unsubscribe?token=... — one-click email unsubscribe, no
   // login, no phone/SMS re-auth (Requirement 12.4 / Constraint C1).
   app.get(
@@ -306,12 +129,7 @@ export async function campaignConsumerRoutes(app: FastifyInstance) {
       return reply
         .status(200)
         .type('text/html')
-        .send(
-          unsubscribePage(
-            "You're unsubscribed",
-            'You will no longer receive win-back campaign emails from this business. You can opt back in anytime from your in-app preferences.',
-          ),
-        )
+        .send(unsubscribePage("You're unsubscribed", 'You will no longer receive emails from this business.'))
     },
   )
 }

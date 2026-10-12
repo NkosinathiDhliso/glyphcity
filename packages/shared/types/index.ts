@@ -337,54 +337,6 @@ export interface BusinessReceipt extends ReceiptSentences {
   nextStep: ReceiptNextStepView | null
 }
 
-// ─── Boost_Scoreboard payload: GET /v1/business/boosts/:boostId/scoreboard ───
-// (proof-of-demand R7.1 to R7.5). What one Boost_Window recorded, next to the
-// same clock window seven days earlier. Counts only: the words belong to the
-// panel, and nothing here describes the boost as having caused a visit.
-
-/** One window's readings. Visits (`checkIns`) and visitors are distinct facts. */
-export interface BoostScoreboardPeriodView {
-  /** The half-open window `[windowStartUtc, windowEndUtc)` these counts cover. */
-  windowStartUtc: string
-  windowEndUtc: string
-  checkIns: number
-  /** Distinct consumers. Always `foundYou + walkIns`. */
-  visitors: number
-  foundYou: number
-  walkIns: number
-}
-
-/** Window minus baseline, per reading. Signed: negative is a real answer. */
-export interface BoostScoreboardDeltaView {
-  checkIns: number
-  visitors: number
-  foundYou: number
-  walkIns: number
-}
-
-/**
- * The scoreboard for one boost purchase.
- *
- * `comparable` is false when either window's sample is below the
- * Suppression_Floor, and `delta` is then null, so a client cannot render a
- * comparison the sample does not support (R7.3). Both sets of counts always
- * render. A window that recorded nothing reports zeros, which is neither a
- * failure nor a claim (R7.5).
- *
- * `windowClosed` says whether the numbers can still move: an open window is
- * computed live on every read, a closed one is stable history (R7.2).
- */
-export interface BoostScoreboardView {
-  /** The `yocoCheckoutId` of the purchase, the id the endpoint is keyed on. */
-  boostId: string
-  nodeId: string
-  windowClosed: boolean
-  window: BoostScoreboardPeriodView
-  baseline: BoostScoreboardPeriodView
-  comparable: boolean
-  delta: BoostScoreboardDeltaView | null
-}
-
 // Audience panel payload: GET /v1/business/me/audience
 export interface AudienceAnalytics {
   totalUniqueVisitors: number

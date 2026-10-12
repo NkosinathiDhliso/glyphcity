@@ -534,14 +534,6 @@ register('GET', '/v1/business/plans', () => ({
     maxRewards: 3,
     maxStaff: 2,
   },
-  boost: { '2hr': 2500, '6hr': 5000, '24hr': 15000 },
-}))
-
-register('POST', '/v1/business/boost', () => ({
-  success: true,
-  checkoutUrl: '#dev-boost',
-  amountCents: 2500,
-  currency: 'ZAR',
 }))
 
 register('POST', '/v1/business/checkout', () => ({

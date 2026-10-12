@@ -131,12 +131,11 @@ masking defaults (see `no-fallbacks-no-legacy.md`).
   (Media_CDN origin for server-rendered image URLs, e.g. the venue
   Share_Preview `og:image`; same distribution as `VITE_CDN_URL`. Unset means no
   venue image, so the preview uses the site default).
-- Async queues and invokes: `AREA_CODE_REPORT_QUEUE_URL`,
-  `AREA_CODE_REWARD_QUEUE_URL`, `AREA_CODE_CAMPAIGN_SEND_QUEUE_URL`,
-  `AREA_CODE_CAMPAIGN_DISPATCHER_FUNCTION` (campaign dispatcher Lambda name).
+- Async queues: `AREA_CODE_REPORT_QUEUE_URL`, `AREA_CODE_REWARD_QUEUE_URL`.
 - Real-time: `WEBSOCKET_ENDPOINT` (API Gateway management endpoint for fan-out).
 - Secrets and signing: `AREA_CODE_QR_HMAC_SECRET` (required in prod),
-  `AREA_CODE_CAMPAIGN_UNSUB_SECRET` (falls back to the QR HMAC secret),
+  `AREA_CODE_CAMPAIGN_UNSUB_SECRET` (verifies the one-click unsubscribe link
+  in campaign emails already sent; falls back to the QR HMAC secret),
   `AREA_CODE_ANONYMIZATION_SALT`.
 - Web Push (VAPID): `AREA_CODE_VAPID_PUBLIC_KEY`, `AREA_CODE_VAPID_PRIVATE_KEY`,
   `AREA_CODE_VAPID_SUBJECT`.

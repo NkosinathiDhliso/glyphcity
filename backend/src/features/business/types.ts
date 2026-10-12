@@ -22,7 +22,6 @@ export const ROLE_PERMISSIONS: Record<BusinessMemberRole, readonly string[]> = {
     'view_rewards',
     'manage_rewards',
     'view_audience',
-    'manage_boost',
     'view_staff',
     'manage_staff',
     'invite_manager',
@@ -45,7 +44,6 @@ export const ROLE_PERMISSIONS: Record<BusinessMemberRole, readonly string[]> = {
     'view_rewards',
     'manage_rewards',
     'view_audience',
-    'manage_boost',
     'view_staff',
     'manage_staff',
     'invite_staff',
@@ -100,24 +98,12 @@ export type BoostDuration = keyof typeof BOOST_PRICING
 //
 // See `.kiro/completed/booster-pricing-floor-and-audit/`.
 //
-// `BOOST_PRICING` (above) remains the price source-of-truth (R9.2). The
-// `BoostFloor_Row` introduced here only gates the lower bound and is seeded
-// equal to `BOOST_PRICING` so the rejection branch never fires on day one
-// (R3.5, R9.4).
+// The boost sale is retired (north-star-alignment R8.2 release A). A stored
+// `BoostFloor_Row` is now only read to snapshot `floorAtPurchaseCents` when a
+// checkout paid before the release still delivers its webhook.
 
-/**
- * Initial seed values for `BoostFloor_Row` per duration. Mirrors `BOOST_PRICING`
- * so launch behaviour is unchanged (R3.5).
- */
-export const BOOST_FLOOR_DEFAULTS: Record<BoostDuration, number> = {
-  '2hr': BOOST_PRICING['2hr'], // 2500
-  '6hr': BOOST_PRICING['6hr'], // 5000
-  '24hr': BOOST_PRICING['24hr'], // 15000
-}
-
-/** Minimum admin-settable floor (1 cent — 0.01 ZAR). R4.3. */
+/** Floor bounds a stored BoostFloor_Row must satisfy to be read. */
 export const BOOST_FLOOR_MIN_CENTS = 1
-/** Maximum admin-settable floor (1 000 000 cents — 10 000.00 ZAR). R4.3. */
 export const BOOST_FLOOR_MAX_CENTS = 1_000_000
 /**
  * Maximum width (in days) of a single Admin_Boost_Report date-range query.
@@ -125,15 +111,18 @@ export const BOOST_FLOOR_MAX_CENTS = 1_000_000
  */
 export const ADMIN_BOOST_REPORT_MAX_RANGE_DAYS = 367
 
+/** CloudWatch `PutMetricData` input for one booster metric (R9.6). */
+export interface BoostMetricInput {
+  MetricName: string
+  Dimensions: Array<{ Name: string; Value: string }>
+}
+
 /**
  * Exhaustive union of structured-log `branch` values emitted by the booster
  * service. Typing log calls as `BOOST_LOG_BRANCHES` makes a missing branch a
  * compile-time error (R9.3).
  */
 export type BOOST_LOG_BRANCHES =
-  | 'floor_loaded_from_dynamo'
-  | 'floor_loaded_from_const_fallback'
-  | 'floor_violation_rejected'
   | 'purchase_audit_written'
   | 'purchase_audit_duplicate_yoco_checkout_id'
   | 'purchase_audit_duplicate_event_id'
@@ -197,24 +186,6 @@ export const boostFloorRowSchema = z.object({
 
 export type BoostFloorRow = z.infer<typeof boostFloorRowSchema>
 
-// ─── Floor change audit row ─────────────────────────────────────────────────
-// R5.1. `previousFloorCents` is `null` on the very first set.
-
-export const floorChangeAuditRowSchema = z.object({
-  pk: z.string().regex(/^BOOST_FLOOR_AUDIT#(2hr|6hr|24hr)$/),
-  sk: z.string().min(1),
-  duration: boostDurationSchema,
-  previousFloorCents: z.number().int().positive().nullable(),
-  newFloorCents: z.number().int().positive(),
-  currency: zarCurrencySchema,
-  changedBy: z.string().min(1),
-  changedByEmail: z.string().min(3).max(254),
-  changedAt: z.string().min(1),
-  changeReason: z.string().min(1).max(280).nullable(),
-})
-
-export type FloorChangeAuditRow = z.infer<typeof floorChangeAuditRowSchema>
-
 // ─── API response views ─────────────────────────────────────────────────────
 //
 // Views mirror their underlying rows but expose only the fields the API
@@ -242,31 +213,6 @@ export const adminBoosterPurchaseViewSchema = boosterPurchaseViewSchema.extend({
 })
 
 export type AdminBoosterPurchaseView = z.infer<typeof adminBoosterPurchaseViewSchema>
-
-export const boostFloorViewSchema = z.object({
-  duration: boostDurationSchema,
-  floorCents: z.number().int().min(BOOST_FLOOR_MIN_CENTS).max(BOOST_FLOOR_MAX_CENTS),
-  currency: zarCurrencySchema,
-  updatedAt: z.string().min(1).nullable(),
-  updatedBy: z.string().min(1).nullable(),
-  /** True when no `BoostFloor_Row` has been written for this duration yet (R4.8). */
-  isDefault: z.boolean(),
-})
-
-export type BoostFloorView = z.infer<typeof boostFloorViewSchema>
-
-export const floorChangeAuditViewSchema = z.object({
-  duration: boostDurationSchema,
-  previousFloorCents: z.number().int().positive().nullable(),
-  newFloorCents: z.number().int().positive(),
-  currency: zarCurrencySchema,
-  changedBy: z.string().min(1),
-  changedByEmail: z.string().min(3).max(254),
-  changedAt: z.string().min(1),
-  changeReason: z.string().min(1).max(280).nullable(),
-})
-
-export type FloorChangeAuditView = z.infer<typeof floorChangeAuditViewSchema>
 
 // ─── Subscription payments (billing-revenue-integrity) ──────────────────────
 //
@@ -446,11 +392,6 @@ export const trialStartBodySchema = z.object({
   plan: z.enum(['growth', 'pro']),
 })
 
-export const boostBodySchema = z.object({
-  nodeId: z.string().uuid(),
-  duration: z.enum(['2hr', '6hr', '24hr']),
-})
-
 export const staffInviteBodySchema = z.object({
   email: z.string().email(),
   role: z.enum(['manager', 'staff']).default('staff'),
@@ -474,5 +415,4 @@ export const staffInviteTokenParamsSchema = z.object({
 })
 
 export type CheckoutBody = z.infer<typeof checkoutBodySchema>
-export type BoostBody = z.infer<typeof boostBodySchema>
 export type StaffInviteBody = z.infer<typeof staffInviteBodySchema>

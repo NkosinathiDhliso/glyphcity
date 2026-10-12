@@ -206,14 +206,3 @@ export function hasAudienceAnalytics(tier: BusinessTier): boolean {
 export function hasExportAnalytics(tier: BusinessTier): boolean {
   return tier === 'pro'
 }
-
-export function getIncludedBoosts(tier: BusinessTier): number {
-  switch (tier) {
-    case 'pro':
-      return Infinity
-    case 'growth':
-      return 3
-    default:
-      return 0
-  }
-}
