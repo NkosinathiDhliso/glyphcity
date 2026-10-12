@@ -178,17 +178,7 @@ export async function getActivityFeed(userId: string, cursor: string | undefined
       },
     ]
     return {
-      items: [
-        ...devItems.map((i) => ({ ...i, feedType: 'checkin' as const })),
-        {
-          id: 'milestone-streak-7',
-          feedType: 'milestone' as const,
-          checkedInAt: new Date(Date.now() - 600000).toISOString(),
-          milestoneType: 'streak' as const,
-          title: '7-day streak',
-          body: "You're on a 7-day check-in streak",
-        },
-      ],
+      items: devItems.map((i) => ({ ...i, feedType: 'checkin' as const })),
       nextCursor: null,
       hasMore: false,
     }
@@ -222,19 +212,9 @@ export async function getActivityFeed(userId: string, cursor: string | undefined
       isFriend: true,
     }
   })
-  // Merge the viewer's own shareable milestones (R11.5). Best-effort: a read
-  // failure degrades to a feed without milestone items.
-  let milestones: Awaited<ReturnType<typeof import('./milestones.js').getRecentMilestones>> = []
-  try {
-    const { getRecentMilestones } = await import('./milestones.js')
-    milestones = await getRecentMilestones(userId, 10)
-  } catch {
-    // non-critical
-  }
-
   return {
     ...result,
-    items: [...privacyFilteredItems, ...milestones],
+    items: privacyFilteredItems,
   }
 }
 

@@ -60,22 +60,25 @@ runs, block-statement predicates, tagged
         import; empty board "No ranks yet. Open the map."; component tests
     - _Requirements: 2.4_
 
-- [ ] 4. Feed (R4)
-  - [ ] 4.1 Delete `social/milestones.ts`, its test, the `recordMilestone`
+- [x] 4. Feed (R4)
+  - [x] 4.1 Delete `social/milestones.ts`, its test, the `recordMilestone`
         call in `processCheckIn`, the merge in `getActivityFeed`,
         `MilestoneFeedItem`; drop the `milestones.js` mocks from the four
         named tests
     - _Requirements: 4.3_
-  - [ ] 4.2 Client: `FeedType` drops `'milestone'`; remove
+  - [x] 4.2 Client: `FeedType` drops `'milestone'`; remove
         `toMilestoneItem`, the `FeedItemRow` branch, the `shareCard.ts`
         milestone renderer and its test case, the `touchTargets` case,
         the `feedEnrichment.test.ts` arbitrary member
     - _Requirements: 4.3_
-  - [ ] 4.3 `FeedItemRow`: one tap per item to `onFocusVenue`; component
+  - [x] 4.3 `FeedItemRow`: one tap per item to `onFocusVenue`; component
         test asserts it for every rendered item; empty state "Nothing from
         friends yet. Open the map." with a Map button
     - _Requirements: 4.2, 4.3a_
-  - [ ] 4.4 Property 3: every feed item has a node id
+  - [x] 4.4 Property 3: every feed item has a node id, over
+        `keepVenueItems`, the gate the feed screen runs before rendering.
+        The `MILESTONE#` line in `cleanup.ts` stays until the tables are
+        confirmed empty (R4.3)
     - _Requirements: 4.2_
 
 - [ ] 5. Tonight at a place you know (R3)

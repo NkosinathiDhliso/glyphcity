@@ -179,22 +179,6 @@ export async function generateShareCard(data: ShareCardData): Promise<Blob> {
   return canvasToPngBlob(canvas)
 }
 
-/**
- * Render a milestone share card (e.g. "7-day streak", "Moved up to Patron")
- * in the same frame. Contains only the milestone text, so it exposes no other
- * user's data (R11.5.3).
- */
-export async function generateMilestoneCard(title: string, body: string): Promise<Blob> {
-  const f = await loadCardFonts()
-  const { canvas, ctx } = createCardCanvas(CARD_WIDTH, CARD_HEIGHT)
-  drawCardFrame(ctx, f)
-
-  centredText(ctx, title, CARD_HEIGHT / 2 - 20, `700 52px ${f.display}`, INK)
-  centredText(ctx, body, CARD_HEIGHT / 2 + 30, `400 24px ${f.body}`, INK_SECONDARY)
-
-  return canvasToPngBlob(canvas)
-}
-
 // ─── Share / copy (Web Share API with clipboard fallback) ───────────────────
 
 /**

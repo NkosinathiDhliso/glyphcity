@@ -218,7 +218,7 @@
   "leaderboard.noData": "No ranks yet. Open the map.",
   "leaderboard.anonymousExplorer": "{{appName}} Explorer",
   "leaderboard.you": "You",
-  "feed.emptyState": "No activity yet | follow friends to fill this up",
+  "feed.emptyState": "Nothing from friends yet. Open the map.",
   "friends.title": "Friends",
   "friends.mutual": "Friends",
   "friends.mutualCount": "{{count}} mutual friends",

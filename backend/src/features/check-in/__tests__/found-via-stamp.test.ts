@@ -66,8 +66,6 @@ const h = vi.hoisted(() => ({
   incrementTotalCheckIns: vi.fn(async () => ({ totalCheckIns: 5, tier: 'local' })),
   updateStreak: vi.fn(async () => 1),
   processCheckInRewardLocks: vi.fn(async () => undefined),
-  recordMilestone: vi.fn(async () => undefined),
-  streakMilestoneFor: vi.fn(() => null),
   sendNotification: vi.fn(async () => undefined),
   getPreferences: vi.fn(async () => ({})),
 }))
@@ -132,11 +130,6 @@ vi.mock('../repository.js', () => ({
 }))
 
 vi.mock('../../rewards/threshold-lock.js', () => ({ processCheckInRewardLocks: h.processCheckInRewardLocks }))
-
-vi.mock('../../social/milestones.js', () => ({
-  recordMilestone: h.recordMilestone,
-  streakMilestoneFor: h.streakMilestoneFor,
-}))
 
 vi.mock('../../notifications/service.js', () => ({
   sendNotification: h.sendNotification,

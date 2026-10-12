@@ -2,13 +2,11 @@ import { Avatar } from '@area-code/shared/components/Avatar'
 import { PLAIN_SCALE_EN, stateLabelKey } from '@area-code/shared/constants/state-labels'
 import { formatRelativeTime } from '@area-code/shared/lib/formatters'
 import type { NodeCategory, NodeState, Tier } from '@area-code/shared/types'
-import { Trophy, Share2, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { Zap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { isJoinEligible, type EnrichedFeedItem } from '../lib/feedEnrichment'
 import { getPulseStateColour } from '../lib/mapHelpers'
-import { generateMilestoneCard, shareOrCopy } from '../lib/shareCard'
 
 import { ArchetypeGlyph } from './ArchetypeGlyph'
 
@@ -21,56 +19,14 @@ interface FeedItemRowProps {
 /** States that earn a visual accent to draw the eye to alive spots (R11.1.2). */
 const ACCENT_STATES: ReadonlySet<NodeState> = new Set<NodeState>(['buzzing', 'popping'])
 
-/** A shareable milestone row (R11.5.2): headline, detail, and a Share button. */
-function MilestoneRow({ title, body }: { title: string; body: string }) {
-  const { t } = useTranslation()
-  const [sharing, setSharing] = useState(false)
-
-  const handleShare = async () => {
-    setSharing(true)
-    try {
-      const blob = await generateMilestoneCard(title, body)
-      await shareOrCopy(blob, `${title} | ${body}`)
-    } catch {
-      // Best-effort: a dismissed share sheet or render failure is a no-op.
-    } finally {
-      setSharing(false)
-    }
-  }
-
-  return (
-    <div className="flex flex-row items-center gap-3 bg-[var(--bg-raised)] border border-[var(--accent)] rounded-2xl px-4 py-3">
-      <div className="w-8 h-8 rounded-full bg-[var(--accent)]/15 flex items-center justify-center shrink-0">
-        <Trophy size={16} className="text-[var(--accent)]" strokeWidth={2} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[var(--text-primary)] text-sm font-semibold">{title}</p>
-        <p className="text-[var(--text-secondary)] text-xs mt-0.5">{body}</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => void handleShare()}
-        disabled={sharing}
-        aria-label={t('feed.shareMilestone', 'Share milestone')}
-        className="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl text-[var(--accent)] transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:opacity-50"
-      >
-        <Share2 size={18} strokeWidth={1.75} />
-      </button>
-    </div>
-  )
-}
-
 /**
  * One City Feed row. Renders a vibe-enriched check-in (pulse badge, live count,
  * venue archetype glyph, and a "Join them?" CTA when a friend is still present
- * at an alive venue), a live-get item ("Live now"), or a shareable milestone.
+ * at an alive venue) or a live-get item ("Live now"). Every row focuses its
+ * venue on the map (north-star-alignment R4.2).
  */
 export function FeedItemRow({ item, onFocusVenue }: FeedItemRowProps) {
   const { t } = useTranslation()
-
-  if (item.feedType === 'milestone') {
-    return <MilestoneRow title={item.title ?? ''} body={item.body ?? ''} />
-  }
 
   if (item.feedType === 'live_get' && item.node) {
     const liveGetNode = item.node

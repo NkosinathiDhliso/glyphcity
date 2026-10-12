@@ -14,9 +14,7 @@ import type { Toast } from '@area-code/shared/types'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { EnrichedFeedItem } from '../../lib/feedEnrichment'
 import { BottomNav } from '../BottomNav'
-import { FeedItemRow } from '../FeedItemRow'
 import { MapControls } from '../MapControls'
 import { ProximityNudgeBanner } from '../ProximityNudgeBanner'
 import { ToastOverlay } from '../ToastOverlay'
@@ -76,26 +74,6 @@ describe('R15.24 touch targets', () => {
 
     const cta = screen.getByRole('button', { name: 'Check in' })
     expect(cta.className).toMatch(TARGET_CLASS_HEIGHT)
-  })
-
-  it('sizes the feed milestone share button to at least 44px', () => {
-    const milestone: EnrichedFeedItem = {
-      id: 'm1',
-      feedType: 'milestone',
-      checkedInAt: new Date().toISOString(),
-      venuePulseState: null,
-      venueCheckInCount: 0,
-      venueArchetypeId: null,
-      friendStillPresent: false,
-      title: 'Five nights in a row',
-      body: 'At Kitcheners',
-    }
-    render(<FeedItemRow item={milestone} onFocusVenue={vi.fn()} />)
-
-    // The milestone row renders exactly one control: the share button.
-    const share = screen.getByRole('button')
-    expect(share.className).toMatch(TARGET_CLASS)
-    expect(share.className).toMatch(TARGET_CLASS_HEIGHT)
   })
 
   it('keeps the documented minimum at 44px', () => {

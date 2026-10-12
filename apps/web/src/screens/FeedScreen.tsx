@@ -9,10 +9,12 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { FeedItemRow } from '../components/FeedItemRow'
+import { OpenMapButton } from '../components/OpenMapButton'
 import { resolveArchetypeDisplayName } from '../lib/archetypeDisplay'
 import {
   filterArchetypeCluster,
   filterLiveGets,
+  keepVenueItems,
   sortFeedItems,
   type EnrichedFeedItem,
   type RawFeedItem,
@@ -70,21 +72,6 @@ function enrichCheckin(item: RawFeedItem, ctx: EnrichContext): EnrichedFeedItem 
     venueCheckInCount: ctx.checkInCounts[nodeId] ?? 0,
     venueArchetypeId: ctx.archetypeIds[nodeId] ?? ctx.defaultArchetypeOf(nodeId),
     friendStillPresent: item.user ? (ctx.friendsAtVenue[nodeId] ?? []).includes(item.user.id) : false,
-  }
-}
-
-/** Pass a milestone item through unchanged (no venue vibe to enrich). */
-function toMilestoneItem(item: RawFeedItem): EnrichedFeedItem {
-  return {
-    id: item.id,
-    feedType: 'milestone',
-    checkedInAt: item.checkedInAt,
-    venuePulseState: null,
-    venueCheckInCount: 0,
-    venueArchetypeId: null,
-    friendStillPresent: false,
-    title: item.title,
-    body: item.body,
   }
 }
 
@@ -158,7 +145,7 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
       defaultArchetypeOf: (nodeId) => nodes[nodeId]?.defaultArchetypeId ?? null,
       isKnown: (nodeId) => nodes[nodeId] !== undefined || nodeId in pulseScores,
     }
-    const enriched = rawItems.map((i) => (i.feedType === 'milestone' ? toMilestoneItem(i) : enrichCheckin(i, ctx)))
+    const enriched = keepVenueItems(rawItems).map((i) => enrichCheckin(i, ctx))
 
     const cluster = filterArchetypeCluster(enriched, archetypeId).slice(0, 5)
     const clusterIds = new Set(cluster.map((i) => i.id))
@@ -237,17 +224,12 @@ export function FeedScreen({ onNavigate }: FeedScreenProps) {
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <div data-testid="feed-empty" className="flex flex-col items-center justify-center py-12 gap-3">
           <Users size={32} strokeWidth={1.5} className="text-[var(--text-muted)] opacity-40" />
           <p className="text-[var(--text-secondary)] text-sm text-center max-w-xs">
-            {t('feed.emptyState', 'No activity yet | follow friends to fill this up.')}
+            {t('feed.emptyState', 'Nothing from friends yet. Open the map.')}
           </p>
-          <button
-            onClick={() => onNavigate('friends')}
-            className="text-sm bg-[var(--accent)] text-[var(--on-accent)] rounded-xl px-4 py-2 transition-all active:scale-95"
-          >
-            {t('feed.findPeople', 'Find your people')}
-          </button>
+          <OpenMapButton onOpenMap={() => onNavigate('map')} />
         </div>
       )}
     </div>

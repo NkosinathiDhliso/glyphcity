@@ -317,8 +317,6 @@ const h = vi.hoisted(() => {
     getFollowingIds: vi.fn(async () => [] as string[]),
     getMutualFollowIds: vi.fn(async () => new Set<string>()),
     processCheckInRewardLocks: vi.fn(async () => undefined),
-    recordMilestone: vi.fn(async () => undefined),
-    streakMilestoneFor: vi.fn(() => null),
     sendNotification: vi.fn(async () => undefined),
     getPreferences: vi.fn(async () => ({})),
   }
@@ -372,11 +370,6 @@ vi.mock('../../business/staff-leaderboard.js', async (importOriginal) => {
 vi.mock('../../rewards/threshold-lock.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../rewards/threshold-lock.js')>()
   return { ...actual, processCheckInRewardLocks: h.processCheckInRewardLocks }
-})
-
-vi.mock('../../social/milestones.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../social/milestones.js')>()
-  return { ...actual, recordMilestone: h.recordMilestone, streakMilestoneFor: h.streakMilestoneFor }
 })
 
 vi.mock('../../notifications/service.js', async (importOriginal) => {

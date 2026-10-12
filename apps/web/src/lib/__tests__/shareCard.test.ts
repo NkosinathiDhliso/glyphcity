@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * Rank and milestone share cards (glyphcity-rebrand task 12.2). jsdom has no 2D
+ * Rank share cards (glyphcity-rebrand task 12.2). jsdom has no 2D
  * canvas, so `getContext` returns a recording fake that keeps every drawn text
  * and every colour used to paint. Image decode is stubbed; the glyph SVG is real.
  *
@@ -10,7 +10,7 @@ import { ARCHETYPE_CATALOG, UNCHARTED_ARCHETYPE_ID } from '@area-code/shared/con
 import { APP_DOMAIN, APP_NAME, BRAND_LINE } from '@area-code/shared/constants/brand'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { buildShareCardData, generateMilestoneCard, generateShareCard } from '../shareCard'
+import { buildShareCardData, generateShareCard } from '../shareCard'
 import { CARD_PALETTE } from '../shareCardPrimitives'
 
 interface Recording {
@@ -107,15 +107,5 @@ describe('generateShareCard', () => {
     const data = stats(null)
     expect(data.glyphId).toBe(UNCHARTED_ARCHETYPE_ID)
     expect(data.archetypeName).toBe('The Uncharted')
-  })
-})
-
-describe('generateMilestoneCard', () => {
-  it('draws the milestone in the shared frame with no slate or indigo', async () => {
-    await generateMilestoneCard('7-day streak', 'Seven nights out')
-    expect(rec.texts).toEqual(
-      expect.arrayContaining([APP_NAME.toLowerCase(), BRAND_LINE, APP_DOMAIN, '7-day streak', 'Seven nights out']),
-    )
-    for (const colour of rec.paints) expect(PALETTE).toContain(colour)
   })
 })

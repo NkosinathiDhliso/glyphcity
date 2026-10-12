@@ -13,7 +13,7 @@ import type { NodeState } from '@area-code/shared/types'
  * Requirements: 11.1, 11.2, 11.3, 11.4, 11.6
  */
 
-export type FeedType = 'checkin' | 'milestone' | 'live_get' | 'archetype_cluster'
+export type FeedType = 'checkin' | 'live_get' | 'archetype_cluster'
 
 /** The checking-in user as returned by the feed endpoint. */
 export interface FeedUser {
@@ -33,25 +33,18 @@ export interface FeedNode {
   category: string
 }
 
-/**
- * A raw feed item as returned by `GET /v1/feed`. Check-in items carry `user` +
- * `node`; milestone items carry `title` + `body` instead (R11.5).
- */
+/** A raw check-in feed item as returned by `GET /v1/feed`: a `user` at a `node`. */
 export interface RawFeedItem {
   id: string
   checkedInAt: string
   user?: FeedUser
   node?: FeedNode
   feedType?: FeedType
-  /** Milestone items only. */
-  title?: string
-  body?: string
 }
 
 /**
  * A feed item after client-side vibe enrichment from `mapStore`. Live-get items
- * reuse this shape with `user` omitted and `getTitle` set; milestone items omit
- * `user`/`node` and carry `title`/`body`.
+ * reuse this shape with `user` omitted and `getTitle` set.
  */
 export interface EnrichedFeedItem {
   id: string
@@ -66,9 +59,16 @@ export interface EnrichedFeedItem {
   friendStillPresent: boolean
   /** For `live_get` items: the get title shown with the "Live now" badge. */
   getTitle?: string
-  /** For `milestone` items: the milestone headline + detail (R11.5). */
-  title?: string
-  body?: string
+}
+
+/**
+ * Keep only items about a room: every feed item must carry a venue to focus on
+ * the map, so an item without one never renders (north-star-alignment R4.2).
+ */
+export function keepVenueItems<T extends { node?: { id: string } }>(
+  items: readonly T[],
+): Array<T & { node: { id: string } }> {
+  return items.filter((item): item is T & { node: { id: string } } => Boolean(item.node?.id))
 }
 
 /** Pulse states that mean the venue is alive enough to send someone to now. */

@@ -21,7 +21,7 @@ import {
 const ALL_STATES: NodeState[] = ['dormant', 'quiet', 'active', 'buzzing', 'popping']
 const ALIVE: ReadonlySet<NodeState> = new Set<NodeState>(['active', 'buzzing', 'popping'])
 const stateArb = fc.constantFrom(...ALL_STATES)
-const feedTypeArb = fc.constantFrom<FeedType>('checkin', 'milestone', 'live_get', 'archetype_cluster')
+const feedTypeArb = fc.constantFrom<FeedType>('checkin', 'live_get', 'archetype_cluster')
 
 describe('Feature: vibe-ranked-browse, Property 10: "Join them?" eligibility', () => {
   it('CTA shown iff friend is still present AND venue pulse state is alive', () => {

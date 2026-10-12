@@ -17,7 +17,7 @@
  * `AREA_CODE_FORCE_LIVE` (DEV_MODE off) and the service is imported dynamically
  * after the env is set — the same pattern as the sibling check-in suites. The
  * whole I/O surface (KV, sockets, privacy guard, repositories, dynamic-imported
- * milestone/notification/reward-lock modules) is mocked; proximity stays REAL
+ * notification/reward-lock modules) is mocked; proximity stays REAL
  * and is satisfied by submitting the node's own coordinates (distance 0). Each
  * run randomises the consent/relationship/setting inputs and asserts the three
  * live-signal writes fire regardless.
@@ -62,8 +62,6 @@ const h = vi.hoisted(() => ({
   incrementTotalCheckIns: vi.fn(async () => ({ totalCheckIns: 5, tier: 'local' })),
   updateStreak: vi.fn(async () => 1),
   processCheckInRewardLocks: vi.fn(async () => undefined),
-  recordMilestone: vi.fn(async () => undefined),
-  streakMilestoneFor: vi.fn(() => null),
   sendNotification: vi.fn(async () => undefined),
   getPreferences: vi.fn(async () => ({})),
 }))
@@ -125,11 +123,6 @@ vi.mock('../repository.js', () => ({
 }))
 
 vi.mock('../../rewards/threshold-lock.js', () => ({ processCheckInRewardLocks: h.processCheckInRewardLocks }))
-
-vi.mock('../../social/milestones.js', () => ({
-  recordMilestone: h.recordMilestone,
-  streakMilestoneFor: h.streakMilestoneFor,
-}))
 
 vi.mock('../../notifications/service.js', () => ({
   sendNotification: h.sendNotification,
