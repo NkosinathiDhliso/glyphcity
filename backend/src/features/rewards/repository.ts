@@ -1,4 +1,5 @@
 // DynamoDB-backed Rewards Repository (replaces Prisma)
+import { DEFAULT_ORDER_MODE, type OrderMode } from '@area-code/shared/constants/ranking'
 import { ScanCommand, QueryCommand } from '@aws-sdk/lib-dynamodb'
 
 import { documentClient, TableNames } from '../../shared/db/dynamodb.js'
@@ -179,10 +180,14 @@ export async function getRewardsNearMe(lat: number, lng: number, viewerId?: stri
   // to neutral (no match / 0 friends) on any lookup failure so the feed never
   // 500s and simply falls back toward aliveness-first ordering.
   let viewerArchetypeId: string | null = null
+  // The viewer's chosen order (vibe-order-toggle R1.2), from the same read.
+  let viewerOrderMode: OrderMode = DEFAULT_ORDER_MODE
   let friendsByNode: Record<string, number> = {}
   if (viewerId) {
     try {
-      viewerArchetypeId = (await getUserById(viewerId))?.archetypeId ?? null
+      const viewer = await getUserById(viewerId)
+      viewerArchetypeId = viewer?.archetypeId ?? null
+      viewerOrderMode = viewer?.orderMode ?? DEFAULT_ORDER_MODE
     } catch {
       viewerArchetypeId = null
     }
@@ -289,7 +294,7 @@ export async function getRewardsNearMe(lat: number, lng: number, viewerId?: stri
 
   // Order taste-first to mirror the map carousel (`vibeRank`):
   // taste → aliveness → tier → has-live-gets → proximity → id.
-  return rankGetsByVibe(signalled).slice(0, 50)
+  return rankGetsByVibe(signalled, viewerOrderMode).slice(0, 50)
 }
 
 export async function getUnclaimedRewards(userId: string) {

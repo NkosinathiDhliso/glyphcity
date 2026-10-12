@@ -91,7 +91,8 @@ app. These are hard rules.
   search. Enforced by
   `backend/src/features/rewards/__tests__/no-global-events-feed.test.ts`.
 - **Ranking mirrors the carousel.** `rankGetsByVibe`
-  (`backend/src/features/rewards/ranking.ts`) orders by taste, aliveness,
+  (`backend/src/features/rewards/ranking.ts`) orders by the guest's top two
+  (aliveness then taste for Busiest, taste then aliveness for My crowd), then
   business tier, has-live-gets, distance, id: the same signal order as
   `vibeRank`. Tier participates (founder-approved) but sits below taste and
   aliveness, so a paid get must still be on-taste and alive to lead. Reach is the
@@ -835,7 +836,8 @@ Always. If your ranking can ever produce the opposite, it is wrong.
 
 1. **Never make proximity the primary sort key.** No "nearest first" / "sort by
    distance" as a default discovery mode anywhere. Distance is a tiebreaker at
-   most.
+   most: proximity sits below both top levels (taste and aliveness) in both
+   order modes.
 2. **Proximity weight stays strictly minor.** In any scoring function, the
    proximity term must be incapable of outranking a meaningfully more-alive or
    better-taste-matched venue. When in doubt, lower it, do not raise it.
@@ -873,17 +875,23 @@ Always. If your ranking can ever produce the opposite, it is wrong.
 
 - `apps/web/src/lib/carouselRanking.ts` — `vibeRank`. Orders venues in strict
   lexicographic priority (each level short-circuits before the next is
-  consulted):
-  1. **Taste-match score** (archetype match + friends-at-venue count)
-  2. **Aliveness** (pulseScore + checkInCount)
+  consulted). The guest's Order_Mode picks which of the top two leads
+  (`docs/decisions/north-star-alignment.md` decision 1): **Busiest** (`busy`,
+  the default) is aliveness then taste; **My crowd** (`crowd`) is taste then
+  aliveness. Levels 3 to 6 are the same in both modes.
+  1. **Aliveness** (pulseScore + checkInCount) in `busy`; **taste-match
+     score** (archetype match + friends-at-venue count) in `crowd`
+  2. The other of the two
   3. **Business tier / node boost** (paid lever — growth/pro get an edge among
      equally-alive venues)
   4. **Has live gets** (boolean: venue has ≥1 live event/offer)
   5. **Distance** (nearer wins, only when position is fresh)
   6. **Venue ID** (deterministic tiebreaker)
 
-  Proximity is structurally incapable of outranking any higher signal.
-  Spec: `.kiro/completed/vibe-ranked-browse/requirements.md`
+  Proximity is structurally incapable of outranking any higher signal, in
+  either mode. The backend `rankGetsByVibe` takes the same mode from the user
+  record. Specs: `.kiro/completed/vibe-ranked-browse/requirements.md`,
+  `.kiro/specs/vibe-order-toggle/requirements.md`
 
 - **Constellation mode (country zoom).** Below `MIN_MARKER_ZOOM`, venues
   render as pulse-driven sky beams, not hidden markers. Beam brightness =
@@ -988,8 +996,11 @@ bugs already fixed. Ranking DNA lives in
 `discovery-dna-vibe-over-convenience.md`; country-zoom beam behaviour lives in
 `constellation-mode.md`. This file is the carousel camera/scope contract.
 
-- **Two scopes, one order.** `vibeRank` (`apps/web/src/lib/carouselRanking.ts`)
-  decides order (taste, aliveness, tier, live gets, distance, id). Scope decides
+- **Two scopes, two orders, one ranker.** `vibeRank`
+  (`apps/web/src/lib/carouselRanking.ts`) decides order: the guest's
+  Order_Mode puts aliveness then taste (Busiest, default) or taste then
+  aliveness (My crowd) on top, then tier, live gets, distance, id in both
+  (`docs/decisions/north-star-alignment.md` decision 1). Scope decides
   membership only, never re-sorts by nearness. Default scope is `recommended`
   (citywide top venues, viewport independent). Switch to `area`
   (viewport-scoped) only on a meaningful user pan or zoom (>= 400 m or >= 0.35
@@ -1015,6 +1026,10 @@ bugs already fixed. Ranking DNA lives in
   This is load-bearing, not cosmetic: the `area` scope can only ever be entered
   by a user pan/zoom performed while the strip is open. Only Commit_Mode is a
   modal takeover (backdrop, focus trap, tap-outside dismiss).
+- **The order toggle re-ranks in place.** The Order_Control sits in the
+  Browse_Mode top row (hidden in the empty state, Constellation peek and
+  Commit_Mode). Choosing a mode calls `recomputeOrder` only: no camera move,
+  no scope change, the Active_Venue stays selected.
 - **Map tab re-tap toggles the carousel** via `selectionStore.toggleOpen`, wired
   through `BottomNav` `onReselect`.
 - **Constellation scope lock.** While `zoom < MIN_MARKER_ZOOM`, browse scope
@@ -1078,7 +1093,9 @@ Constants live in `apps/web/src/lib/carouselConstants.ts` (`MIN_MARKER_ZOOM`,
 - **Active venue**: brightest beam; others dim (~40%) so selection reads clearly.
 - **Cap at country zoom**: render at most the top `RECOMMENDED_LIMIT` (20) beams
   by `vibeRank`. Omit dormant venues beyond the cap at `zoom < 6`. Fade in more
-  as zoom approaches `MIN_MARKER_ZOOM`.
+  as zoom approaches `MIN_MARKER_ZOOM`. Which beams survive the cap follows the
+  guest's active order (Busiest or My crowd); brightness is pulse only in both
+  (`docs/decisions/north-star-alignment.md` decision 1).
 
 ## Calm by default, magic on intent
 

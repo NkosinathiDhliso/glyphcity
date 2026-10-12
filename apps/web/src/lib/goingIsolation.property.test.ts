@@ -17,6 +17,7 @@
  * Validates: Requirements 9.4
  */
 
+import { ORDER_MODES, type OrderMode } from '@area-code/shared/constants/ranking'
 import type { Node } from '@area-code/shared/types'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
@@ -73,7 +74,7 @@ const scenarioArb: fc.Arbitrary<Scenario> = fc.record({
 })
 
 /** The ranking input for one scenario, with or without the Going counts. */
-function rankInput(scenario: Scenario, carryGoing: boolean): RankInput {
+function rankInput(scenario: Scenario, carryGoing: boolean, orderMode: OrderMode): RankInput {
   const pulseScores: Record<string, number> = {}
   const checkInCounts: Record<string, number> = {}
   for (const v of scenario.venues) {
@@ -86,6 +87,7 @@ function rankInput(scenario: Scenario, carryGoing: boolean): RankInput {
     checkInCounts,
     lastKnownPosition: { lat: -26.2041, lng: 28.0473 },
     positionFresh: true,
+    orderMode,
   }
 }
 
@@ -102,11 +104,11 @@ function beamGeometry(ranked: Node[], pulseScores: Record<string, number>): Reco
 // ─── Property 5 ──────────────────────────────────────────────────────────────
 
 describe('Property 5: Going never moves the order or the beams', () => {
-  it('ranks venues identically whether or not a Going count rides along', () => {
+  it.each(ORDER_MODES)('ranks venues identically whether or not a Going count rides along (%s)', (orderMode) => {
     fc.assert(
       fc.property(scenarioArb, (scenario) => {
-        const withGoing = vibeRank(rankInput(scenario, true)).map((v) => v.id)
-        const without = vibeRank(rankInput(scenario, false)).map((v) => v.id)
+        const withGoing = vibeRank(rankInput(scenario, true, orderMode)).map((v) => v.id)
+        const without = vibeRank(rankInput(scenario, false, orderMode)).map((v) => v.id)
 
         expect(withGoing).toEqual(without)
       }),
@@ -114,11 +116,11 @@ describe('Property 5: Going never moves the order or the beams', () => {
     )
   })
 
-  it('shows the same beams, with the same height and footprint', () => {
+  it.each(ORDER_MODES)('shows the same beams, with the same height and footprint (%s)', (orderMode) => {
     fc.assert(
       fc.property(scenarioArb, (scenario) => {
-        const inputWith = rankInput(scenario, true)
-        const inputWithout = rankInput(scenario, false)
+        const inputWith = rankInput(scenario, true, orderMode)
+        const inputWithout = rankInput(scenario, false, orderMode)
         const rankedWith = vibeRank(inputWith)
         const rankedWithout = vibeRank(inputWithout)
 
@@ -135,7 +137,7 @@ describe('Property 5: Going never moves the order or the beams', () => {
     )
   })
 
-  it('never lets marks carry a quiet venue over an alive one', () => {
+  it.each(ORDER_MODES)('never lets marks carry a quiet venue over an alive one (%s)', (orderMode) => {
     fc.assert(
       fc.property(fc.integer({ min: 1, max: 100 }), fc.integer({ min: 1, max: 500 }), (pulse, marks) => {
         // The quiet venue is also the nearer one, so proximity cannot rescue it
@@ -146,6 +148,7 @@ describe('Property 5: Going never moves the order or the beams', () => {
           checkInCounts: {},
           lastKnownPosition: { lat: -26.2041, lng: 28.0473 },
           positionFresh: true,
+          orderMode,
         }
 
         expect(vibeRank(input).map((v) => v.id)).toEqual(['alive', 'quiet-but-intended'])

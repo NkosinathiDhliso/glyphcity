@@ -19,7 +19,9 @@ import { ReconsentGate } from './components/ReconsentGate'
 import { VerifyEmailBanner } from './components/VerifyEmailBanner'
 import { useCheckinOutbox } from './hooks/useCheckinOutbox'
 import { useFriendsPresence } from './hooks/useFriendsPresence'
+import i18n from './i18n'
 import { captureAcquisitionFromLocation } from './lib/acquisition'
+import { reconcileOrderMode } from './lib/orderModePreference'
 import { clearQrCheckIn, readQrCheckIn } from './lib/pendingQrCheckIn'
 import { captureVenueArrivalFromLocation, hasPendingVenueArrival } from './lib/venueArrival'
 import { AuthLanding } from './screens/AuthLanding'
@@ -220,6 +222,7 @@ function AppContent() {
         // Populate the shared user store so other surfaces (e.g. the email
         // verification banner) can read profile state without a second fetch.
         setUser(profile)
+        void reconcileOrderMode(profile, (key, en) => i18n.t(key, en))
         if (profile.onboardingComplete === false) {
           setShowOnboarding(true)
         }

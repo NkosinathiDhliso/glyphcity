@@ -15,6 +15,7 @@ import { createLongPressHandlers } from '../lib/longPress'
 
 import { FlickControls } from './FlickControls'
 import { NodeDetailContent } from './NodeDetailContent'
+import { OrderModeControl } from './OrderModeControl'
 import { VenueCard } from './VenueCard'
 
 /**
@@ -125,6 +126,7 @@ export function PeekCarousel({
     setSwipeInProgress,
     browseScope,
     showRecommended,
+    recomputeOrder,
     enterSpotlight,
   } = selection
 
@@ -326,6 +328,7 @@ export function PeekCarousel({
             showMore={showMore}
             browseScope={browseScope}
             onShowRecommended={showRecommended}
+            onOrderChanged={recomputeOrder}
             nodeCategoryOf={(id) => nodes[id]?.category ?? null}
             onCardSelect={(id) => {
               // A fired hold (Spotlight_Mode) must not also select (R3.2).
@@ -415,6 +418,8 @@ interface BrowseModeProps {
   browseScope: UseCarouselSelectionResult['browseScope']
   /** Return to the citywide recommended scope. */
   onShowRecommended: () => void
+  /** Re-rank after the order mode changes. Never moves the camera or scope. */
+  onOrderChanged: () => void
   nodeCategoryOf: (id: string) => NodeCategory | null
   onCardSelect: (id: string) => void
   /** Callback when the "Keep exploring" card is activated (R4.3). */
@@ -428,6 +433,7 @@ function BrowseMode({
   showMore,
   browseScope,
   onShowRecommended,
+  onOrderChanged,
   nodeCategoryOf,
   onCardSelect,
   onTapMore,
@@ -487,7 +493,7 @@ function BrowseMode({
         type="button"
         data-back-to-recommended
         onClick={onShowRecommended}
-        className="self-start flex items-center gap-1.5 text-[var(--accent)] text-xs font-semibold transition-all duration-150 active:scale-95"
+        className="min-h-11 flex items-center gap-1.5 text-[var(--accent)] text-xs font-semibold transition-all duration-150 active:scale-95"
       >
         {t('map.backToRecommended', 'Back to recommended')}
       </button>
@@ -509,7 +515,10 @@ function BrowseMode({
 
   return (
     <div className="flex flex-col gap-3">
-      {recommendedCue}
+      <div className="flex flex-row items-center justify-between gap-2">
+        <OrderModeControl onChanged={onOrderChanged} />
+        {recommendedCue}
+      </div>
       {/* Swipeable Venue_Card strip (R1.1). Horizontal overflow scrolls so all
           in-viewport cards are reachable; selection is driven by tap, swipe,
           and the FlickControls below. In collapsed (top 2) view, a "Keep

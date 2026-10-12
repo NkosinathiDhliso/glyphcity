@@ -40,7 +40,8 @@ Always. If your ranking can ever produce the opposite, it is wrong.
 
 1. **Never make proximity the primary sort key.** No "nearest first" / "sort by
    distance" as a default discovery mode anywhere. Distance is a tiebreaker at
-   most.
+   most: proximity sits below both top levels (taste and aliveness) in both
+   order modes.
 2. **Proximity weight stays strictly minor.** In any scoring function, the
    proximity term must be incapable of outranking a meaningfully more-alive or
    better-taste-matched venue. When in doubt, lower it, do not raise it.
@@ -78,17 +79,23 @@ Always. If your ranking can ever produce the opposite, it is wrong.
 
 - `apps/web/src/lib/carouselRanking.ts` — `vibeRank`. Orders venues in strict
   lexicographic priority (each level short-circuits before the next is
-  consulted):
-  1. **Taste-match score** (archetype match + friends-at-venue count)
-  2. **Aliveness** (pulseScore + checkInCount)
+  consulted). The guest's Order_Mode picks which of the top two leads
+  (`docs/decisions/north-star-alignment.md` decision 1): **Busiest** (`busy`,
+  the default) is aliveness then taste; **My crowd** (`crowd`) is taste then
+  aliveness. Levels 3 to 6 are the same in both modes.
+  1. **Aliveness** (pulseScore + checkInCount) in `busy`; **taste-match
+     score** (archetype match + friends-at-venue count) in `crowd`
+  2. The other of the two
   3. **Business tier / node boost** (paid lever — growth/pro get an edge among
      equally-alive venues)
   4. **Has live gets** (boolean: venue has ≥1 live event/offer)
   5. **Distance** (nearer wins, only when position is fresh)
   6. **Venue ID** (deterministic tiebreaker)
 
-  Proximity is structurally incapable of outranking any higher signal.
-  Spec: `.kiro/completed/vibe-ranked-browse/requirements.md`
+  Proximity is structurally incapable of outranking any higher signal, in
+  either mode. The backend `rankGetsByVibe` takes the same mode from the user
+  record. Specs: `.kiro/completed/vibe-ranked-browse/requirements.md`,
+  `.kiro/specs/vibe-order-toggle/requirements.md`
 
 - **Constellation mode (country zoom).** Below `MIN_MARKER_ZOOM`, venues
   render as pulse-driven sky beams, not hidden markers. Beam brightness =

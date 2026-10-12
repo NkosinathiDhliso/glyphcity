@@ -1,4 +1,5 @@
 import { TIER_SIZE_MULTIPLIER } from '@area-code/shared/constants'
+import { ORDER_MODES } from '@area-code/shared/constants/ranking'
 import type { BusinessTier, Node } from '@area-code/shared/types'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
@@ -83,42 +84,59 @@ function toMaps(venues: Node[], pulse: number[], checkin: number[]) {
 }
 
 describe('Feature: map-discovery-experience, Property 8: vibe-first ranking with proximity tiebreak and total order', () => {
-  it('is a permutation; vibe never decreases, proximity breaks vibe ties, id breaks the rest', () => {
-    fc.assert(
-      fc.property(scenarioArb, ({ venues, pulse, checkin, position, positionFresh }) => {
-        const { pulseScores, checkInCounts } = toMaps(venues, pulse, checkin)
-        const input: RankInput = { venues, pulseScores, checkInCounts, lastKnownPosition: position, positionFresh }
-        const ranked = vibeRank(input)
-
-        // Permutation: same multiset of ids, no drops or dupes.
-        expect([...ranked.map((v) => v.id)].sort()).toEqual([...venues.map((v) => v.id)].sort())
-
-        const vibe = (v: Node) => (pulseScores[v.id] ?? 0) + (checkInCounts[v.id] ?? 0)
-        const useProx = positionFresh && position !== null
-        const dist = (v: Node) => (useProx ? haversineMeters(position!, { lat: v.lat, lng: v.lng }) : 0)
-
-        for (let i = 1; i < ranked.length; i++) {
-          const prev = ranked[i - 1]!
-          const next = ranked[i]!
-          // 1) Vibe is the hero signal: it never increases as we descend the order.
-          expect(vibe(prev)).toBeGreaterThanOrEqual(vibe(next))
-          if (vibe(prev) === vibe(next)) {
-            // 2) Equal vibe -> proximity tiebreak, nearer first (never outranks vibe).
-            expect(dist(prev)).toBeLessThanOrEqual(dist(next))
-            // 3) Equal vibe and distance -> deterministic id tiebreak.
-            if (dist(prev) === dist(next)) expect(prev.id < next.id).toBe(true)
+  it.each(ORDER_MODES)(
+    'is a permutation; vibe never decreases, proximity breaks vibe ties, id breaks the rest (%s)',
+    (orderMode) => {
+      fc.assert(
+        fc.property(scenarioArb, ({ venues, pulse, checkin, position, positionFresh }) => {
+          const { pulseScores, checkInCounts } = toMaps(venues, pulse, checkin)
+          const input: RankInput = {
+            venues,
+            pulseScores,
+            checkInCounts,
+            lastKnownPosition: position,
+            positionFresh,
+            orderMode,
           }
-        }
-      }),
-      { numRuns: 200 },
-    )
-  })
+          const ranked = vibeRank(input)
 
-  it('is deterministic - two computations on identical input agree exactly', () => {
+          // Permutation: same multiset of ids, no drops or dupes.
+          expect([...ranked.map((v) => v.id)].sort()).toEqual([...venues.map((v) => v.id)].sort())
+
+          const vibe = (v: Node) => (pulseScores[v.id] ?? 0) + (checkInCounts[v.id] ?? 0)
+          const useProx = positionFresh && position !== null
+          const dist = (v: Node) => (useProx ? haversineMeters(position!, { lat: v.lat, lng: v.lng }) : 0)
+
+          for (let i = 1; i < ranked.length; i++) {
+            const prev = ranked[i - 1]!
+            const next = ranked[i]!
+            // 1) Vibe is the hero signal: it never increases as we descend the order.
+            expect(vibe(prev)).toBeGreaterThanOrEqual(vibe(next))
+            if (vibe(prev) === vibe(next)) {
+              // 2) Equal vibe -> proximity tiebreak, nearer first (never outranks vibe).
+              expect(dist(prev)).toBeLessThanOrEqual(dist(next))
+              // 3) Equal vibe and distance -> deterministic id tiebreak.
+              if (dist(prev) === dist(next)) expect(prev.id < next.id).toBe(true)
+            }
+          }
+        }),
+        { numRuns: 200 },
+      )
+    },
+  )
+
+  it.each(ORDER_MODES)('is deterministic - two computations on identical input agree exactly (%s)', (orderMode) => {
     fc.assert(
       fc.property(scenarioArb, ({ venues, pulse, checkin, position, positionFresh }) => {
         const { pulseScores, checkInCounts } = toMaps(venues, pulse, checkin)
-        const input: RankInput = { venues, pulseScores, checkInCounts, lastKnownPosition: position, positionFresh }
+        const input: RankInput = {
+          venues,
+          pulseScores,
+          checkInCounts,
+          lastKnownPosition: position,
+          positionFresh,
+          orderMode,
+        }
         expect(vibeRank(input).map((v) => v.id)).toEqual(vibeRank(input).map((v) => v.id))
       }),
     )
@@ -126,7 +144,7 @@ describe('Feature: map-discovery-experience, Property 8: vibe-first ranking with
 })
 
 describe('Feature: map-discovery-experience, Property 9: Ranking falls back to buzz without a fresh position', () => {
-  it('orders by buzz alone (id tie-break) when the position is stale or absent, and never throws', () => {
+  it.each(ORDER_MODES)('orders by buzz alone (id tie-break) when the position is stale or absent (%s)', (orderMode) => {
     fc.assert(
       fc.property(
         venuesArb(0).chain((venues) =>
@@ -146,6 +164,7 @@ describe('Feature: map-discovery-experience, Property 9: Ranking falls back to b
             checkInCounts,
             lastKnownPosition: position,
             positionFresh: false,
+            orderMode,
           })
 
           const buzz = (v: Node) => (pulseScores[v.id] ?? 0) + (checkInCounts[v.id] ?? 0)
@@ -342,64 +361,70 @@ const boostScenarioArb = fc
   )
 
 describe('Feature: billing-revenue-integrity, Property 4: boost never crosses ranking levels', () => {
-  it('boost stays inside level 3: it never reorders a taste or aliveness winner, and orders ahead of tier', () => {
-    fc.assert(
-      fc.property(boostScenarioArb, ({ venues, consumerArchetypeId }) => {
-        const nodes = venues.map((v) => makeBoostNode(v.id, v.boostActive, v.businessTier, v.defaultArchetypeId))
-        const pulseScores: Record<string, number> = {}
-        const checkInCounts: Record<string, number> = {}
-        const friendsAtVenue: Record<string, string[]> = {}
-        venues.forEach((v) => {
-          pulseScores[v.id] = v.pulse
-          checkInCounts[v.id] = v.checkin
-          friendsAtVenue[v.id] = Array.from({ length: v.friends }, (_, i) => `u${i}`)
-        })
+  it.each(ORDER_MODES)(
+    'boost stays inside level 3: never reorders a taste or aliveness winner, ahead of tier (%s)',
+    (orderMode) => {
+      fc.assert(
+        fc.property(boostScenarioArb, ({ venues, consumerArchetypeId }) => {
+          const nodes = venues.map((v) => makeBoostNode(v.id, v.boostActive, v.businessTier, v.defaultArchetypeId))
+          const pulseScores: Record<string, number> = {}
+          const checkInCounts: Record<string, number> = {}
+          const friendsAtVenue: Record<string, string[]> = {}
+          venues.forEach((v) => {
+            pulseScores[v.id] = v.pulse
+            checkInCounts[v.id] = v.checkin
+            friendsAtVenue[v.id] = Array.from({ length: v.friends }, (_, i) => `u${i}`)
+          })
 
-        const input: RankInput = {
-          venues: nodes,
-          pulseScores,
-          checkInCounts,
-          lastKnownPosition: null,
-          positionFresh: false,
-          consumerArchetypeId,
-          venueArchetypeIds: {},
-          friendsAtVenue,
-          hasLiveGets: {},
-        }
-        const ranked = vibeRank(input)
+          const input: RankInput = {
+            venues: nodes,
+            pulseScores,
+            checkInCounts,
+            lastKnownPosition: null,
+            positionFresh: false,
+            consumerArchetypeId,
+            venueArchetypeIds: {},
+            friendsAtVenue,
+            hasLiveGets: {},
+            orderMode,
+          }
+          const ranked = vibeRank(input)
 
-        const taste = (v: Node) =>
-          tasteMatchScore(consumerArchetypeId, resolveArchetype(v, {}), (friendsAtVenue[v.id] ?? []).length)
-        const alive = (v: Node) => (pulseScores[v.id] ?? 0) + (checkInCounts[v.id] ?? 0)
-        const boost = (v: Node) => (v.boostActive ? 1 : 0)
-        const tier = (v: Node) => TIER_SIZE_MULTIPLIER[v.businessTier ?? 'starter']
+          const taste = (v: Node) =>
+            tasteMatchScore(consumerArchetypeId, resolveArchetype(v, {}), (friendsAtVenue[v.id] ?? []).length)
+          const alive = (v: Node) => (pulseScores[v.id] ?? 0) + (checkInCounts[v.id] ?? 0)
+          const boost = (v: Node) => (v.boostActive ? 1 : 0)
+          const tier = (v: Node) => TIER_SIZE_MULTIPLIER[v.businessTier ?? 'starter']
+          // The mode picks which of taste and aliveness leads; boost sits below both.
+          const [first, second] = orderMode === 'busy' ? [alive, taste] : [taste, alive]
 
-        // For every ordered pair (A before B), the lexicographic level hierarchy
-        // holds. This proves a boost assignment can never reorder a pair that is
-        // separated on taste (1) or aliveness (2): whenever A strictly beats B on
-        // taste, or ties taste but strictly beats aliveness, A precedes B no
-        // matter how boostActive is assigned to B. Only when A and B tie on both
-        // does boost decide, and it sorts ahead of tier.
-        for (let i = 0; i < ranked.length; i++) {
-          for (let j = i + 1; j < ranked.length; j++) {
-            const a = ranked[i]!
-            const b = ranked[j]!
-            expect(taste(a)).toBeGreaterThanOrEqual(taste(b))
-            if (taste(a) === taste(b)) {
-              expect(alive(a)).toBeGreaterThanOrEqual(alive(b))
-              if (alive(a) === alive(b)) {
-                // Equal on taste + aliveness: boostActive orders ahead (level 3a).
-                expect(boost(a)).toBeGreaterThanOrEqual(boost(b))
-                // Boost breaks before tier: tier only decides once boost ties (3b).
-                if (boost(a) === boost(b)) {
-                  expect(tier(a)).toBeGreaterThanOrEqual(tier(b))
+          // For every ordered pair (A before B), the lexicographic level hierarchy
+          // holds. This proves a boost assignment can never reorder a pair that is
+          // separated on taste (1) or aliveness (2): whenever A strictly beats B on
+          // taste, or ties taste but strictly beats aliveness, A precedes B no
+          // matter how boostActive is assigned to B. Only when A and B tie on both
+          // does boost decide, and it sorts ahead of tier.
+          for (let i = 0; i < ranked.length; i++) {
+            for (let j = i + 1; j < ranked.length; j++) {
+              const a = ranked[i]!
+              const b = ranked[j]!
+              expect(first(a)).toBeGreaterThanOrEqual(first(b))
+              if (first(a) === first(b)) {
+                expect(second(a)).toBeGreaterThanOrEqual(second(b))
+                if (second(a) === second(b)) {
+                  // Equal on taste + aliveness: boostActive orders ahead (level 3a).
+                  expect(boost(a)).toBeGreaterThanOrEqual(boost(b))
+                  // Boost breaks before tier: tier only decides once boost ties (3b).
+                  if (boost(a) === boost(b)) {
+                    expect(tier(a)).toBeGreaterThanOrEqual(tier(b))
+                  }
                 }
               }
             }
           }
-        }
-      }),
-      { numRuns: 200 },
-    )
-  })
+        }),
+        { numRuns: 200 },
+      )
+    },
+  )
 })

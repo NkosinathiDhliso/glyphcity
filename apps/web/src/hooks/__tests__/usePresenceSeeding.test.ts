@@ -16,6 +16,7 @@
  * mutable per-nodeId response map and a call log. The real `useMapStore` is
  * driven/inspected via setState/getState and reset in `beforeEach`. No network.
  */
+import { ORDER_MODES } from '@area-code/shared/constants/ranking'
 import { useMapStore } from '@area-code/shared/stores/mapStore'
 import type { Node } from '@area-code/shared/types'
 import { renderHook } from '@testing-library/react'
@@ -23,6 +24,7 @@ import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RECOMMENDED_LIMIT } from '../../lib/carouselConstants'
+import { vibeRank } from '../../lib/carouselRanking'
 import { pickSeedTargets, usePresenceSeeding } from '../usePresenceSeeding'
 
 // `vi.hoisted` so the module mock factory can reference shared mutable state:
@@ -184,6 +186,30 @@ describe('pickSeedTargets', () => {
         expect(new Set(ids).size).toBe(ids.length)
       }),
       { numRuns: 200 },
+    )
+  })
+
+  // Feature: Vibe order toggle. The seed set is picked before any live signal
+  // exists, so taste and aliveness are flat and the Order_Mode cannot move it.
+  it.each(ORDER_MODES)('picks the same targets as vibeRank on flat signals in %s mode', (orderMode) => {
+    const nodesArb = fc
+      .uniqueArray(fc.integer({ min: 0, max: 60 }), { minLength: 0, maxLength: 40 })
+      .map((ns) => ns.map((n) => node(`n${n}`)))
+
+    fc.assert(
+      fc.property(nodesArb, (nodes) => {
+        const ranked = vibeRank({
+          venues: nodes,
+          pulseScores: {},
+          checkInCounts: {},
+          lastKnownPosition: null,
+          positionFresh: false,
+          orderMode,
+        })
+
+        expect(pickSeedTargets(nodes).map((n) => n.id)).toEqual(ranked.slice(0, RECOMMENDED_LIMIT).map((n) => n.id))
+      }),
+      { numRuns: 100 },
     )
   })
 })

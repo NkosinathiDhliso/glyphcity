@@ -47,7 +47,9 @@ Constants live in `apps/web/src/lib/carouselConstants.ts` (`MIN_MARKER_ZOOM`,
 - **Active venue**: brightest beam; others dim (~40%) so selection reads clearly.
 - **Cap at country zoom**: render at most the top `RECOMMENDED_LIMIT` (20) beams
   by `vibeRank`. Omit dormant venues beyond the cap at `zoom < 6`. Fade in more
-  as zoom approaches `MIN_MARKER_ZOOM`.
+  as zoom approaches `MIN_MARKER_ZOOM`. Which beams survive the cap follows the
+  guest's active order (Busiest or My crowd); brightness is pulse only in both
+  (`docs/decisions/north-star-alignment.md` decision 1).
 
 ## Calm by default, magic on intent
 

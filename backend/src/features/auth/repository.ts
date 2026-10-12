@@ -1,5 +1,6 @@
 // DynamoDB Repository for Auth (Replaces Prisma)
 import type { AcquisitionSource } from '@area-code/shared/constants/attribution'
+import type { OrderMode } from '@area-code/shared/constants/ranking'
 import { QueryCommand, PutCommand, GetCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 
 import { documentClient, TableNames, scanFirstMatch } from '../../shared/db/dynamodb.js'
@@ -32,7 +33,7 @@ export { updateUser, deleteUser, linkCognitoSub, relinkCognitoSub }
 
 export async function updateUserProfile(
   userId: string,
-  data: Partial<{ displayName: string; avatarUrl: string | null; cityId: string }>,
+  data: Partial<{ displayName: string; avatarUrl: string | null; cityId: string; orderMode: OrderMode }>,
 ) {
   return updateUser(userId, data)
 }

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
+import { DEFAULT_ORDER_MODE, type OrderMode } from '../constants/ranking'
 import { storage } from '../lib/storage'
 import type { User, Tier } from '../types'
 
@@ -17,6 +18,12 @@ interface UserStore {
   totalCheckIns: number
   streakCount: number
   onboarding: OnboardingState
+  /**
+   * Browse order, held for every visitor so a logged-out choice survives a
+   * reload. Signed in, the user record holds it too (vibe-order-toggle R3).
+   */
+  orderMode: OrderMode
+  setOrderMode: (mode: OrderMode) => void
   setUser: (user: User) => void
   clearUser: () => void
   incrementCheckIns: () => void
@@ -32,12 +39,18 @@ export const useUserStore = create<UserStore>()(
       totalCheckIns: 0,
       streakCount: 0,
       onboarding: { hintSeen: false, layerHintSeen: false, firstCheckIn: false },
+      orderMode: DEFAULT_ORDER_MODE,
+      setOrderMode: (mode) =>
+        set((state) => {
+          state.orderMode = mode
+        }),
       setUser: (user) =>
         set((state) => {
           state.user = user
           state.tier = user.tier
           state.totalCheckIns = user.totalCheckIns
         }),
+      // Keeps `orderMode`: the visitor's choice outlives the session.
       clearUser: () =>
         set((state) => {
           state.user = null

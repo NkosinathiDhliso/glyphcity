@@ -1,3 +1,5 @@
+import type { OrderMode } from '@area-code/shared/constants/ranking'
+
 import { DEV_MODE, requireEnv } from '../../shared/config/env.js'
 import { AppError } from '../../shared/errors/AppError.js'
 import { kvGet, kvSet, kvDel } from '../../shared/kv/dynamodb-kv.js'
@@ -52,12 +54,13 @@ export async function completeOnboarding(userId: string) {
 
 export async function updateProfile(
   userId: string,
-  data: { displayName?: string; avatarUrl?: string | null; citySlug?: string },
+  data: { displayName?: string; avatarUrl?: string | null; citySlug?: string; orderMode?: OrderMode },
 ) {
   if (DEV_MODE) return { id: userId, ...data }
   const updateData: Record<string, unknown> = {}
   if (data.displayName !== undefined) updateData['displayName'] = data.displayName
   if (data.avatarUrl !== undefined) updateData['avatarUrl'] = data.avatarUrl
+  if (data.orderMode !== undefined) updateData['orderMode'] = data.orderMode
   if (data.citySlug) {
     const city = await repo.getCityBySlug(data.citySlug)
     if (!city) throw AppError.unprocessable('City not found')
@@ -65,7 +68,7 @@ export async function updateProfile(
   }
   return repo.updateUserProfile(
     userId,
-    updateData as { displayName?: string; avatarUrl?: string | null; cityId?: string },
+    updateData as { displayName?: string; avatarUrl?: string | null; cityId?: string; orderMode?: OrderMode },
   )
 }
 

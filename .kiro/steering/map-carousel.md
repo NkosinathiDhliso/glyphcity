@@ -9,8 +9,11 @@ bugs already fixed. Ranking DNA lives in
 `discovery-dna-vibe-over-convenience.md`; country-zoom beam behaviour lives in
 `constellation-mode.md`. This file is the carousel camera/scope contract.
 
-- **Two scopes, one order.** `vibeRank` (`apps/web/src/lib/carouselRanking.ts`)
-  decides order (taste, aliveness, tier, live gets, distance, id). Scope decides
+- **Two scopes, two orders, one ranker.** `vibeRank`
+  (`apps/web/src/lib/carouselRanking.ts`) decides order: the guest's
+  Order_Mode puts aliveness then taste (Busiest, default) or taste then
+  aliveness (My crowd) on top, then tier, live gets, distance, id in both
+  (`docs/decisions/north-star-alignment.md` decision 1). Scope decides
   membership only, never re-sorts by nearness. Default scope is `recommended`
   (citywide top venues, viewport independent). Switch to `area`
   (viewport-scoped) only on a meaningful user pan or zoom (>= 400 m or >= 0.35
@@ -36,6 +39,10 @@ bugs already fixed. Ranking DNA lives in
   This is load-bearing, not cosmetic: the `area` scope can only ever be entered
   by a user pan/zoom performed while the strip is open. Only Commit_Mode is a
   modal takeover (backdrop, focus trap, tap-outside dismiss).
+- **The order toggle re-ranks in place.** The Order_Control sits in the
+  Browse_Mode top row (hidden in the empty state, Constellation peek and
+  Commit_Mode). Choosing a mode calls `recomputeOrder` only: no camera move,
+  no scope change, the Active_Venue stays selected.
 - **Map tab re-tap toggles the carousel** via `selectionStore.toggleOpen`, wired
   through `BottomNav` `onReselect`.
 - **Constellation scope lock.** While `zoom < MIN_MARKER_ZOOM`, browse scope

@@ -11,6 +11,7 @@
  *
  * **Validates: Requirements 8.2**
  */
+import { ORDER_MODES, type OrderMode } from '@area-code/shared/constants/ranking'
 import { POINT_MODE_FOV_DEG, POINT_MODE_RADIUS_METRES } from '@area-code/shared/lib/pointMode/constants'
 import { distanceTo, depthScale, project, relativeAngle, bearingTo } from '@area-code/shared/lib/pointMode/geometry'
 import { placeVenues, pointTarget, type PointModeView } from '@area-code/shared/lib/pointMode/view'
@@ -64,7 +65,7 @@ const scenarioArb = fc.record({
 type Scenario = typeof scenarioArb extends fc.Arbitrary<infer S> ? S : never
 
 /** Paid-tier, active, owned nodes: what the city payload carries. */
-function buildRankInput(s: Scenario): RankInput {
+function buildRankInput(s: Scenario, orderMode: OrderMode): RankInput {
   const pulseScores: Record<string, number> = {}
   const checkInCounts: Record<string, number> = {}
   const venueArchetypeIds: Record<string, string> = {}
@@ -112,6 +113,7 @@ function buildRankInput(s: Scenario): RankInput {
     venueArchetypeIds,
     friendsAtVenue,
     hasLiveGets,
+    orderMode,
   }
 }
 
@@ -152,49 +154,52 @@ function expectSizeFromDistance(v: PointModeView<Node>, position: { lat: number;
 const RUNS = { numRuns: 200 }
 
 describe('Feature: GlyphCity rebrand, Property 8: ranking parity', () => {
-  it('shows an order-preserving subset of vibeRank, within radius, FOV and the cap', () => {
+  it.each(ORDER_MODES)(
+    'shows an order-preserving subset of vibeRank, within radius, FOV and the cap (%s)',
+    (orderMode) => {
+      fc.assert(
+        fc.property(scenarioArb, (s) => {
+          const ranked = vibeRank(buildRankInput(s, orderMode))
+          const rankedIds = ranked.map((n) => n.id)
+          const observer = offset(ORIGIN, s.observer.dx, s.observer.dy)
+          const v = view(ranked, observer, s)
+
+          // (a) the rank-ordered list and every stack are subsequences of vibeRank
+          const shownIds = v.ranked.map((n) => n.id)
+          expectSubsequence(shownIds, rankedIds)
+          for (const stack of v.stacks) {
+            expectSubsequence(
+              stack.venues.map((p) => p.venue.id),
+              rankedIds,
+            )
+          }
+          const stackIds = v.stacks.flatMap((st) => st.venues.map((p) => p.venue.id))
+          expect([...stackIds].sort()).toEqual([...shownIds].sort())
+
+          // (b) every shown venue is inside the radius and the FOV, by its target
+          for (const node of v.ranked) {
+            expect(inFrame(node, observer, s.heading)).toBe(true)
+          }
+
+          // (c) the beam cap
+          expect(stackIds.length).toBeLessThanOrEqual(RECOMMENDED_LIMIT)
+
+          // Visibility never skips rank: an in-frame venue ranked above a shown one is shown too.
+          const lastShown = shownIds.length ? rankedIds.indexOf(shownIds[shownIds.length - 1]!) : -1
+          const shown = new Set(shownIds)
+          for (const node of ranked.slice(0, lastShown + 1)) {
+            if (inFrame(node, observer, s.heading)) expect(shown.has(node.id)).toBe(true)
+          }
+        }),
+        RUNS,
+      )
+    },
+  )
+
+  it.each(ORDER_MODES)('never reorders when the observer moves; distance only scales size (%s)', (orderMode) => {
     fc.assert(
       fc.property(scenarioArb, (s) => {
-        const ranked = vibeRank(buildRankInput(s))
-        const rankedIds = ranked.map((n) => n.id)
-        const observer = offset(ORIGIN, s.observer.dx, s.observer.dy)
-        const v = view(ranked, observer, s)
-
-        // (a) the rank-ordered list and every stack are subsequences of vibeRank
-        const shownIds = v.ranked.map((n) => n.id)
-        expectSubsequence(shownIds, rankedIds)
-        for (const stack of v.stacks) {
-          expectSubsequence(
-            stack.venues.map((p) => p.venue.id),
-            rankedIds,
-          )
-        }
-        const stackIds = v.stacks.flatMap((st) => st.venues.map((p) => p.venue.id))
-        expect([...stackIds].sort()).toEqual([...shownIds].sort())
-
-        // (b) every shown venue is inside the radius and the FOV, by its target
-        for (const node of v.ranked) {
-          expect(inFrame(node, observer, s.heading)).toBe(true)
-        }
-
-        // (c) the beam cap
-        expect(stackIds.length).toBeLessThanOrEqual(RECOMMENDED_LIMIT)
-
-        // Visibility never skips rank: an in-frame venue ranked above a shown one is shown too.
-        const lastShown = shownIds.length ? rankedIds.indexOf(shownIds[shownIds.length - 1]!) : -1
-        const shown = new Set(shownIds)
-        for (const node of ranked.slice(0, lastShown + 1)) {
-          if (inFrame(node, observer, s.heading)) expect(shown.has(node.id)).toBe(true)
-        }
-      }),
-      RUNS,
-    )
-  })
-
-  it('never reorders when the observer moves; distance only scales size', () => {
-    fc.assert(
-      fc.property(scenarioArb, (s) => {
-        const ranked = vibeRank(buildRankInput(s))
+        const ranked = vibeRank(buildRankInput(s, orderMode))
         const a = offset(ORIGIN, s.observer.dx, s.observer.dy)
         const b = offset(a, s.move.dx, s.move.dy)
         const va = view(ranked, a, s)

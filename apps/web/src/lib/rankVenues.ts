@@ -23,5 +23,6 @@ export function rankVenuesFromStores(venues: Node[]): Node[] {
     venueArchetypeIds: mapState.archetypeIds,
     friendsAtVenue: mapState.friendsAtVenue,
     hasLiveGets: mapState.hasLiveGets,
+    orderMode: useUserStore.getState().orderMode,
   })
 }

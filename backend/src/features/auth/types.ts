@@ -1,10 +1,12 @@
 import { ACQUISITION_SOURCES, type AcquisitionSource } from '@area-code/shared/constants/attribution'
+import { ORDER_MODES, type OrderMode } from '@area-code/shared/constants/ranking'
 import { z } from 'zod'
 
 export const updateProfileBodySchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
   avatarUrl: z.string().url().nullable().optional(),
   citySlug: z.string().min(1).optional(),
+  orderMode: z.enum(ORDER_MODES).optional(),
 })
 
 export const consentBodySchema = z
@@ -148,6 +150,8 @@ export interface User {
   musicGenres?: string[]
   dimensionScores?: Record<string, unknown>
   archetypeId?: string
+  /** Carousel and gets order chosen on the map strip (vibe-order-toggle). */
+  orderMode?: OrderMode
   streamingProvider?: string
   genresUpdatedAt?: string
   privacyLevel?: string

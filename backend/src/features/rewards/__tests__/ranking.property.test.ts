@@ -1,3 +1,4 @@
+import { ORDER_MODES } from '@area-code/shared/constants/ranking'
 import * as fc from 'fast-check'
 import { describe, it, expect } from 'vitest'
 
@@ -10,13 +11,14 @@ import {
 } from '../ranking.js'
 
 /**
- * Gets feed ranking — taste-first ordering invariants.
+ * Gets feed ranking: ordering invariants, in both Order_Modes.
  *
  * These tests lock the discovery-DNA law
  * (`.kiro/steering/discovery-dna-vibe-over-convenience.md`) for the consumer
  * Get_Feed, which now mirrors the map carousel (`vibeRank`) signal-for-signal:
  *
- *   taste -> aliveness -> business tier -> has-live-gets -> proximity -> id
+ *   busy:  aliveness -> taste -> business tier -> has-live-gets -> proximity -> id
+ *   crowd: taste -> aliveness -> business tier -> has-live-gets -> proximity -> id
  *
  * The same pure function (`rankGetsByVibe`) is what the repository/service use
  * to order the feed, so these exercise real behaviour. Each signal short-circuits
@@ -37,28 +39,31 @@ const uniqueByIdArb = fc
   .array(signalArb, { minLength: 1, maxLength: 30 })
   .map((arr) => arr.map((s, i) => ({ ...s, id: `${s.id}-${i}` })))
 
-describe('rankGetsByVibe — taste-first ordering', () => {
-  it('never ranks a worse taste match above a better one (lead signal)', () => {
+describe.each(ORDER_MODES)('rankGetsByVibe, %s order', (orderMode) => {
+  const lead = (g: GetRankSignals) => (orderMode === 'busy' ? g.aliveness : g.tasteMatch)
+  const next = (g: GetRankSignals) => (orderMode === 'busy' ? g.tasteMatch : g.aliveness)
+
+  it('never ranks a weaker lead signal above a stronger one', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const ranked = rankGetsByVibe(gets)
+        const ranked = rankGetsByVibe(gets, orderMode)
         for (let i = 0; i < ranked.length - 1; i++) {
-          expect(ranked[i]!.tasteMatch).toBeGreaterThanOrEqual(ranked[i + 1]!.tasteMatch)
+          expect(lead(ranked[i]!)).toBeGreaterThanOrEqual(lead(ranked[i + 1]!))
         }
       }),
       { numRuns: 200 },
     )
   })
 
-  it('among equal taste, never lets a deader get outrank a more-alive one', () => {
+  it('among an equal lead signal, never lets a weaker second signal outrank a stronger one', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const ranked = rankGetsByVibe(gets)
+        const ranked = rankGetsByVibe(gets, orderMode)
         for (let i = 0; i < ranked.length - 1; i++) {
           const a = ranked[i]!
           const b = ranked[i + 1]!
-          if (a.tasteMatch === b.tasteMatch) {
-            expect(a.aliveness).toBeGreaterThanOrEqual(b.aliveness)
+          if (lead(a) === lead(b)) {
+            expect(next(a)).toBeGreaterThanOrEqual(next(b))
           }
         }
       }),
@@ -69,7 +74,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
   it('among equal taste AND aliveness, a higher tier never ranks below a lower one', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const ranked = rankGetsByVibe(gets)
+        const ranked = rankGetsByVibe(gets, orderMode)
         for (let i = 0; i < ranked.length - 1; i++) {
           const a = ranked[i]!
           const b = ranked[i + 1]!
@@ -85,7 +90,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
   it('among equal taste/aliveness/tier, a live-gets venue never ranks below a non-live one', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const ranked = rankGetsByVibe(gets)
+        const ranked = rankGetsByVibe(gets, orderMode)
         for (let i = 0; i < ranked.length - 1; i++) {
           const a = ranked[i]!
           const b = ranked[i + 1]!
@@ -101,7 +106,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
   it('proximity only breaks ties between gets equal on every signal above it', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const ranked = rankGetsByVibe(gets)
+        const ranked = rankGetsByVibe(gets, orderMode)
         for (let i = 0; i < ranked.length - 1; i++) {
           const a = ranked[i]!
           const b = ranked[i + 1]!
@@ -119,7 +124,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
     )
   })
 
-  it('a better taste match beats a buzzing-but-off-taste get (the headline rule)', () => {
+  it('the mode picks the winner between an on-taste get and a buzzing off-taste one', () => {
     const onTaste: GetRankSignals = {
       id: 'on-taste',
       tasteMatch: 2,
@@ -136,8 +141,8 @@ describe('rankGetsByVibe — taste-first ordering', () => {
       hasLiveGets: true,
       distanceMeters: 50,
     }
-    const ranked = rankGetsByVibe([buzzing, onTaste])
-    expect(ranked[0]!.id).toBe('on-taste')
+    const ranked = rankGetsByVibe([buzzing, onTaste], orderMode)
+    expect(ranked[0]!.id).toBe(orderMode === 'busy' ? 'buzzing' : 'on-taste')
   })
 
   it('a buzzing-but-further get beats a quiet-but-closer one when taste is equal', () => {
@@ -157,7 +162,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
       hasLiveGets: false,
       distanceMeters: 50,
     }
-    const ranked = rankGetsByVibe([close, alive])
+    const ranked = rankGetsByVibe([close, alive], orderMode)
     expect(ranked[0]!.id).toBe('alive')
   })
 
@@ -178,15 +183,15 @@ describe('rankGetsByVibe — taste-first ordering', () => {
       hasLiveGets: true,
       distanceMeters: 100,
     }
-    const ranked = rankGetsByVibe([paidButDead, onTasteAlive])
+    const ranked = rankGetsByVibe([paidButDead, onTasteAlive], orderMode)
     expect(ranked[0]!.id).toBe('free-but-alive')
   })
 
   it('is deterministic and total — same input, same order; no items lost', () => {
     fc.assert(
       fc.property(uniqueByIdArb, (gets) => {
-        const a = rankGetsByVibe(gets).map((g) => g.id)
-        const b = rankGetsByVibe(gets).map((g) => g.id)
+        const a = rankGetsByVibe(gets, orderMode).map((g) => g.id)
+        const b = rankGetsByVibe(gets, orderMode).map((g) => g.id)
         expect(a).toEqual(b)
         expect([...a].sort()).toEqual([...gets.map((g) => g.id)].sort())
       }),
@@ -200,7 +205,7 @@ describe('rankGetsByVibe — taste-first ordering', () => {
       { id: 'b', tasteMatch: 0, aliveness: 2, tierMultiplier: 1, hasLiveGets: false, distanceMeters: 200 },
     ]
     const snapshot = gets.map((g) => g.id)
-    rankGetsByVibe(gets)
+    rankGetsByVibe(gets, orderMode)
     expect(gets.map((g) => g.id)).toEqual(snapshot)
   })
 })

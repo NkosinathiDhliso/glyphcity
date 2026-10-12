@@ -77,7 +77,8 @@ app. These are hard rules.
   search. Enforced by
   `backend/src/features/rewards/__tests__/no-global-events-feed.test.ts`.
 - **Ranking mirrors the carousel.** `rankGetsByVibe`
-  (`backend/src/features/rewards/ranking.ts`) orders by taste, aliveness,
+  (`backend/src/features/rewards/ranking.ts`) orders by the guest's top two
+  (aliveness then taste for Busiest, taste then aliveness for My crowd), then
   business tier, has-live-gets, distance, id: the same signal order as
   `vibeRank`. Tier participates (founder-approved) but sits below taste and
   aliveness, so a paid get must still be on-taste and alive to lead. Reach is the

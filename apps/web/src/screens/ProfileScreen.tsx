@@ -26,6 +26,7 @@ import { ParkedCheckinsSection } from '../components/ParkedCheckinsSection'
 import { RankTrophyOverlay } from '../components/RankTrophyOverlay'
 import { StreamingSection } from '../components/StreamingSection'
 import { YourGlyphCard } from '../components/YourGlyphCard'
+import { reconcileOrderMode } from '../lib/orderModePreference'
 import type { AppRoute } from '../types'
 
 interface ProfileScreenProps {
@@ -90,6 +91,7 @@ export function ProfileScreen({ onNavigate }: ProfileScreenProps) {
     queryFn: async () => {
       const u = await api.get<User & { streakCount?: number }>('/v1/users/me')
       setUser(u)
+      void reconcileOrderMode(u, t)
       if (typeof u.streakCount === 'number') {
         useUserStore.getState().setStreak(u.streakCount)
       }

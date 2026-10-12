@@ -1,4 +1,5 @@
 import type { FoundVia } from '../constants/attribution'
+import type { OrderMode } from '../constants/ranking'
 import type { SocialLinks } from '../constants/social-platforms'
 
 // Social handles are re-exported here so callers can import venue-related
@@ -575,6 +576,8 @@ export interface User {
    * regardless of this flag.
    */
   proximityNudgesEnabled?: boolean
+  /** Browse order chosen on the map strip. Unset reads as `DEFAULT_ORDER_MODE`. */
+  orderMode?: OrderMode
 }
 
 export interface BusinessAccount {

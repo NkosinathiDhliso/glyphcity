@@ -1,4 +1,5 @@
 import { TIER_SIZE_MULTIPLIER } from '@area-code/shared/constants'
+import { DEFAULT_ORDER_MODE, type OrderMode } from '@area-code/shared/constants/ranking'
 import type { Node } from '@area-code/shared/types'
 
 import { BROWSE_STEP, INITIAL_BROWSE_COUNT } from './carouselConstants'
@@ -38,6 +39,8 @@ export interface RankInput {
   friendsAtVenue?: Record<string, string[]>
   /** Whether a venue has at least one live event/offer get. */
   hasLiveGets?: Record<string, boolean>
+  /** Which of the top two levels leads. Absent reads as `DEFAULT_ORDER_MODE`. */
+  orderMode?: OrderMode
 }
 
 export interface ViewportBounds {
@@ -160,11 +163,12 @@ export function deriveHasLiveGets(
  * Discovery DNA (`.kiro/steering/discovery-dna-vibe-over-convenience.md`):
  * proximity is incapable of outranking taste, vibe, tier, or live gets.
  *
- * The 6-signal order:
- *   1. **Taste-match score** (archetype affinity + friends-at-venue count).
- *      Higher wins. When the consumer has no archetypeId and no friends, this
- *      is 0 for all venues → gracefully degrades to aliveness-first (R7.1).
- *   2. **Aliveness** (pulseScore + checkInCount). Higher wins.
+ * The 6-signal order. Levels 1 and 2 follow the guest's Order_Mode
+ * (`docs/decisions/north-star-alignment.md` decision 1): `busy` (default) is
+ * aliveness then taste, `crowd` is taste then aliveness.
+ *   1-2. **Taste-match score** (archetype affinity + friends-at-venue count; 0
+ *      for all venues with no archetypeId and no friends, R7.1) and
+ *      **Aliveness** (pulseScore + checkInCount). Higher wins on each.
  *   3. **Boost then business tier** — the paid lever among equally-alive venues,
  *      ordered `(boostActive desc, tierWeight desc)`:
  *        3a. **Boost active** (node.boostActive, billing R5.3). A venue inside
@@ -198,6 +202,7 @@ export function vibeRank(input: RankInput): Node[] {
     venueArchetypeIds: rawVenueArchetypeIds,
     friendsAtVenue: rawFriendsAtVenue,
     hasLiveGets: rawHasLiveGets,
+    orderMode = DEFAULT_ORDER_MODE,
   } = input
 
   // Safe defaults for optional fields (graceful degradation R7.1, R7.2)
@@ -207,25 +212,22 @@ export function vibeRank(input: RankInput): Node[] {
   const hasLiveGets = rawHasLiveGets ?? {}
 
   const useProximity = positionFresh && lastKnownPosition !== null
+  const taste = (n: Node) =>
+    tasteMatchScore(consumerArchetypeId, resolveArchetype(n, venueArchetypeIds), (friendsAtVenue[n.id] ?? []).length)
 
   return [...venues].sort((a, b) => {
     // 1) Taste-match score (higher wins) - archetype affinity + friends count
-    const tasteA = tasteMatchScore(
-      consumerArchetypeId,
-      resolveArchetype(a, venueArchetypeIds),
-      (friendsAtVenue[a.id] ?? []).length,
-    )
-    const tasteB = tasteMatchScore(
-      consumerArchetypeId,
-      resolveArchetype(b, venueArchetypeIds),
-      (friendsAtVenue[b.id] ?? []).length,
-    )
-    if (tasteA !== tasteB) return tasteB - tasteA
+    const tasteDelta = taste(b) - taste(a)
 
     // 2) Aliveness (higher wins) - pulse + check-in count
     const aliveA = (pulseScores[a.id] ?? 0) + (checkInCounts[a.id] ?? 0)
     const aliveB = (pulseScores[b.id] ?? 0) + (checkInCounts[b.id] ?? 0)
-    if (aliveA !== aliveB) return aliveB - aliveA
+    const aliveDelta = aliveB - aliveA
+
+    // The Order_Mode picks which leads; both short-circuit before level 3.
+    const [first, second] = orderMode === 'busy' ? [aliveDelta, tasteDelta] : [tasteDelta, aliveDelta]
+    if (first !== 0) return first
+    if (second !== 0) return second
 
     // 3) Paid lever among equally-alive venues, ordered (boostActive desc, tier desc).
     //    Sits below taste (1) and aliveness (2), which short-circuit first, so a

@@ -12,14 +12,15 @@
  *
  * The order is LEXICOGRAPHIC, strongest signal first — each signal short-circuits
  * before the next is consulted, so a higher-priority signal structurally cannot
- * be overridden by any combination of lower-priority ones:
+ * be overridden by any combination of lower-priority ones. The viewer's
+ * `OrderMode` picks which of the top two leads: `busy` (default) puts
+ * aliveness first, `crowd` puts taste match first. Levels 3 to 6 are the same
+ * in both modes:
  *
- *   1. Taste match — archetype affinity + friends-at-venue count between the
- *                    venue's crowd and the viewer. The lead signal: a get the
- *                    viewer is more likely to love ranks first. Degrades to 0
- *                    for every get when the viewer has no archetype and no
- *                    friends present, so the feed falls back to aliveness-first.
- *   2. Aliveness  — how buzzing the get's venue is RIGHT NOW.
+ *   1/2. Taste match: archetype affinity + friends-at-venue count between the
+ *                    venue's crowd and the viewer. Degrades to 0 for every get
+ *                    when the viewer has no archetype and no friends present.
+ *   1/2. Aliveness: how buzzing the get's venue is RIGHT NOW.
  *                   `aliveness = pulseScore + liveCount` (honest current
  *                   presence + decaying pulse). Higher wins.
  *   3. Business tier — `tierMultiplier` from the venue's effective billing tier.
@@ -34,13 +35,15 @@
  *
  * MONETIZATION NOTE: business tier participates in this ordering at priority 3
  * (founder-approved override of the earlier "tier is absent from the feed" rule).
- * Tier is deliberately BELOW taste and aliveness, so a paid get still has to be
+ * Tier is deliberately BELOW taste and aliveness in both modes, so a paid get still has to be
  * on-taste and alive to lead — payment only breaks ties between gets a viewer
  * would otherwise weigh equally. This matches `vibeRank` on the map exactly.
  *
  * Every function here is observably pure: no clock, no I/O, no globals — so the
  * ordering is deterministic and unit/property testable.
  */
+
+import { DEFAULT_ORDER_MODE, type OrderMode } from '@area-code/shared/constants/ranking'
 
 /**
  * Business tier → ranking multiplier. Kept in lockstep with
@@ -88,17 +91,23 @@ export interface GetRankSignals {
 }
 
 /**
- * Order gets vibe-first (taste → aliveness → tier → live gets → proximity → id),
- * returning a new array. The input is never mutated.
+ * Order gets vibe-first, returning a new array. The input is never mutated.
+ *
+ * The top two levels follow the viewer's Order_Mode, exactly as `vibeRank`
+ * does (vibe-order-toggle): `busy` (default) is aliveness then taste, `crowd`
+ * is taste then aliveness. Tier, live gets, proximity and id follow in both.
  */
-export function rankGetsByVibe<T extends GetRankSignals>(gets: readonly T[]): T[] {
+export function rankGetsByVibe<T extends GetRankSignals>(
+  gets: readonly T[],
+  orderMode: OrderMode = DEFAULT_ORDER_MODE,
+): T[] {
   return [...gets].sort((a, b) => {
-    // 1) Taste match — the lead signal. A better match always wins.
+    // 1-2) Taste and aliveness, in the Order_Mode's order.
     const tasteDelta = b.tasteMatch - a.tasteMatch
-    if (tasteDelta !== 0) return tasteDelta
-    // 2) Aliveness — more-alive venue's get wins among equally-on-taste gets.
     const alivenessDelta = b.aliveness - a.aliveness
-    if (alivenessDelta !== 0) return alivenessDelta
+    const [first, second] = orderMode === 'busy' ? [alivenessDelta, tasteDelta] : [tasteDelta, alivenessDelta]
+    if (first !== 0) return first
+    if (second !== 0) return second
     // 3) Business tier — paid lever among equally on-taste, equally-alive gets.
     const tierDelta = b.tierMultiplier - a.tierMultiplier
     if (tierDelta !== 0) return tierDelta
